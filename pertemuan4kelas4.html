@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slide Edukasi: Penomoran di Google Docs</title>
+    <!-- Font Ramah Anak dari Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- Icon FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* CSS Reset & Base */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #333; /* Latar belakang gelap di luar slide */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        /* Container Slide (Proporsi 16:9) */
+        #slide-container {
+            width: 1280px;
+            height: 720px;
+            position: relative;
+            background-color: white;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            border-radius: 20px;
+            overflow: hidden;
+            /* Transform scale akan diatur oleh JS agar pas di layar */
+            transform-origin: center center;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+            transform: translateX(50px);
+            padding: 50px 80px;
+        }
+
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(0);
+        }
+
+        /* Navigasi Overlay */
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.7);
+            border: none;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            font-size: 24px;
+            color: #333;
+            cursor: pointer;
+            z-index: 100;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            transition: all 0.2s;
+        }
+
+        .nav-btn:hover {
+            background: white;
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        #prev-btn { left: 20px; }
+        #next-btn { right: 20px; }
+
+        .progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 8px;
+            background: #ff6b6b;
+            transition: width 0.3s;
+            z-index: 100;
+        }
+
+        /* Tipografi & Warna (Ceria & Premium) */
+        h1, h2, h3 {
+            font-family: 'Fredoka One', cursive;
+            color: #2d3436;
+        }
+
+        h1 { font-size: 64px; line-height: 1.2; margin-bottom: 20px; }
+        h2 { font-size: 50px; margin-bottom: 30px; text-align: center; }
+        p { font-size: 30px; color: #4b6584; line-height: 1.5; margin-bottom: 20px; }
+        
+        .highlight { color: #ff6b6b; }
+        .highlight-blue { color: #48dbfb; }
+        .highlight-green { color: #1dd1a1; }
+        .highlight-yellow { color: #feca57; }
+
+        /* Dekorasi Latar Belakang (Blobs & Shapes) */
+        .shape {
+            position: absolute;
+            z-index: -1;
+            opacity: 0.6;
+        }
+        .shape-1 { top: -50px; left: -50px; width: 300px; height: 300px; background: #ff9ff3; border-radius: 50%; filter: blur(50px); }
+        .shape-2 { bottom: -100px; right: -50px; width: 400px; height: 400px; background: #48dbfb; border-radius: 50%; filter: blur(60px); }
+        .shape-3 { top: 20%; right: 10%; width: 200px; height: 200px; background: #feca57; border-radius: 50%; filter: blur(40px); }
+
+        /* Layout Khusus Slide */
+        .layout-center {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .layout-split {
+            display: flex;
+            flex-direction: row;
+            height: 100%;
+            align-items: center;
+            gap: 50px;
+        }
+
+        .split-text { flex: 1; }
+        .split-image { 
+            flex: 1; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            font-size: 200px; /* Untuk emoji raksasa */
+        }
+
+        /* Kotak Info Premium */
+        .info-box {
+            background: white;
+            padding: 30px;
+            border-radius: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+            border: 4px solid #feca57;
+            margin-top: 20px;
+        }
+
+        /* Simulasi Google Docs */
+        .docs-mockup {
+            background: #f1f3f4;
+            border-radius: 10px;
+            width: 100%;
+            height: 400px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 2px solid #dadce0;
+        }
+
+        .docs-toolbar {
+            background: #ffffff;
+            padding: 10px 20px;
+            border-bottom: 1px solid #dadce0;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            font-size: 20px;
+            color: #5f6368;
+        }
+
+        .btn-numbering {
+            background: #e8f0fe;
+            color: #1a73e8;
+            padding: 5px 10px;
+            border-radius: 4px;
+            border: 1px solid #1a73e8;
+            font-weight: bold;
+        }
+
+        .docs-page {
+            background: white;
+            margin: 20px auto;
+            width: 80%;
+            flex: 1;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 30px;
+            font-size: 24px;
+        }
+
+        .list-item {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+        .list-number { font-weight: bold; color: #1a73e8; }
+
+        ul, ol {
+            font-size: 30px;
+            margin-left: 40px;
+            color: #4b6584;
+            line-height: 1.6;
+        }
+
+        .bounce { animation: bounce 2s infinite; }
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-20px); }
+            60% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="slide-container">
+        <!-- Background Shapes (Shared) -->
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+
+        <!-- Slide 1: Judul -->
+        <div class="slide layout-center active">
+            <div style="font-size: 100px; margin-bottom: 20px;" class="bounce">📝✨</div>
+            <h1 style="color: #ff6b6b;">Menyusun Data Super Rapi!</h1>
+            <p style="font-size: 36px; font-weight: bold; color: #2d3436;">Belajar <i>Numbering</i> di Google Docs</p>
+            <div class="info-box" style="border-color: #1dd1a1; background: #eafff5; display: inline-block; padding: 15px 40px;">
+                <p style="margin:0; font-size: 24px; font-weight:bold; color: #10ac84;">Materi TIK Kelas 4 SD</p>
+            </div>
+            <p style="font-size: 18px; margin-top: 40px; color: #8395a7;">(Gunakan panah ⬅️ ➡️ di keyboard untuk berpindah)</p>
+        </div>
+
+        <!-- Slide 2: Apa itu Data? -->
+        <div class="slide layout-split">
+            <div class="split-text">
+                <h2>Apa sih <span class="highlight-blue">"Data"</span> itu?</h2>
+                <p>Data adalah kumpulan informasi atau catatan yang penting.</p>
+                <p>Contoh data yang sering kita temui:</p>
+                <ul>
+                    <li>Daftar nama teman sekelas 🧑‍🤝‍🧑</li>
+                    <li>Daftar mainan favoritmu 🧸</li>
+                    <li>Daftar belanjaan Ibu di pasar 🍎</li>
+                </ul>
+            </div>
+            <div class="split-image">
+                📊
+            </div>
+        </div>
+
+        <!-- Slide 3: Kenapa Harus Rapi? -->
+        <div class="slide layout-split">
+            <div class="split-image" style="font-size: 150px; flex-direction: column; gap: 20px;">
+                <div style="background: #ffeaa7; padding: 20px; border-radius: 20px;">😵 Berantakan</div>
+                <div style="background: #55efc4; padding: 20px; border-radius: 20px;">😍 Rapi!</div>
+            </div>
+            <div class="split-text">
+                <h2>Kenapa Harus <span class="highlight-yellow">Rapi?</span></h2>
+                <p>Bayangkan kamarmu yang penuh mainan tapi berantakan. Pasti susah mencari mainan yang kamu mau, kan?</p>
+                <div class="info-box">
+                    <p style="margin:0;">Data juga begitu! Kalau kita menulis daftar nama secara acak dan berantakan, kita akan pusing membacanya.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Kenalan dengan Google Docs -->
+        <div class="slide layout-center">
+            <h2 style="font-size: 60px;">Kenalan Yuk dengan <span style="color:#1a73e8;">Google Docs!</span> 📄</h2>
+            <p style="max-width: 900px;">Google Docs adalah "kertas ajaib" di dalam komputer atau HP yang bisa kita gunakan untuk mengetik catatan, cerita, atau tugas sekolah!</p>
+            <div style="font-size: 150px; margin-top: 20px;">💻☁️</div>
+        </div>
+
+        <!-- Slide 5: Apa itu Numbering? -->
+        <div class="slide layout-split">
+            <div class="split-text">
+                <h2>Senjata Rahasia Kita:<br><span class="highlight">Numbering!</span> 🔢</h2>
+                <p><strong>Numbering (Penomoran)</strong> adalah fitur hebat di Google Docs.</p>
+                <p>Fitur ini akan memberikan angka (1, 2, 3...) secara otomatis pada daftar yang kita buat.</p>
+            </div>
+            <div class="split-image">
+                <div class="docs-mockup" style="height: auto;">
+                    <div class="docs-page">
+                        <div class="list-item"><span class="list-number">1.</span> Pensil</div>
+                        <div class="list-item"><span class="list-number">2.</span> Penghapus</div>
+                        <div class="list-item"><span class="list-number">3.</span> Penggaris</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Tombol Ajaib -->
+        <div class="slide layout-center">
+            <h2>Di Mana Tombol <span class="highlight-blue">Ajaibnya?</span> 🔍</h2>
+            <p>Coba cari ikon kecil di bagian atas layar Google Docs yang bentuknya seperti angka 1, 2, 3 dengan garis-garis.</p>
+            
+            <div class="info-box" style="margin-top: 40px; display: inline-block; border-color: #1a73e8;">
+                <div class="docs-toolbar" style="border:none; padding: 20px; font-size: 40px; justify-content: center; gap: 40px;">
+                    <i class="fas fa-bold"></i>
+                    <i class="fas fa-italic"></i>
+                    <i class="fas fa-underline"></i>
+                    <div style="border-left: 2px solid #ccc; height: 50px;"></div>
+                    <i class="fas fa-align-left"></i>
+                    <i class="fas fa-list-ul"></i>
+                    <div class="btn-numbering" style="padding: 10px 20px; box-shadow: 0 5px 15px rgba(26,115,232,0.3);">
+                        <i class="fas fa-list-ol"></i> Numbering
+                    </div>
+                </div>
+            </div>
+            <p style="margin-top: 30px; font-size: 24px; color: #1a73e8; font-weight: bold;">(Ini dia tombolnya! Ingat-ingat ya bentuknya)</p>
+        </div>
+
+        <!-- Slide 7: Cara Pakai -->
+        <div class="slide layout-split">
+            <div class="split-image" style="font-size: 150px;">
+                🪄
+            </div>
+            <div class="split-text">
+                <h2>3 Langkah <span class="highlight-green">Sulap!</span></h2>
+                <ol style="font-size: 32px; gap: 20px; display: flex; flex-direction: column;">
+                    <li><strong>Ketik</strong> daftar namamu ke bawah (tekan <i>Enter</i> setiap ganti baris).</li>
+                    <li><strong>Blok</strong> (sorot) semua tulisan tersebut dengan mouse.</li>
+                    <li><strong>Klik ikon Numbering</strong> <i class="fas fa-list-ol" style="color:#1a73e8;"></i> di atas layar.</li>
+                </ol>
+                <h3 style="margin-top: 30px; color: #ff6b6b;">TRING! 🎉 Langsung rapi berurutan!</h3>
+            </div>
+        </div>
+
+        <!-- Slide 8: Misi Hari Ini -->
+        <div class="slide layout-center">
+            <h2>🚨 <span class="highlight">Misi Hari Ini!</span> 🚨</h2>
+            <div class="info-box" style="max-width: 900px; text-align: left; background: #fff9e6;">
+                <p>Budi ingin membuat pesta ulang tahun. Dia mencatat daftar makanan yang ingin dibeli, tapi catatannya berantakan:</p>
+                <p style="font-family: monospace; background: #eee; padding: 10px; border-radius: 10px;">Kue tart<br>Es krim cokelat<br>Balon warna-warni<br>Topi pesta</p>
+                <p style="margin-top: 20px; font-weight: bold; color: #e15f41;">Tugasmu: Buka Google Docs, ketik daftar Budi, lalu gunakan "Numbering" agar menjadi urutan 1, 2, 3, dan 4!</p>
+            </div>
+        </div>
+
+        <!-- Slide 9: Kuis Singkat -->
+        <div class="slide layout-split">
+            <div class="split-text">
+                <h2>Kuis <span class="highlight-blue">Cerdas!</span> 🧠</h2>
+                <p>Jika kita ingin menomori 10 nama buah-buahan, apakah kita harus mengetik angka 1 sampai 10 satu per satu secara manual?</p>
+                
+                <div style="margin-top: 30px; padding: 20px; background: #f1f2f6; border-radius: 15px;">
+                    <p style="margin: 0; font-weight: bold;">Jawabannya: <span style="color: #ff6b6b;">TIDAK PERLU!</span></p>
+                    <p style="margin: 0; font-size: 24px;">Kita cukup ketik nama buahnya, lalu klik tombol Numbering. Komputer akan mengurutkan angkanya secara otomatis untuk kita!</p>
+                </div>
+            </div>
+            <div class="split-image">
+                💡
+            </div>
+        </div>
+
+        <!-- Slide 10: Penutup -->
+        <div class="slide layout-center">
+            <div style="font-size: 100px; margin-bottom: 20px;" class="bounce">🏆</div>
+            <h1 style="color: #feca57; font-size: 80px;">Horeee!</h1>
+            <h2>Kamu Hebat Sekali!</h2>
+            <p>Sekarang kamu sudah menjadi jagoan menyusun daftar rapi di Google Docs.</p>
+            <p style="margin-top: 40px; font-weight: bold; color: #1dd1a1;">Selamat mempraktikkan! 🚀</p>
+        </div>
+
+        <!-- Tombol Navigasi -->
+        <button class="nav-btn" id="prev-btn" onclick="prevSlide()"><i class="fas fa-chevron-left"></i></button>
+        <button class="nav-btn" id="next-btn" onclick="nextSlide()"><i class="fas fa-chevron-right"></i></button>
+        
+        <!-- Progress Bar -->
+        <div class="progress-bar" id="progress-bar"></div>
+    </div>
+
+    <!-- Script JavaScript untuk Logika Slide & Skala Otomatis -->
+    <script>
+        // Logika Perpindahan Slide
+        const slides = document.querySelectorAll('.slide');
+        const progressBar = document.getElementById('progress-bar');
+        let currentSlide = 0;
+
+        function updateSlide() {
+            slides.forEach((slide, index) => {
+                slide.classList.remove('active');
+                if (index === currentSlide) {
+                    slide.classList.add('active');
+                }
+            });
+
+            // Update Progress Bar
+            const progress = ((currentSlide + 1) / slides.length) * 100;
+            progressBar.style.width = progress + '%';
+
+            // Hide/Show Buttons
+            document.getElementById('prev-btn').style.display = currentSlide === 0 ? 'none' : 'block';
+            document.getElementById('next-btn').style.display = currentSlide === slides.length - 1 ? 'none' : 'block';
+        }
+
+        function nextSlide() {
+            if (currentSlide < slides.length - 1) {
+                currentSlide++;
+                updateSlide();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                updateSlide();
+            }
+        }
+
+        // Navigasi dengan Keyboard Arrow
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                prevSlide();
+            }
+        });
+
+        // Logika Scaling Slide (agar responsif seperti presentasi asli)
+        function scaleSlideContainer() {
+            const container = document.getElementById('slide-container');
+            const windowWidth = window.innerWidth;
+            const windowHeight = window.innerHeight;
+            
+            // Ukuran asli container
+            const containerWidth = 1280;
+            const containerHeight = 720;
+            
+            // Hitung skala berdasarkan lebar dan tinggi layar (ambil yang terkecil agar tidak terpotong)
+            const scaleX = windowWidth / containerWidth;
+            const scaleY = windowHeight / containerHeight;
+            const scale = Math.min(scaleX, scaleY) * 0.95; // 0.95 memberi sedikit margin
+            
+            container.style.transform = `scale(${scale})`;
+        }
+
+        window.addEventListener('resize', scaleSlideContainer);
+        
+        // Inisialisasi awal
+        scaleSlideContainer();
+        updateSlide();
+    </script>
+</body>
+</html>
