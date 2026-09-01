@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Analis Cilik: Google Sheets</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        body {
+            background-color: #f0f4f8;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        header {
+            background-color: #10b981;
+            color: white;
+            text-align: center;
+            padding: 15px 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 10;
+        }
+
+        .main-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* PANEL KIRI - GOOGLE SHEETS MOCKUP */
+        .left-panel {
+            width: 45%;
+            background-color: #ffffff;
+            border-right: 4px solid #cbd5e1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sheet-header-title {
+            padding: 15px;
+            background-color: #e2e8f0;
+            color: #334155;
+            font-weight: 800;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sheet-icon {
+            background: #10b981;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .sheet-container {
+            flex: 1;
+            overflow: auto;
+            position: relative;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            background: white;
+        }
+
+        th, td {
+            border: 1px solid #cbd5e1;
+            padding: 8px 12px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        th {
+            background-color: #f1f5f9;
+            color: #475569;
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+
+        .col-header { top: 0; }
+        
+        .row-header {
+            background-color: #f1f5f9;
+            color: #475569;
+            font-weight: bold;
+            position: sticky;
+            left: 0;
+            z-index: 1;
+            width: 40px;
+        }
+
+        /* Cell Styling specifically for formula simulation */
+        td { color: #0f172a; }
+        .cell-string { text-align: left; }
+        .cell-number { text-align: right; font-family: monospace; font-size: 15px; }
+
+        /* PANEL KANAN - KUIS */
+        .right-panel {
+            width: 55%;
+            background-color: #fffbeb;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow-y: auto;
+        }
+
+        .quiz-card {
+            background: white;
+            width: 100%;
+            max-width: 650px;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            border-top: 8px solid #f59e0b;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #f59e0b;
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .q-type-badge {
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-weight: 800;
+            font-size: 13px;
+            color: white;
+            text-transform: uppercase;
+        }
+        .type-pg { background-color: #3b82f6; }
+        .type-pgk { background-color: #8b5cf6; }
+        .type-isian { background-color: #ef4444; }
+        .type-essay { background-color: #10b981; }
+
+        .question-text {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        /* Inputs Options */
+        .option-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-label {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            padding: 15px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            font-size: 16px;
+        }
+
+        .option-label:hover { background: #f1f5f9; border-color: #cbd5e1; }
+        
+        .option-label input[type="radio"], 
+        .option-label input[type="checkbox"] {
+            margin-right: 15px;
+            transform: scale(1.3);
+            accent-color: #f59e0b;
+        }
+
+        .text-input, .essay-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #cbd5e1;
+            border-radius: 12px;
+            font-size: 16px;
+        }
+        .text-input:focus, .essay-input:focus {
+            outline: none;
+            border-color: #f59e0b;
+        }
+        .essay-input { height: 120px; resize: vertical; }
+        .helper-text { font-size: 13px; color: #64748b; margin-bottom: 15px; }
+
+        .btn-submit {
+            background: #f59e0b;
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 12px;
+            cursor: pointer;
+            margin-top: 30px;
+            width: 100%;
+            transition: 0.2s;
+        }
+        .btn-submit:hover { background: #d97706; }
+
+        /* SCORE SCREEN */
+        .score-screen {
+            display: none;
+            text-align: center;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+
+        .score-circle {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: #10b981;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+            font-weight: 800;
+            margin: 20px 0;
+            border: 10px solid #d1fae5;
+        }
+
+        .score-text { font-size: 24px; color: #334155; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h2>📊 Latihan Analisis Data Spreadsheet Kelas 6 📊</h2>
+</header>
+
+<div class="main-container">
+    <!-- PANEL KIRI: GOOGLE SHEETS -->
+    <div class="left-panel">
+        <div class="sheet-header-title">
+            <span class="sheet-icon">田</span> Data Penjualan Nasi Goreng
+        </div>
+        <div class="sheet-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th class="row-header"></th>
+                        <th class="col-header">A</th>
+                        <th class="col-header">B</th>
+                        <th class="col-header">C</th>
+                    </tr>
+                </thead>
+                <tbody id="sheet-body">
+                    <!-- Data digenerate dengan JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- PANEL KANAN: KUIS -->
+    <div class="right-panel">
+        <div class="quiz-card" id="quiz-card">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+            <div class="question-header">
+                <span class="q-type-badge" id="q-type">Pilihan Ganda</span>
+                <span style="font-weight:bold; color:#64748b;" id="q-counter">Soal 1/30</span>
+            </div>
+            
+            <div class="question-text" id="q-text"></div>
+            
+            <div id="q-helper" class="helper-text"></div>
+            <div id="input-area"></div>
+
+            <button class="btn-submit" id="btn-next" onclick="submitAnswer()">Simpan & Lanjut ➔</button>
+        </div>
+
+        <!-- LAYAR NILAI -->
+        <div class="score-screen" id="score-screen">
+            <h1 style="color: #f59e0b; font-size: 36px;">Kerja Bagus, Analis Cilik! 🎉</h1>
+            <div class="score-text">Nilai Analisismu:</div>
+            <div class="score-circle" id="final-score">100</div>
+            <p style="color: #64748b; font-size: 16px; max-width: 400px;">
+                Nilai Essay telah diberikan poin penuh secara otomatis jika kamu mengisinya dengan lengkap. Teruslah berlatih!
+            </p>
+            <button class="btn-submit" style="max-width: 200px;" onclick="location.reload()">Ulangi Kuis</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // DATA PENJUALAN NASI GORENG (30 HARI)
+    // Dibuat agar Total (SUM) = 750, Rata-rata (AVERAGE) = 25, MAX = 45, MIN = 5
+    const dataPenjualan = [
+        25, 30, 20, 15, 35, 
+        40, 10, 25, 30, 45, 
+        20, 15, 25, 30, 35, 
+        20, 25, 15, 10, 5, 
+        25, 30, 35, 40, 25, 
+        20, 15, 30, 35, 20
+    ];
+
+    // RENDER TABEL (MOCKUP SPREADSHEET)
+    const tbody = document.getElementById('sheet-body');
+    // Baris 1: Header Kolom pada data nyata (Row 1)
+    tbody.innerHTML += `
+        <tr>
+            <td class="row-header">1</td>
+            <td class="cell-string" style="font-weight:bold; background:#f8fafc;">Hari Ke-</td>
+            <td class="cell-string" style="font-weight:bold; background:#f8fafc;">Menu</td>
+            <td class="cell-string" style="font-weight:bold; background:#f8fafc;">Terjual</td>
+        </tr>
+    `;
+    // Baris 2 - 31: Data
+    dataPenjualan.forEach((jumlah, index) => {
+        let rowNum = index + 2; // Karena data mulai baris 2
+        let hari = index + 1;
+        tbody.innerHTML += `
+            <tr>
+                <td class="row-header">${rowNum}</td>
+                <td class="cell-number">${hari}</td>
+                <td class="cell-string">Nasi Goreng</td>
+                <td class="cell-number">${jumlah}</td>
+            </tr>
+        `;
+    });
+
+    // DATA SOAL KUIS
+    const questions = [
+        // 10 PILIHAN GANDA (1-10)
+        { type: 'pg', text: "Fungsi Google Sheets apa yang digunakan untuk mencari total (jumlah) penjualan selama 30 hari?", options: ["MAX", "MIN", "SUM", "AVERAGE"], answer: "SUM" },
+        { type: 'pg', text: "Jika kamu ingin mencari nilai tertinggi dari penjualan nasi goreng, fungsi apa yang harus kamu ketik?", options: ["MAX", "MIN", "SUM", "AVERAGE"], answer: "MAX" },
+        { type: 'pg', text: "Fungsi =AVERAGE(C2:C31) digunakan untuk apa?", options: ["Mencari total penjualan", "Mencari rata-rata penjualan", "Mencari nilai tertinggi", "Mencari nilai terendah"], answer: "Mencari rata-rata penjualan" },
+        { type: 'pg', text: "Berdasarkan tabel di samping, nilai MAX dari kolom C (Terjual) ada pada hari ke berapa?", options: ["Hari 1", "Hari 6", "Hari 10", "Hari 24"], answer: "Hari 10" },
+        { type: 'pg', text: "Nilai MIN (penjualan terendah) dari tabel tersebut adalah...", options: ["5", "10", "15", "20"], answer: "5" },
+        { type: 'pg', text: "Jika kita mengetik rumus =SUM(C2:C11) apa artinya?", options: ["Total penjualan hari ke-1 sampai ke-10", "Total penjualan hari ke-2 sampai ke-11", "Rata-rata penjualan hari ke-1 sampai ke-10", "Total penjualan seluruh bulan"], answer: "Total penjualan hari ke-1 sampai ke-10" },
+        { type: 'pg', text: "Berapakah hasil jika kamu mengetik =MAX(C2:C31) pada Spreadsheet?", options: ["40", "45", "50", "35"], answer: "45" },
+        { type: 'pg', text: "Berapakah hasil yang muncul jika kamu mengetik =AVERAGE(C2:C31)? (Petunjuk: Total keseluruhan adalah 750, dibagi 30 hari)", options: ["20", "25", "30", "35"], answer: "25" },
+        { type: 'pg', text: "Fungsi untuk mencari angka penjualan paling sedikit (terburuk) adalah...", options: ["=MAX()", "=SUM()", "=AVERAGE()", "=MIN()"], answer: "=MIN()" },
+        { type: 'pg', text: "Untuk menghitung total (penjumlahan) seluruh porsi yang laku dari hari ke-1 sampai hari ke-30, rumus yang paling tepat adalah...", options: ["=SUM(C1:C30)", "=SUM(C2:C31)", "=AVERAGE(C2:C31)", "=TOTAL(C2:C31)"], answer: "=SUM(C2:C31)" },
+
+        // 10 PILIHAN GANDA KOMPLEKS (11-20)
+        { type: 'pgk', text: "Manakah dari rumus sel berikut yang berisi angka 20 jika dilihat pada tabel? (Pilih semua jawaban benar)", options: ["=C4", "=C12", "=C27", "=C2"], answers: ["=C4", "=C12", "=C27"] },
+        { type: 'pgk', text: "Pilih dua pernyataan yang BENAR tentang fungsi =MIN().", options: ["Digunakan untuk mencari nilai terkecil", "Digunakan untuk mencari nilai terbesar", "Berguna untuk melihat penjualan terendah", "Berfungsi menjumlahkan semua data"], answers: ["Digunakan untuk mencari nilai terkecil", "Berguna untuk melihat penjualan terendah"] },
+        { type: 'pgk', text: "Jika fungsi =AVERAGE(C2:C31) digunakan, manakah pernyataan yang tepat?", options: ["Hasil angkanya adalah 25", "Mencari penjualan tertinggi", "Menghitung rata-rata dari 30 hari data", "Menjumlahkan seluruh data"], answers: ["Hasil angkanya adalah 25", "Menghitung rata-rata dari 30 hari data"] },
+        { type: 'pgk', text: "Dari pilihan berikut, mana yang merupakan rumus Google Sheets yang VALID (benar)?", options: ["=SUM(C2:C31)", "=MAX(C2:C31)", "=RATA(C2:C31)", "=TOTAL(C2:C31)"], answers: ["=SUM(C2:C31)", "=MAX(C2:C31)"] },
+        { type: 'pgk', text: "Pilih hari-hari di mana penjualan Nasi Goreng mencapai 40 porsi ATAU LEBIH.", options: ["Hari 6", "Hari 10", "Hari 20", "Hari 24"], answers: ["Hari 6", "Hari 10", "Hari 24"] },
+        { type: 'pgk', text: "Fungsi SUM dapat digunakan untuk...", options: ["Menjumlahkan angka-angka penjualan", "Menghitung total porsi yang laku dalam sebulan", "Mencari rata-rata", "Mencari nilai tertinggi"], answers: ["Menjumlahkan angka-angka penjualan", "Menghitung total porsi yang laku dalam sebulan"] },
+        { type: 'pgk', text: "Manakah pernyataan yang SALAH (tidak sesuai) tentang tabel penjualan ini?", options: ["Rata-rata penjualannya adalah 30 porsi", "Penjualan terendah adalah 10 porsi", "Penjualan tertinggi adalah 45 porsi", "Penjualan terendah terjadi di hari ke-20"], answers: ["Rata-rata penjualannya adalah 30 porsi", "Penjualan terendah adalah 10 porsi"] },
+        { type: 'pgk', text: "Rumus apa saja yang bisa digunakan untuk MENJUMLAHKAN (total) data?", options: ["=SUM(C2:C6)", "=SUM(C7:C11)", "=MAX(C2:C6)", "=AVERAGE(C7:C11)"], answers: ["=SUM(C2:C6)", "=SUM(C7:C11)"] },
+        { type: 'pgk', text: "Di hari apa saja penjualan berada di BAWAH 20 porsi?", options: ["Hari 4", "Hari 19", "Hari 20", "Hari 23"], answers: ["Hari 4", "Hari 19", "Hari 20"] },
+        { type: 'pgk', text: "Manakah langkah yang benar jika kamu ingin memunculkan rata-rata penjualan menggunakan Google Sheets?", options: ["Ketik =AVERAGE(", "Blok sel C2 sampai C31 dan tutup kurung", "Ketik =SUM(", "Ketik =MAX("], answers: ["Ketik =AVERAGE(", "Blok sel C2 sampai C31 dan tutup kurung"] },
+
+        // 9 ISIAN SINGKAT (21-29)
+        { type: 'isian', text: "Tuliskan HASIL ANGKA jika kamu mengetik rumus =SUM(C2:C31) pada tabel tersebut! (Petunjuk: Total semuanya)", answer: "750" },
+        { type: 'isian', text: "Untuk menemukan hari dengan penjualan paling laku (terbesar), kamu mengetikkan fungsi =...", answer: "max" },
+        { type: 'isian', text: "Angka penjualan terendah (minimum) pada tabel di samping adalah sebesar ... porsi.", answer: "5" },
+        { type: 'isian', text: "Tuliskan RUMUS LENGKAP untuk mencari nilai RATA-RATA dari kolom C baris 2 sampai baris 31!", answer: "=average(c2:c31)" },
+        { type: 'isian', text: "Berapakah hasil dari rumus =MAX(C2:C6)? (Cek data hari ke-1 sampai ke-5)", answer: "35" },
+        { type: 'isian', text: "Jika kamu mengetik =MIN(C7:C11), berapakah hasil angkanya? (Cek data hari ke-6 sampai ke-10)", answer: "10" },
+        { type: 'isian', text: "Hitunglah jumlah total penjualan pada hari ke-1, 2, dan 3 jika menggunakan rumus =SUM(C2:C4) !", answer: "75" },
+        { type: 'isian', text: "Tuliskan RUMUS LENGKAP untuk mencari TOTAL PENJUMLAHAN dari kolom C baris 2 sampai 31!", answer: "=sum(c2:c31)" },
+        { type: 'isian', text: "Berapa hasil yang keluar dari rumus =MIN(C2:C31) berdasarkan tabel 30 hari tersebut?", answer: "5" },
+
+        // 1 ESSAY (30)
+        { type: 'essay', text: "Bayangkan kamu adalah Data Analyst di Kantin Sekolah. Setelah menggunakan fungsi SUM, AVERAGE, MAX, dan MIN, apa saran yang akan kamu berikan kepada penjual nasi goreng agar penjualannya semakin baik atau bahan makanannya tidak terbuang sia-sia bulan depan? Jelaskan alasanmu!" }
+    ];
+
+    let currentQ = 0;
+    let totalScore = 0;
+
+    const elQType = document.getElementById('q-type');
+    const elQCounter = document.getElementById('q-counter');
+    const elQText = document.getElementById('q-text');
+    const elQHelper = document.getElementById('q-helper');
+    const elInputArea = document.getElementById('input-area');
+    const elProgress = document.getElementById('progress-fill');
+
+    function loadQuestion() {
+        const q = questions[currentQ];
+        elQCounter.innerText = `Soal ${currentQ + 1}/30`;
+        elQText.innerText = q.text;
+        elInputArea.innerHTML = '';
+        elProgress.style.width = `${((currentQ) / questions.length) * 100}%`;
+
+        // Atur UI berdasarkan Tipe Soal
+        if (q.type === 'pg') {
+            elQType.innerText = "Pilihan Ganda";
+            elQType.className = "q-type-badge type-pg";
+            elQHelper.innerText = "Pilih satu jawaban yang paling tepat.";
+            
+            const optDiv = document.createElement('div');
+            optDiv.className = 'option-container';
+            q.options.forEach(opt => {
+                const label = document.createElement('label');
+                label.className = 'option-label';
+                label.innerHTML = `<input type="radio" name="pg_answer" value="${opt}"> ${opt}`;
+                optDiv.appendChild(label);
+            });
+            elInputArea.appendChild(optDiv);
+        } 
+        else if (q.type === 'pgk') {
+            elQType.innerText = "Pilihan Ganda Kompleks";
+            elQType.className = "q-type-badge type-pgk";
+            elQHelper.innerText = "Pilih LEBIH DARI SATU jawaban yang tepat dengan mencentang kotaknya.";
+            
+            const optDiv = document.createElement('div');
+            optDiv.className = 'option-container';
+            q.options.forEach(opt => {
+                const label = document.createElement('label');
+                label.className = 'option-label';
+                label.innerHTML = `<input type="checkbox" class="pgk_answer" value="${opt}"> ${opt}`;
+                optDiv.appendChild(label);
+            });
+            elInputArea.appendChild(optDiv);
+        }
+        else if (q.type === 'isian') {
+            elQType.innerText = "Isian Singkat";
+            elQType.className = "q-type-badge type-isian";
+            elQHelper.innerText = "Ketik jawabanmu. Jika rumus, gunakan tanda '=' (misal: =SUM(A1)).";
+            
+            elInputArea.innerHTML = `<input type="text" id="isian_answer" class="text-input" placeholder="Ketik jawabanmu di sini..." autocomplete="off">`;
+        }
+        else if (q.type === 'essay') {
+            elQType.innerText = "Penjelasan (Essay)";
+            elQType.className = "q-type-badge type-essay";
+            elQHelper.innerText = "Tuliskan saran dan alasanmu dengan bahasa yang jelas (minimal 1 kalimat).";
+            
+            elInputArea.innerHTML = `<textarea id="essay_answer" class="essay-input" placeholder="Menurutku, saran untuk penjual nasi goreng adalah..."></textarea>`;
+        }
+    }
+
+    function submitAnswer() {
+        const q = questions[currentQ];
+        let points = 0;
+
+        // Validasi dan Penilaian
+        if (q.type === 'pg') {
+            const selected = document.querySelector('input[name="pg_answer"]:checked');
+            if (!selected) { alert("Pilih jawaban terlebih dahulu!"); return; }
+            if (selected.value === q.answer) points = 3; // PG bobot 3
+        } 
+        else if (q.type === 'pgk') {
+            const checked = Array.from(document.querySelectorAll('.pgk_answer:checked')).map(cb => cb.value);
+            if (checked.length === 0) { alert("Pilih minimal satu jawaban!"); return; }
+            
+            // Cek apakah jawaban user sama persis dengan kunci
+            const isCorrectLength = checked.length === q.answers.length;
+            const isAllCorrect = checked.every(val => q.answers.includes(val));
+            if (isCorrectLength && isAllCorrect) {
+                points = 3; // PGK bobot 3 (harus benar semua)
+            }
+        } 
+        else if (q.type === 'isian') {
+            const val = document.getElementById('isian_answer').value.trim().toLowerCase();
+            if (val === '') { alert("Isi jawaban terlebih dahulu!"); return; }
+            if (val === q.answer) points = 3; // Isian bobot 3
+        }
+        else if (q.type === 'essay') {
+            const val = document.getElementById('essay_answer').value.trim();
+            if (val.length < 10) { alert("Jawaban essay terlalu singkat. Ayo jelaskan lebih panjang!"); return; }
+            points = 13; // Essay diberi bonus penuh 13 poin otomatis jika diisi dengan pantas
+        }
+
+        totalScore += points;
+
+        // Lanjut ke soal berikutnya atau selesai
+        currentQ++;
+        if (currentQ < questions.length) {
+            loadQuestion();
+        } else {
+            showFinalScore();
+        }
+    }
+
+    function showFinalScore() {
+        document.getElementById('quiz-card').style.display = 'none';
+        document.getElementById('score-screen').style.display = 'flex';
+        
+        // Animasi angka
+        const scoreCircle = document.getElementById('final-score');
+        let counter = 0;
+        let finalDisplay = totalScore;
+        // Memastikan maksimal 100
+        if (finalDisplay > 100) finalDisplay = 100;
+        
+        const interval = setInterval(() => {
+            if (counter >= finalDisplay) {
+                clearInterval(interval);
+                scoreCircle.innerText = finalDisplay;
+            } else {
+                counter += 2;
+                scoreCircle.innerText = counter;
+            }
+        }, 20);
+    }
+
+    // Mulai saat halaman dimuat
+    loadQuestion();
+</script>
+
+</body>
+</html>
