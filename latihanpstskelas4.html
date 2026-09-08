@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modul & Kuis Interaktif Google Docs - TIK Kelas 4 SD</title>
+    <style>
+        :root {
+            --primary: #4285f4;
+            --primary-hover: #2b6cb0;
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-color: #3c4043;
+            --border-color: #dadce0;
+            --success: #34a853;
+            --warning: #fbbc04;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .header-title h1 {
+            font-size: 1.3rem;
+        }
+
+        .header-title p {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        .timer-container {
+            display: flex;
+            gap: 15px;
+        }
+
+        .timer-box {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 15px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .main-layout {
+            display: flex;
+            height: calc(100vh - 65px);
+            overflow: hidden;
+        }
+
+        /* Panel Kiri: Materi */
+        .left-panel {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+            border-right: 2px solid var(--border-color);
+            background-color: white;
+        }
+
+        .material-header {
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .material-section {
+            margin-bottom: 25px;
+        }
+
+        .material-section h2 {
+            color: var(--primary);
+            font-size: 1.15rem;
+            margin-bottom: 10px;
+        }
+
+        .material-section p, .material-section li {
+            font-size: 0.95rem;
+            color: #4a4a4a;
+            margin-bottom: 8px;
+        }
+
+        .material-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 0.9rem;
+        }
+
+        .material-table th, .material-table td {
+            border: 1px solid var(--border-color);
+            padding: 8px 12px;
+            text-align: left;
+        }
+
+        .material-table th {
+            background-color: #e8f0fe;
+            color: var(--primary);
+        }
+
+        .tip-box {
+            background-color: #e8f0fe;
+            border-left: 4px solid var(--primary);
+            padding: 12px 15px;
+            margin: 15px 0;
+            border-radius: 0 6px 6px 0;
+            font-size: 0.9rem;
+        }
+
+        /* Panel Kanan: Kuis */
+        .right-panel {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+            position: relative;
+            background-color: var(--bg-color);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .overlay-lock {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(255, 255, 255, 0.96);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 50;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .overlay-lock h2 {
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background-color: #5f6368;
+        }
+
+        .btn-secondary:hover {
+            background-color: #474a4d;
+        }
+
+        .student-info {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border-color);
+        }
+
+        .form-group {
+            margin-bottom: 10px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+        }
+
+        .quiz-header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 15px;
+        }
+
+        .type-badge {
+            background: #e8f0fe;
+            color: var(--primary);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .question-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            min-height: 250px;
+            margin-bottom: 15px;
+        }
+
+        .question-card h3 {
+            font-size: 1rem;
+            margin-bottom: 15px;
+            color: var(--text-color);
+        }
+
+        .options label {
+            display: flex;
+            align-items: center;
+            padding: 10px 12px;
+            margin: 6px 0;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+
+        .options label:hover {
+            background-color: #f1f3f4;
+        }
+
+        .options input {
+            margin-right: 12px;
+            transform: scale(1.1);
+        }
+
+        textarea, input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 0.95rem;
+        }
+
+        .quiz-nav-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+            gap: 10px;
+        }
+
+        .select-question {
+            padding: 8px 12px;
+            border-radius: 5px;
+            border: 1px solid var(--border-color);
+            background: white;
+            font-size: 0.9rem;
+        }
+
+        #result-section {
+            display: none;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .summary-box {
+            background: #e8f0fe;
+            border-left: 5px solid var(--primary);
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 4px;
+        }
+
+        @media (max-width: 900px) {
+            .main-layout {
+                flex-direction: column;
+                height: auto;
+                overflow: visible;
+            }
+            .left-panel, .right-panel {
+                overflow-y: visible;
+                height: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-title">
+            <h1>Modul & Evaluasi Sumatif TIK</h1>
+            <p>Kelas 4 SD/MI — Pengolahan Kata & Format Dokumen Digital (Google Docs)</p>
+        </div>
+        <div class="timer-container">
+            <div class="timer-box" id="read-timer-display">⏱️ Waktu Membaca: 03:00</div>
+            <div class="timer-box" id="quiz-timer-display" style="display:none;">⏳ Waktu Kuis: 45:00</div>
+        </div>
+    </header>
+
+    <div class="main-layout">
+        <!-- Panel Kiri: Ringkasan Materi -->
+        <div class="left-panel">
+            <div class="material-header">
+                <h2>MATERI PEMBELAJARAN TIK KELAS 4 SD</h2>
+                <p><strong>Topik:</strong> Menjadi Ahli Dokumen Digital dengan Google Docs</p>
+            </div>
+
+            <div class="tip-box">
+                🎯 <strong>Tujuan Pembelajaran:</strong>
+                <ol style="margin-left: 20px; margin-top: 5px;">
+                    <li>Memahami konsep dasar aplikasi pengolah kata berbasis cloud (Google Docs).</li>
+                    <li>Mengenal penyusunan <strong>Data Sederhana</strong> pada dokumen digital.</li>
+                    <li>Menguasai 3 elemen formatting dasar: <strong>Font</strong>, <strong>Size</strong>, dan <strong>Style</strong>.</li>
+                    <li>Menggunakan fitur pembuatan daftar: <strong>Bullet List</strong> dan <strong>Numbering</strong>.</li>
+                    <li>Memahami penggunaan warna teks (<strong>Text Color</strong>) dan warna latar (<strong>Highlight Color</strong>).</li>
+                </ol>
+            </div>
+
+            <div class="material-section">
+                <h2>1. Mengenal Google Docs & Data Sederhana</h2>
+                <p><strong>Google Docs</strong> adalah aplikasi pengolah kata berbasis web (online) yang dikembangkan oleh Google. Salah satu kelebihan utamanya adalah dokumen kita akan <strong>tersimpan secara otomatis</strong> di penyimpanan awan (Google Drive) tanpa khawatir hilang saat mati lampu.</p>
+                <p><strong>Data Sederhana:</strong> Kumpulan informasi atau keterangan tentang sesuatu di sekitar kita yang disusun secara rapi dan mudah dibaca (contoh: daftar nama siswa, daftar belanjaan, jadwal piket kelas).</p>
+            </div>
+
+            <div class="material-section">
+                <h2>2. Memformat Teks (Font, Size, & Style)</h2>
+                <p>Agar teks dokumen kita terlihat rapi dan menarik, kita perlu mengatur 3 elemen format dasar:</p>
+                <ul>
+                    <li><strong>Font (Jenis Huruf):</strong> Menentukan bentuk karakter teks (contoh: Arial, Georgia, Caveat).</li>
+                    <li><strong>Font Size (Ukuran Huruf):</strong> Mengatur besar kecilnya huruf pada tulisan.</li>
+                    <li><strong>Text Style (Gaya Teks):</strong> Menandai atau menonjolkan poin penting.</li>
+                </ul>
+
+                <table class="material-table">
+                    <thead>
+                        <tr>
+                            <th>Gaya Teks (Style)</th>
+                            <th>Ikon / Tombol</th>
+                            <th>Pintasan Keyboard (Shortcut)</th>
+                            <th>Kegunaan Utama</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Bold (Tebal)</strong></td>
+                            <td><code>B</code></td>
+                            <td><code>Ctrl + B</code></td>
+                            <td>Menebalkan judul atau kata penting.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Italic (Miring)</strong></td>
+                            <td><code>I</code></td>
+                            <td><code>Ctrl + I</code></td>
+                            <td>Memiringkan istilah asing atau kata penekanan.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Underline (Garis Bawah)</strong></td>
+                            <td><u><code>U</code></u></td>
+                            <td><code>Ctrl + U</code></td>
+                            <td>Memberi garis bawah pada kata/poin penting.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="material-section">
+                <h2>3. Membuat Daftar (Bullet List vs Numbering)</h2>
+                <p>Untuk merapikan data sederhana berupa susunan kata atau kalimat, kita dapat menggunakan dua jenis daftar:</p>
+                <ul>
+                    <li><strong>Bullet List (Daftar Simbol):</strong> Menggunakan simbol seperti titik tebal (•) atau kotak (■). Digunakan jika <em>urutan data tidak terlalu penting</em> (contoh: daftar alat tulis, daftar belanja).</li>
+                    <li><strong>Numbering (Penomoran):</strong> Menggunakan angka (1, 2, 3) atau huruf (A, B, C) secara otomatis. Digunakan jika <em>urutan data sangat penting</em> (contoh: nomor absen siswa, langkah-langkah resep masakan).</li>
+                </ul>
+            </div>
+
+            <div class="material-section">
+                <h2>4. Menggunakan Warna pada Dokumen</h2>
+                <p>Pemberian warna membuat dokumen tidak membosankan dan membantu pembaca menemukan informasi penting dengan cepat:</p>
+                <ul>
+                    <li><strong>Text Color (Warna Teks):</strong> Mengubah warna tulisan atau huruf itu sendiri (ikon huruf <code>A</code> bergaris warna).</li>
+                    <li><strong>Highlight Color (Warna Stabilo):</strong> Memberikan warna pada latar belakang teks layaknya menggunakan spidol stabilo.</li>
+                </ul>
+
+                <div class="tip-box">
+                    💡 <strong>Tips Memilih Warna:</strong>
+                    <br>Pilihlah warna yang <strong>kontras</strong> dengan latar belakang agar tulisan tetap jelas terbaca, tidak berlebihan, dan konsisten!
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel Kanan: Kuis Interaktif -->
+        <div class="right-panel">
+            <div id="read-overlay" class="overlay-lock">
+                <h2>📖 Sesi Membaca Wajib</h2>
+                <p>Silakan baca ringkasan materi di sebelah kiri terlebih dahulu.</p>
+                <p>Kuis akan terbuka secara otomatis dalam:</p>
+                <h1 id="overlay-timer" style="font-size: 3rem; color: var(--primary); margin: 15px 0;">05:00</h1>
+                <button id="btn-start-quiz" class="btn" disabled onclick="startQuiz()">Mulai Kuis Sekarang</button>
+            </div>
+
+            <div id="quiz-wrapper" style="display: flex; flex-direction: column; height: 100%;">
+                <div class="student-info">
+                    <div style="display: flex; gap: 10px;">
+                        <div class="form-group" style="flex:1;">
+                            <label>Nama Lengkap Siswa:</label>
+                            <input type="text" id="student-name" placeholder="Masukkan nama lengkap..." oninput="saveProgress()">
+                        </div>
+                        <div class="form-group" style="flex:1;">
+                            <label>Kelas / Nomor Absen:</label>
+                            <input type="text" id="student-class" placeholder="Contoh: 4 SDIT / Absen 08" oninput="saveProgress()">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quiz-header-bar">
+                    <span id="question-number" style="font-weight: bold;">Soal 1 dari 25</span>
+                    <span id="question-type-badge" class="type-badge">Pilihan Ganda</span>
+                </div>
+
+                <div id="question-card-container"></div>
+
+                <div class="quiz-nav-bar">
+                    <button id="btn-prev" class="btn btn-secondary" onclick="prevQuestion()">← Sebelumnya</button>
+                    
+                    <select id="jump-select" class="select-question" onchange="jumpToQuestion(this.value)"></select>
+
+                    <button id="btn-next" class="btn" onclick="nextQuestion()">Selanjutnya →</button>
+                    <button id="btn-submit" class="btn" style="background-color: var(--success); display: none;" onclick="submitQuiz()">Kirim Jawaban ✓</button>
+                </div>
+            </div>
+
+            <div id="result-section">
+                <h2>Hasil Evaluasi Kuis Interaktif TIK</h2>
+                <hr style="margin: 10px 0;"><br>
+                <p><strong>Nama Siswa:</strong> <span id="res-name"></span></p>
+                <p><strong>Kelas / NIS:</strong> <span id="res-class"></span></p>
+                <p><strong>Skor Otomatis (PG, PG Kompleks & Isian):</strong> <span id="res-score" style="font-size: 1.2rem; font-weight: bold; color: var(--primary);"></span></p>
+                
+                <div class="summary-box">
+                    <h3>🤖 AI Summary & Evaluasi Jawaban Essai</h3>
+                    <div id="ai-loading" style="display:none; font-style: italic; color: #666; margin-top: 10px;">Sedang menganalisis jawaban essai dan mengirim data...</div>
+                    <div id="ai-feedback" style="margin-top: 10px; white-space: pre-line;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const GROQ_API_KEY = "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";
+        
+        // Ganti URL di bawah ini dengan Web App URL dari Google Apps Script Anda
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby_owY5prcI0F7jTylFcHhGbrc8TsTFFUxkDDNdiEL9v0-8hh-kFq7N-v4LKqzzr8cK/exec";
+
+        // Total 25 Soal Adaptasi Konsep SD Kelas 4
+        const allQuestions = [
+            // --- 10 PILIHAN GANDA (ID 1-10) ---
+            { id: 1, type: "pg", q: "Google Docs adalah aplikasi pengolah kata buatan Google. Salah satu keunggulan utama dari aplikasi ini adalah...", o: ["Harus diinstal menggunakan CD khusus", "Berbasis internet (cloud) dan menyimpan dokumen secara otomatis", "Hanya bisa digunakan secara offline tanpa jaringan internet", "Memerlukan biaya langganan yang mahal"], a: 1 },
+            { id: 2, type: "pg", q: "Kumpulan informasi atau keterangan di sekitar kita yang disusun secara rapi dan sistematis agar mudah dibaca disebut...", o: ["Aplikasi", "Hardware", "Data", "Browser"], a: 2 },
+            { id: 3, type: "pg", q: "Jika Ani ingin membuat daftar langkah-langkah membuat kue yang runtut dan berurutan secara otomatis, fitur yang paling tepat digunakan adalah...", o: ["Numbering", "Bullet List", "Highlight Color", "Text Color"], a: 0 },
+            { id: 4, type: "pg", q: "Jenis daftar yang menggunakan simbol seperti titik tebal (•), bintang, atau kotak untuk merapikan data yang urutannya bebas dinamakan...", o: ["Numbering", "Font Size", "Bullet List", "Alignment"], a: 2 },
+            { id: 5, type: "pg", q: "Fitur pada Google Docs yang berfungsi memberi warna stabilo pada latar belakang teks agar kata penting terlihat menonjol adalah...", o: ["Text Color", "Highlight Color", "Font Style", "Underline"], a: 1 },
+            { id: 6, type: "pg", q: "Kombinasi tombol keyboard (shortcut) yang berfungsi untuk memberikan garis bawah pada teks di Google Docs adalah...", o: ["Ctrl + B", "Ctrl + I", "Ctrl + U", "Ctrl + P"], a: 2 },
+            { id: 7, type: "pg", q: "Ketika kita memilih sebuah kalimat lalu menekan tombol kombinasi Ctrl + B, perubahan yang terjadi pada tulisan tersebut adalah...", o: ["Tulisan menjadi miring", "Tulisan menjadi tebal", "Tulisan bergaris bawah", "Tulisan berubah warna"], a: 1 },
+            { id: 8, type: "pg", q: "Fitur yang dipergunakan untuk menentukan bentuk atau gaya tampilan huruf (seperti Arial, Georgia, atau Caveat) dinamakan...", o: ["Font", "Font Size", "Highlight", "Bullet"], a: 0 },
+            { id: 9, type: "pg", q: "Salah satu keuntungan utama menyimpan dokumen pada Google Docs yang terhubung dengan Google Drive adalah...", o: ["Dokumen mudah hilang jika listrik padam", "Memerlukan flashdisk tambahan untuk membawa file", "File tersimpan secara otomatis dan dapat dibuka dari mana saja", "File tidak bisa dibagikan ke teman"], a: 2 },
+            { id: 10, type: "pg", q: "Prinsip utama yang harus diperhatikan saat memilih warna teks di Google Docs adalah...", o: ["Menggunakan warna yang sama dengan warna latar belakang", "Menggunakan semua warna dalam satu kalimat agar ramai", "Memilih warna yang kontras dengan latar belakang agar mudah dibaca", "Menggunakan warna yang sangat gelap pada latar belakang hitam"], a: 2 },
+
+            // --- 5 PILIHAN GANDA KOMPLEKS (ID 11-15) ---
+            { id: 11, type: "pg_kompleks", q: "Pilihlah 2 contoh penggunaan fitur penomoran (Numbering) yang tepat!", o: ["Membuat daftar peringkat juara di kelas", "Menyusun urutan langkah-langkah eksperimen sains", "Mencatat daftar alat tulis di dalam tempat pensil", "Menuliskan daftar buah kesukaan teman"], a: [0, 1] },
+            { id: 12, type: "pg_kompleks", q: "Pilihlah 2 dari 3 elemen format dasar dalam penyusunan teks di Google Docs!", o: ["Jenis Huruf (Font)", "Ukuran Huruf (Size)", "Pemutar Musik", "Kamera Depan"], a: [0, 1] },
+            { id: 13, type: "pg_kompleks", q: "Pilihlah 2 pasang pintasan keyboard (shortcut) dan fungsinya yang BENAR!", o: ["Ctrl + B untuk mencetak huruf tebal (Bold)", "Ctrl + I untuk membuat huruf miring (Italic)", "Ctrl + U untuk mengubah warna teks", "Ctrl + B untuk menghapus dokumen"], a: [0, 1] },
+            { id: 14, type: "pg_kompleks", q: "Pilihlah 2 pernyataan yang BENAR mengenai perbedaan Text Color dan Highlight Color!", o: ["Text Color mengubah warna huruf itu sendiri", "Highlight Color memberikan warna latar belakang pada teks (seperti stabilo)", "Text Color membuat huruf menjadi tebal", "Highlight Color menghapus garis bawah teks"], a: [0, 1] },
+            { id: 15, type: "pg_kompleks", q: "Pilihlah 2 tips yang baik saat menghias dokumen menggunakan warna di Google Docs!", o: ["Menggunakan warna yang kontras agar tulisan tetap jelas terbaca", "Menggunakan warna secara teratur dan tidak berlebihan", "Mewarnai setiap huruf dengan warna yang berbeda-beda", "Memilih warna teks yang sama persis dengan latar belakang"], a: [0, 1] },
+
+            // --- 5 ISIAN SINGKAT (ID 16-20) ---
+            { id: 16, type: "isian", q: "Aplikasi pengolah kata berbasis cloud buatan Google yang digunakan Sarah untuk mencatat laporan adalah...", a: "google docs" },
+            { id: 17, type: "isian", q: "Untuk membuat daftar urutan hari Senin sampai Jumat secara otomatis, Sarah menggunakan fitur...", a: "numbering" },
+            { id: 18, type: "isian", q: "Sarah ingin menebalkan kata 'JADWAL PIKET', maka pintasan keyboard yang ia tekan adalah Ctrl + ...", a: "b" },
+            { id: 19, type: "isian", q: "Agar ukuran huruf pada bagian judul menjadi lebih besar, Sarah mengatur nilai pada bagian Font...", a: "size" },
+            { id: 20, type: "isian", q: "Pekerjaan Sarah aman dan tidak hilang saat komputer mati karena tersimpan secara otomatis di Google...", a: "drive" },
+
+            // --- 5 ESSAI (ID 21-25) ---
+            { id: 21, type: "essai", q: "Jelaskan apa yang dimaksud dengan data sederhana, dan sebutkan 2 contoh kumpulan data sederhana yang biasa kita temukan di sekolah!" },
+            { id: 22, type: "essai", q: "Jelaskan perbedaan kegunaan antara fitur Bullet List dan Numbering pada aplikasi pengolah kata Google Docs!" },
+            { id: 23, type: "essai", q: "Tuliskan 3 gaya teks (Text Style) beserta tombol pintasan keyboard (shortcut)-nya masing-masing!" },
+            { id: 24, type: "essai", q: "Apakah perbedaan fungsi antara fitur Text Color dan Highlight Color pada Google Docs? Jelaskan!" },
+            { id: 25, type: "essai", q: "Sebutkan 3 aturan atau tips penting dalam memilih dan menggunakan warna pada dokumen agar hasil tulisan rapi dan nyaman dibaca!" }
+        ];
+
+        let currentIndex = 0;
+        let readTime = 180; // 5 menit membaca
+        let quizTime = 2700; // 45 menit pengerjaan kuis
+        let readInterval, quizInterval;
+        let userAnswers = {};
+        let hasStartedQuiz = false;
+
+        window.onload = function() {
+            populateJumpSelect();
+            let startedBefore = loadProgress();
+            renderCurrentQuestion();
+
+            if (startedBefore) {
+                resumeQuizMode();
+            } else {
+                startReadTimer();
+            }
+        };
+
+        function startReadTimer() {
+            readInterval = setInterval(() => {
+                if(readTime <= 0) {
+                    clearInterval(readInterval);
+                    document.getElementById("btn-start-quiz").disabled = false;
+                    document.getElementById("overlay-timer").innerText = "00:00 - Selesai!";
+                } else {
+                    readTime--;
+                    let m = Math.floor(readTime / 60).toString().padStart(2, '0');
+                    let s = (readTime % 60).toString().padStart(2, '0');
+                    document.getElementById("read-timer-display").innerText = `⏱️ Waktu Membaca: ${m}:${s}`;
+                    document.getElementById("overlay-timer").innerText = `${m}:${s}`;
+                }
+            }, 1000);
+        }
+
+        function startQuiz() {
+            clearInterval(readInterval);
+            hasStartedQuiz = true;
+            saveProgress();
+            resumeQuizMode();
+        }
+
+        function resumeQuizMode() {
+            document.getElementById("read-overlay").style.display = "none";
+            document.getElementById("read-timer-display").style.display = "none";
+            document.getElementById("quiz-timer-display").style.display = "flex";
+
+            if (!quizInterval) {
+                quizInterval = setInterval(() => {
+                    if(quizTime <= 0) {
+                        clearInterval(quizInterval);
+                        alert("Waktu pengerjaan kuis telah habis!");
+                        submitQuiz();
+                    } else {
+                        quizTime--;
+                        let m = Math.floor(quizTime / 60).toString().padStart(2, '0');
+                        let s = (quizTime % 60).toString().padStart(2, '0');
+                        document.getElementById("quiz-timer-display").innerText = `⏳ Waktu Kuis: ${m}:${s}`;
+                        
+                        if(quizTime % 5 === 0) saveProgress();
+                    }
+                }, 1000);
+            }
+        }
+
+        function populateJumpSelect() {
+            let select = document.getElementById("jump-select");
+            select.innerHTML = "";
+            allQuestions.forEach((q, idx) => {
+                let opt = document.createElement("option");
+                opt.value = idx;
+                opt.innerText = `Soal ${idx + 1}`;
+                select.appendChild(opt);
+            });
+        }
+
+        function renderCurrentQuestion() {
+            let q = allQuestions[currentIndex];
+            let container = document.getElementById("question-card-container");
+            document.getElementById("question-number").innerText = `Soal ${currentIndex + 1} dari ${allQuestions.length}`;
+            document.getElementById("jump-select").value = currentIndex;
+
+            let badge = document.getElementById("question-type-badge");
+            if(q.type === "pg") badge.innerText = "Pilihan Ganda";
+            else if(q.type === "pg_kompleks") badge.innerText = "Pilihan Ganda Kompleks (Bisa >1 Jawaban)";
+            else if(q.type === "isian") badge.innerText = "Isian Singkat";
+            else if(q.type === "essai") badge.innerText = "Soal Essai";
+
+            let html = `<div class="question-card"><h3>${currentIndex + 1}. ${q.q}</h3>`;
+
+            if(q.type === "pg") {
+                html += `<div class="options">`;
+                q.o.forEach((opt, i) => {
+                    let checked = (userAnswers[q.id] === i) ? "checked" : "";
+                    html += `
+                    <label>
+                        <input type="radio" name="q_${q.id}" value="${i}" ${checked} onchange="saveAnswer(${q.id}, ${i})">
+                        ${String.fromCharCode(65 + i)}. ${opt}
+                    </label>`;
+                });
+                html += `</div>`;
+            } else if(q.type === "pg_kompleks") {
+                html += `<div class="options"><p style="font-size: 0.85rem; color: #666; margin-bottom: 8px;">*Pilih 2 jawaban yang menurutmu benar:</p>`;
+                q.o.forEach((opt, i) => {
+                    let currentArr = userAnswers[q.id] || [];
+                    let checked = currentArr.includes(i) ? "checked" : "";
+                    html += `
+                    <label>
+                        <input type="checkbox" name="q_${q.id}" value="${i}" ${checked} onchange="saveAnswerKompleks(${q.id}, ${i})">
+                        ${String.fromCharCode(65 + i)}. ${opt}
+                    </label>`;
+                });
+                html += `</div>`;
+            } else if(q.type === "isian") {
+                let val = userAnswers[q.id] || "";
+                html += `<input type="text" value="${val}" placeholder="Ketik jawaban singkat di sini..." oninput="saveAnswerText(${q.id}, this.value)">`;
+            } else if(q.type === "essai") {
+                let val = userAnswers[q.id] || "";
+                html += `<textarea rows="5" placeholder="Ketik jawaban lengkap di sini..." oninput="saveAnswerText(${q.id}, this.value)">${val}</textarea>`;
+            }
+
+            html += `</div>`;
+            container.innerHTML = html;
+
+            document.getElementById("btn-prev").disabled = (currentIndex === 0);
+            if(currentIndex === allQuestions.length - 1) {
+                document.getElementById("btn-next").style.display = "none";
+                document.getElementById("btn-submit").style.display = "block";
+            } else {
+                document.getElementById("btn-next").style.display = "block";
+                document.getElementById("btn-submit").style.display = "none";
+            }
+        }
+
+        function saveAnswer(qId, val) {
+            userAnswers[qId] = val;
+            saveProgress();
+        }
+
+        function saveAnswerKompleks(qId, val) {
+            if(!userAnswers[qId]) userAnswers[qId] = [];
+            let idx = userAnswers[qId].indexOf(val);
+            if(idx > -1) {
+                userAnswers[qId].splice(idx, 1);
+            } else {
+                userAnswers[qId].push(val);
+            }
+            saveProgress();
+        }
+
+        function saveAnswerText(qId, val) {
+            userAnswers[qId] = val;
+            saveProgress();
+        }
+
+        function prevQuestion() {
+            if(currentIndex > 0) {
+                currentIndex--;
+                renderCurrentQuestion();
+            }
+        }
+
+        function nextQuestion() {
+            if(currentIndex < allQuestions.length - 1) {
+                currentIndex++;
+                renderCurrentQuestion();
+            }
+        }
+
+        function jumpToQuestion(idx) {
+            currentIndex = parseInt(idx);
+            renderCurrentQuestion();
+        }
+
+        function saveProgress() {
+            let data = {
+                answers: userAnswers,
+                name: document.getElementById("student-name").value,
+                sClass: document.getElementById("student-class").value,
+                hasStartedQuiz: hasStartedQuiz,
+                quizTimeLeft: quizTime
+            };
+            localStorage.setItem("sd4_psht_google_docs_progress", JSON.stringify(data));
+        }
+
+        function loadProgress() {
+            let saved = localStorage.getItem("sd4_psht_google_docs_progress");
+            if(!saved) return false;
+            let data = JSON.parse(saved);
+            userAnswers = data.answers || {};
+            if(data.name) document.getElementById("student-name").value = data.name;
+            if(data.sClass) document.getElementById("student-class").value = data.sClass;
+            if(data.quizTimeLeft !== undefined) quizTime = data.quizTimeLeft;
+            hasStartedQuiz = data.hasStartedQuiz || false;
+            return hasStartedQuiz;
+        }
+
+        async function submitQuiz() {
+            if(confirm("Apakah Anda yakin ingin menyelesaikan kuis ini?")) {
+                clearInterval(quizInterval);
+
+                let name = document.getElementById("student-name").value || "Siswa";
+                let sClass = document.getElementById("student-class").value || "Kelas 4 SD";
+
+                let autoScore = 0;
+
+                allQuestions.forEach(q => {
+                    let ans = userAnswers[q.id];
+                    if(q.type === "pg" && ans !== undefined) {
+                        if(ans === q.a) autoScore += 4; // 10 PG x 4 = 40
+                    } else if(q.type === "pg_kompleks" && Array.isArray(ans)) {
+                        let sortedAns = [...ans].sort().join(',');
+                        let sortedTarget = [...q.a].sort().join(',');
+                        if(sortedAns === sortedTarget) autoScore += 4; // 5 Kompleks x 4 = 20
+                    } else if(q.type === "isian" && typeof ans === 'string') {
+                        if(ans.trim().toLowerCase().includes(q.a.toLowerCase())) autoScore += 4; // 5 Isian x 4 = 20
+                    }
+                });
+
+                document.getElementById("quiz-wrapper").style.display = "none";
+                document.getElementById("result-section").style.display = "block";
+
+                document.getElementById("res-name").innerText = name;
+                document.getElementById("res-class").innerText = sClass;
+                document.getElementById("res-score").innerText = `${autoScore} / 80 (Maksimal PG, Kompleks & Isian)`;
+
+                fetchGroqEvaluation(name, autoScore);
+            }
+        }
+
+        async function fetchGroqEvaluation(studentName, autoScore) {
+            document.getElementById("ai-loading").style.display = "block";
+
+            let sClass = document.getElementById("student-class").value || "Kelas 4 SD";
+            let essayAnswers = [];
+            allQuestions.filter(q => q.type === "essai").forEach((q, idx) => {
+                let ansText = userAnswers[q.id] || "(Tidak dijawab)";
+                essayAnswers.push(`Soal Essai ${idx + 1}: ${q.q}\nJawaban Siswa: ${ansText}`);
+            });
+
+            let promptText = `Kamu adalah seorang guru Informatika/TIK SD Kelas 4. Berikan umpan balik ringkas, ramah, menyemangati, dan beri nilai/kesimpulan untuk 5 jawaban essai siswa bernama ${studentName} mengenai materi Google Docs & Format Teks.
+
+Skor Otomatis (10 PG, 5 Kompleks, 5 Isian): ${autoScore}/80
+
+Jawaban Essai Siswa:
+${essayAnswers.join("\n\n")}
+
+Berikan:
+1. Penilaian singkat tiap jawaban essai (Skor maksimal total untuk 5 essai adalah 20, yaitu 4 poin per soal).
+2. Total Nilai Akhir Keseluruhan (Skor Otomatis + Nilai Essai = Maksimal 100).
+3. Catatan evaluasi/kesimpulan belajar untuk siswa.`;
+
+            let feedbackText = "";
+
+            try {
+                let response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${GROQ_API_KEY}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        model: "meta-llama/llama-prompt-guard-2-86m",
+                        messages: [{ role: "user", content: promptText }],
+                        temperature: 0.5
+                    })
+                });
+
+                let data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error?.message || `HTTP Error status: ${response.status}`);
+                }
+
+                feedbackText = data.choices[0].message.content;
+                document.getElementById("ai-loading").style.display = "none";
+                document.getElementById("ai-feedback").innerText = feedbackText;
+
+            } catch (err) {
+                feedbackText = `Gagal memuat evaluasi AI: ${err.message}`;
+                document.getElementById("ai-loading").innerText = feedbackText;
+            } finally {
+                // OTOMATIS KIRIM HASIL KE GOOGLE SHEETS
+                sendDataToGoogleSheets({
+                    name: studentName,
+                    studentClass: sClass,
+                    autoScore: autoScore,
+                    aiFeedback: feedbackText,
+                    userAnswers: userAnswers
+                });
+            }
+        }
+
+        async function sendDataToGoogleSheets(studentData) {
+            if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.includes("PASTE_URL_WEB_APP")) {
+                console.warn("URL Google Apps Script belum diisi!");
+                return;
+            }
+
+            try {
+                await fetch(APPS_SCRIPT_URL, {
+                    method: "POST",
+                    mode: "no-cors",
+                    headers: {
+                        "Content-Type": "text/plain;charset=utf-8"
+                    },
+                    body: JSON.stringify(studentData)
+                });
+                console.log("Data kuis berhasil terkirim ke Google Sheets!");
+            } catch (err) {
+                console.error("Gagal mengirim data ke Google Sheets:", err);
+            }
+        }
+    </script>
+</body>
+</html>
