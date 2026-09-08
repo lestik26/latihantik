@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modul & Kuis Interaktif TIK Kelas 3 SD - SDIT Hidayatut Taufiq</title>
+    <style>
+        :root {
+            --primary: #2e7d32;
+            --primary-hover: #1b5e20;
+            --bg-color: #f4f6f8;
+            --card-bg: #ffffff;
+            --text-color: #2c3e50;
+            --border-color: #cfd8dc;
+            --success: #388e3c;
+            --warning: #fbc02d;
+            --accent: #4caf50;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+        }
+
+        .header-title h1 {
+            font-size: 1.3rem;
+        }
+
+        .header-title p {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        .timer-container {
+            display: flex;
+            gap: 15px;
+        }
+
+        .timer-box {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 15px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .main-layout {
+            display: flex;
+            height: calc(100vh - 65px);
+            overflow: hidden;
+        }
+
+        /* Panel Kiri: Materi */
+        .left-panel {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+            border-right: 2px solid var(--border-color);
+            background-color: white;
+        }
+
+        .material-header {
+            border-bottom: 3px solid var(--primary);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .material-section {
+            margin-bottom: 25px;
+        }
+
+        .material-section h2 {
+            color: var(--primary);
+            font-size: 1.15rem;
+            margin-bottom: 10px;
+        }
+
+        .material-section p, .material-section li {
+            font-size: 0.95rem;
+            color: #37474f;
+            margin-bottom: 8px;
+        }
+
+        .material-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 0.9rem;
+        }
+
+        .material-table th, .material-table td {
+            border: 1px solid var(--border-color);
+            padding: 8px 12px;
+            text-align: left;
+        }
+
+        .material-table th {
+            background-color: #e8f5e9;
+            color: var(--primary);
+        }
+
+        .tip-box {
+            background-color: #e8f5e9;
+            border-left: 4px solid var(--primary);
+            padding: 12px 15px;
+            margin: 15px 0;
+            border-radius: 0 6px 6px 0;
+            font-size: 0.9rem;
+        }
+
+        /* Panel Kanan: Kuis */
+        .right-panel {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+            position: relative;
+            background-color: var(--bg-color);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .overlay-lock {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(255, 255, 255, 0.96);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 50;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .overlay-lock h2 {
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background-color: #607d8b;
+        }
+
+        .btn-secondary:hover {
+            background-color: #455a64;
+        }
+
+        .student-info {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border-color);
+        }
+
+        .form-group {
+            margin-bottom: 10px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+        }
+
+        .quiz-header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 15px;
+        }
+
+        .type-badge {
+            background: #e8f5e9;
+            color: var(--primary);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .question-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            min-height: 250px;
+            margin-bottom: 15px;
+        }
+
+        .question-card h3 {
+            font-size: 1rem;
+            margin-bottom: 15px;
+            color: var(--text-color);
+        }
+
+        .options label {
+            display: flex;
+            align-items: center;
+            padding: 10px 12px;
+            margin: 6px 0;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+
+        .options label:hover {
+            background-color: #f1f8e9;
+        }
+
+        .options input {
+            margin-right: 12px;
+            transform: scale(1.1);
+        }
+
+        textarea, input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 0.95rem;
+        }
+
+        .quiz-nav-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+            gap: 10px;
+        }
+
+        .select-question {
+            padding: 8px 12px;
+            border-radius: 5px;
+            border: 1px solid var(--border-color);
+            background: white;
+            font-size: 0.9rem;
+        }
+
+        #result-section {
+            display: none;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .summary-box {
+            background: #e8f5e9;
+            border-left: 5px solid var(--primary);
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 4px;
+        }
+
+        @media (max-width: 900px) {
+            .main-layout {
+                flex-direction: column;
+                height: auto;
+                overflow: visible;
+            }
+            .left-panel, .right-panel {
+                overflow-y: visible;
+                height: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-title">
+            <h1>Modul & Evaluasi Sumatif TIK SD</h1>
+            <p>Kelas 3 SD/MI — Berpikir Komputasional, Perangkat Keras & Pengolah Kata (SDIT Hidayatut Taufiq)</p>
+        </div>
+        <div class="timer-container">
+            <div class="timer-box" id="read-timer-display">⏱️ Waktu Membaca: 03:00</div>
+            <div class="timer-box" id="quiz-timer-display" style="display:none;">⏳ Waktu Kuis: 45:00</div>
+        </div>
+    </header>
+
+    <div class="main-layout">
+        <!-- Panel Kiri: Ringkasan Materi Kelas 3 -->
+        <div class="left-panel">
+            <div class="material-header">
+                <h2>MATERI PEMBELAJARAN TIK KELAS 3 SD</h2>
+                <p><strong>Topik:</strong> Algoritma Pola, Perangkat Keras, K3 Komputer & Pengolah Kata</p>
+            </div>
+
+            <div class="tip-box">
+                🎯 <strong>Tujuan Pembelajaran:</strong>
+                <ol style="margin-left: 20px; margin-top: 5px;">
+                    <li>Memahami konsep <strong>Urutan (Algoritma Sederhana)</strong> dan mencari <strong>Pola</strong> gambar/angka.</li>
+                    <li>Mengenal fungsi 4 <strong>Perangkat Keras Utama Komputer</strong> (CPU, Monitor, Keyboard, Mouse).</li>
+                    <li>Menerapkan aturan <strong>Keselamatan & Kesehatan Kerja (K3)</strong> serta cara menyalakan & mematikan komputer.</li>
+                    <li>Mengenal bagian dasar aplikasi <strong>Pengolah Kata</strong> (Microsoft Word & Google Docs).</li>
+                </ol>
+            </div>
+
+            <div class="material-section">
+                <h2>1. Berpikir Komputasional: Urutan & Pola</h2>
+                <p><strong>Urutan (Algoritma Sederhana):</strong> Langkah-langkah kegiatan yang dikerjakan secara runtut dan sistematis dari awal hingga akhir. Jika langkah dikerjakan tertukar atau acak, maka hasilnya akan salah atau berantakan.</p>
+                <p><strong>Pola:</strong> Susunan gambar, warna, atau angka yang muncul berulang-ulang mengikuti aturan tertentu. Cara menemukan pola adalah dengan <em>mengamati dengan teliti</em>, membandingkan persamaan/perbedaan, dan menentukan aturan pengulangannya.</p>
+            </div>
+
+            <div class="material-section">
+                <h2>2. Perangkat Keras Komputer (Hardware)</h2>
+                <p>Komputer desktop terdiri dari beberapa perangkat keras utama yang saling terhubung:</p>
+
+                <table class="material-table">
+                    <thead>
+                        <tr>
+                            <th>Perangkat Keras</th>
+                            <th>Sebutan / Peran</th>
+                            <th>Fungsi Utama</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>CPU (Central Processing Unit)</strong></td>
+                            <td>Otak Komputer</td>
+                            <td>Memproses data dan menjalankan perintah komputer.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Monitor</strong></td>
+                            <td>Layar Tampilan</td>
+                            <td>Menampilkan visual, teks, dan gambar hasil pemrosesan.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Keyboard</strong></td>
+                            <td>Papan Ketik</td>
+                            <td>Memasukkan huruf, angka, dan perintah tombol.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Mouse</strong></td>
+                            <td>Tetikus</td>
+                            <td>Menggerakkan penunjuk/kursor dan melakukan klik.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="material-section">
+                <h2>3. Pengoperasian Aman & Kesehatan Kerja (K3)</h2>
+                <p>Saat menggunakan komputer di laboratorium sekolah, perhatikan panduan keselamatan berikut:</p>
+                <ul>
+                    <li><strong>Posisi Duduk:</strong> Duduklah dengan tegak dan posisi punggung lurus agar tidak cepat pegal.</li>
+                    <li><strong>Jarak Mata:</strong> Jaga jarak pandang mata ke layar monitor sejauh <em>satu lengan</em> (sekitar 50-70 cm) agar mata tidak cepat lelah.</li>
+                    <li><strong>Langkah Menyalakan Komputer:</strong> Tekan tombol Power pada CPU → Tekan tombol Power pada Monitor → Tunggu hingga layar utama (Desktop) muncul.</li>
+                    <li><strong>Langkah Mematikan Komputer:</strong> Klik tombol <strong>Start</strong> → Pilih ikon <strong>Power</strong> → Klik menu <strong>Shut Down</strong>.</li>
+                </ul>
+            </div>
+
+            <div class="material-section">
+                <h2>4. Mengenal Aplikasi Pengolah Kata</h2>
+                <p><strong>Aplikasi Pengolah Kata (Word Processor)</strong> adalah program komputer yang digunakan untuk mengetik tulisan, membuat cerita, dan menyusun dokumen digital.</p>
+                <ul>
+                    <li><strong>Contoh Aplikasi:</strong> Microsoft Word (ikon biru berhuruf W), Google Docs (berbasis cloud/internet), WordPad, dan Notepad.</li>
+                    <li><strong>Document Area:</strong> Lembar kerja berwarna putih tempat kita mengetik teks.</li>
+                    <li><strong>Kursor:</strong> Garis tegak berkedip yang menunjukkan titik awal ketikan huruf.</li>
+                    <li><strong>Title Bar:</strong> Baris di bagian atas layar yang menampilkan nama dokumen atau nama file.</li>
+                </ul>
+
+                <div class="tip-box">
+                    💡 <strong>Tips Belajar:</strong>
+                    <br>Ingatlah bahwa selalu mematikan komputer dengan menu <strong>Shut Down</strong> agar komponen perangkat keras dan file dokumen tersimpan dengan aman!
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel Kanan: Kuis Interaktif -->
+        <div class="right-panel">
+            <div id="read-overlay" class="overlay-lock">
+                <h2>📖 Sesi Membaca Wajib</h2>
+                <p>Silakan baca ringkasan materi Kelas 3 TIK di sebelah kiri terlebih dahulu.</p>
+                <p>Kuis akan terbuka secara otomatis dalam:</p>
+                <h1 id="overlay-timer" style="font-size: 3rem; color: var(--primary); margin: 15px 0;">03:00</h1>
+                <button id="btn-start-quiz" class="btn" disabled onclick="startQuiz()">Mulai Kuis Sekarang</button>
+            </div>
+
+            <div id="quiz-wrapper" style="display: flex; flex-direction: column; height: 100%;">
+                <div class="student-info">
+                    <div style="display: flex; gap: 10px;">
+                        <div class="form-group" style="flex:1;">
+                            <label>Nama Lengkap Siswa:</label>
+                            <input type="text" id="student-name" placeholder="Masukkan nama lengkap..." oninput="safeSaveProgress()">
+                        </div>
+                        <div class="form-group" style="flex:1;">
+                            <label>Kelas / Nomor Absen:</label>
+                            <input type="text" id="student-class" placeholder="Contoh: 3 SDIT / Absen 12" oninput="safeSaveProgress()">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quiz-header-bar">
+                    <span id="question-number" style="font-weight: bold;">Soal 1 dari 25</span>
+                    <span id="question-type-badge" class="type-badge">Pilihan Ganda</span>
+                </div>
+
+                <div id="question-card-container"></div>
+
+                <div class="quiz-nav-bar">
+                    <button id="btn-prev" class="btn btn-secondary" onclick="prevQuestion()">← Sebelumnya</button>
+                    
+                    <select id="jump-select" class="select-question" onchange="jumpToQuestion(this.value)"></select>
+
+                    <button id="btn-next" class="btn" onclick="nextQuestion()">Selanjutnya →</button>
+                    <button id="btn-submit" class="btn" style="background-color: var(--success); display: none;" onclick="submitQuiz()">Kirim Jawaban ✓</button>
+                </div>
+            </div>
+
+            <div id="result-section">
+                <h2>Hasil Evaluasi Kuis Interaktif TIK Kelas 3</h2>
+                <hr style="margin: 10px 0;"><br>
+                <p><strong>Nama Siswa:</strong> <span id="res-name"></span></p>
+                <p><strong>Kelas / NIS:</strong> <span id="res-class"></span></p>
+                <p><strong>Skor Otomatis (PG, PG Kompleks & Isian):</strong> <span id="res-score" style="font-size: 1.2rem; font-weight: bold; color: var(--primary);"></span></p>
+                
+                <div class="summary-box">
+                    <h3>🤖 AI Summary & Evaluasi Jawaban Essai</h3>
+                    <div id="ai-loading" style="display:none; font-style: italic; color: #666; margin-top: 10px;">Sedang menganalisis jawaban essai dan mengirim data...</div>
+                    <div id="ai-feedback" style="margin-top: 10px; white-space: pre-line;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const GROQ_API_KEY = "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";
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyylmYEP5NiCNgVEwZU8OIoXt1M_5NhuLrWkgnodQYqWnhA9LXY0q9VheeAi9z8u59mjQ/exec";
+
+        const READ_DURATION = 180; // 5 menit
+        const QUIZ_DURATION = 2700; // 45 menit
+
+        let readEndTime = null;
+        let quizEndTime = null;
+
+        const allQuestions = [
+            // --- 10 PILIHAN GANDA (ID 1-10) ---
+            { id: 1, type: "pg", q: "Langkah-langkah kegiatan yang disusun secara rapi dan runtut dari awal sampai akhir agar kegiatan berhasil dinamakan...", o: ["Pola", "Urutan atau Algoritma", "Kursor", "Monitor"], a: 1 },
+            { id: 2, type: "pg", q: "Budi ingin mencuci tangan sebelum makan. Urutan langkah mencuci tangan yang paling tepat dan higienis adalah...", o: ["Membilas air → Memberi sabun → Membasahi tangan", "Membasahi tangan → Memberi sabun → Membilas sampai bersih", "Memberi sabun → Membilas air → Mengeringkan tanpa air", "Mengeringkan tangan → Membasahi tangan → Memberi sabun"], a: 1 },
+            { id: 3, type: "pg", q: "Apa yang akan terjadi apabila kita mengerjakan langkah-langkah pengoperasian komputer secara acak atau tertukar?", o: ["Komputer bekerja lebih cepat", "Hasil pekerjaan menjadi salah atau komputer mengalami kesalahan", "Komputer otomatis menjadi sangat rapi", "File dokumen langsung tersimpan otomatis"], a: 1 },
+            { id: 4, type: "pg", q: "Susunan angka, gambar, atau warna yang muncul berulang-ulang mengikuti aturan tertentu dinamakan...", o: ["Kursor", "Hardware", "Pola", "Software"], a: 2 },
+            { id: 5, type: "pg", q: "Perhatikan barisan angka berikut: 3, 6, 9, 12, ..., ... Dua angka yang tepat untuk mengisi kotak berikutnya sesuai pola adalah...", o: ["13 dan 14", "15 dan 18", "14 dan 16", "15 dan 20"], a: 1 },
+            { id: 6, type: "pg", q: "Perangkat keras komputer yang berfungsi memproses perintah dan sering disebut sebagai 'otak komputer' adalah...", o: ["Monitor", "Keyboard", "CPU (Central Processing Unit)", "Mouse"], a: 2 },
+            { id: 7, type: "pg", q: "Bagian komputer yang berfungsi menampilkan gambar, tulisan, dan video di layar serta harus dijaga jarak pandangnya sejauh satu lengan dari mata adalah...", o: ["Keyboard", "Monitor", "Mouse", "Speaker"], a: 1 },
+            { id: 8, type: "pg", q: "Alat kecil yang digerakkan oleh telapak tangan untuk memindahkan garis berkedip atau penunjuk di layar komputer dinamakan...", o: ["Mouse", "Keyboard", "CPU", "Printer"], a: 0 },
+            { id: 9, type: "pg", q: "Langkah yang benar dan aman untuk mematikan komputer setelah selesai digunakan di laboratorium adalah...", o: ["Mencabut kabel colokan listrik secara langsung", "Menekan tombol Power pada monitor saja", "Klik tombol Start, pilih ikon Power, lalu pilih Shut Down", "Menekan tombol tombol pada keyboard secara acak"], a: 2 },
+            { id: 10, type: "pg", q: "Aplikasi atau program komputer yang digunakan untuk membuat cerita, mengetik teks, dan menyusun laporan disebut program...", o: ["Pengolah gambar", "Pengolah kata", "Pemutar video", "Browser internet"], a: 1 },
+
+            // --- 5 PILIHAN GANDA KOMPLEKS (ID 11-15) ---
+            { id: 11, type: "pg_kompleks", q: "Pilihlah 2 urutan kegiatan sehari-hari yang BENAR dan logis!", o: ["Memakai kaos kaki terlebih dahulu sebelum memakai sepatu", "Membasahi tangan dengan air lalu menggunakan sabun saat cuci tangan", "Memakai sepatu dulu baru memasang kaos kaki di luarnya", "Menyeberang jalan tanpa menengok ke kanan dan ke kiri"], a: [0, 1] },
+            { id: 12, type: "pg_kompleks", q: "Pilihlah 2 perangkat keras komputer yang berfungsi sebagai alat input (memasukkan perintah atau teks)!", o: ["Keyboard (papan ketik)", "Mouse (tetikus)", "Monitor (layar tampilan)", "Speaker (pengeras suara)"], a: [0, 1] },
+            { id: 13, type: "pg_kompleks", q: "Pilihlah 2 kebiasaan yang baik dan sehat saat bekerja menggunakan komputer!", o: ["Duduk tegak dengan posisi punggung lurus", "Menjaga jarak pandang mata ke monitor sekitar satu lengan", "Meletakkan minuman manis tepat di atas keyboard", "Menatap layar dari jarak yang sangat dekat"], a: [0, 1] },
+            { id: 14, type: "pg_kompleks", q: "Pilihlah 2 contoh aplikasi pengolah kata yang biasa digunakan untuk mengetik teks!", o: ["Microsoft Word", "Google Docs", "Microsoft Paint", "Windows Media Player"], a: [0, 1] },
+            { id: 15, type: "pg_kompleks", q: "Pilihlah 2 langkah yang tepat untuk menemukan pola gambar atau angka!", o: ["Mengamati susunan elemen dengan teliti", "Mencari kesamaan atau aturan pengulangan yang terjadi", "Menebak angka secara acak tanpa memperhatikan susunan", "Langsung mematikan layar monitor"], a: [0, 1] },
+
+            // --- 5 ISIAN SINGKAT (ID 16-20) ---
+            { id: 16, type: "isian", q: "Area kerja berwarna putih di aplikasi Microsoft Word atau Google Docs yang digunakan untuk mengetik tulisan disebut Document...", a: "area" },
+            { id: 17, type: "isian", q: "Garis tegak berkedip di layar yang menunjukkan titik awal tempat kita mulai mengetik huruf dinamakan...", a: "kursor" },
+            { id: 18, type: "isian", q: "Papan tombol yang berisi susunan huruf A-Z dan angka untuk memasukkan teks ke komputer dinamakan...", a: "keyboard" },
+            { id: 19, type: "isian", q: "Baris di bagian atas layar aplikasi yang menampilkan judul atau nama file dokumen yang dibuka dinamakan Title...", a: "bar" },
+            { id: 20, type: "isian", q: "Saat mematikan komputer dengan aman, pilihan menu yang kita klik setelah memilih ikon Power adalah Shut...", a: "down" },
+
+            // --- 5 ESSAI (ID 21-25) ---
+            { id: 21, type: "essai", q: "Tuliskan urutan langkah-langkah yang benar dan aman saat menyalakan komputer desktop dari awal hingga layar utama siap digunakan!" },
+            { id: 22, type: "essai", q: "Jelaskan mengapa kita harus duduk tegak dan menjaga jarak pandang mata sejauh satu lengan saat menggunakan komputer di sekolah!" },
+            { id: 23, type: "essai", q: "Sebutkan 3 perangkat keras (hardware) utama komputer beserta fungsi singkatnya masing-masing!" },
+            { id: 24, type: "essai", q: "Apakah yang dimaksud dengan Document Area dan Kursor pada aplikasi pengolah kata? Jelaskan perbedaannya!" },
+            { id: 25, type: "essai", q: "Perhatikan pola urutan warna berikut: [Merah - Kuning - Hijau - Merah - Kuning - Hijau - ...]. Warna apakah yang akan muncul pada urutan ke-7 dan ke-8? Jelaskan cara kamu menemukan jawabannya!" }
+        ];
+
+        let currentIndex = 0;
+        let readInterval, quizInterval;
+        let userAnswers = {};
+        let hasStartedQuiz = false;
+
+        window.onload = function() {
+            populateJumpSelect();
+            let startedBefore = safeLoadProgress();
+            renderCurrentQuestion();
+
+            if (startedBefore) {
+                resumeQuizMode();
+            } else {
+                startReadTimer();
+            }
+        };
+
+        function safeSaveProgress() {
+            try {
+                let data = {
+                    answers: userAnswers,
+                    name: document.getElementById("student-name") ? document.getElementById("student-name").value : "",
+                    sClass: document.getElementById("student-class") ? document.getElementById("student-class").value : "",
+                    hasStartedQuiz: hasStartedQuiz,
+                    readEndTime: readEndTime,
+                    quizEndTime: quizEndTime
+                };
+                localStorage.setItem("sd3_psht_tik_progress", JSON.stringify(data));
+            } catch (e) {
+                console.warn("LocalStorage error (abaikan jika membuka file lokal):", e);
+            }
+        }
+
+        function safeLoadProgress() {
+            try {
+                let saved = localStorage.getItem("sd3_psht_tik_progress");
+                if(!saved) return false;
+                let data = JSON.parse(saved);
+                userAnswers = data.answers || {};
+                if(data.name && document.getElementById("student-name")) document.getElementById("student-name").value = data.name;
+                if(data.sClass && document.getElementById("student-class")) document.getElementById("student-class").value = data.sClass;
+                readEndTime = data.readEndTime || null;
+                quizEndTime = data.quizEndTime || null;
+                hasStartedQuiz = data.hasStartedQuiz || false;
+                return hasStartedQuiz;
+            } catch (e) {
+                console.warn("LocalStorage error saat membaca data:", e);
+                return false;
+            }
+        }
+
+        function startReadTimer() {
+            if (!readEndTime) {
+                readEndTime = Date.now() + READ_DURATION * 1000;
+                safeSaveProgress();
+            }
+
+            if (readInterval) clearInterval(readInterval);
+
+            readInterval = setInterval(() => {
+                let now = Date.now();
+                let remaining = Math.max(0, Math.ceil((readEndTime - now) / 1000));
+
+                let m = Math.floor(remaining / 60).toString().padStart(2, '0');
+                let s = (remaining % 60).toString().padStart(2, '0');
+
+                let readDisplay = document.getElementById("read-timer-display");
+                let overlayTimer = document.getElementById("overlay-timer");
+
+                if (readDisplay) readDisplay.innerText = `⏱️ Waktu Membaca: ${m}:${s}`;
+                if (overlayTimer) overlayTimer.innerText = `${m}:${s}`;
+
+                if (remaining <= 0) {
+                    clearInterval(readInterval);
+                    let btn = document.getElementById("btn-start-quiz");
+                    if (btn) btn.disabled = false;
+                    if (overlayTimer) overlayTimer.innerText = "00:00 - Selesai!";
+                }
+            }, 1000);
+        }
+
+        function startQuiz() {
+            if (readInterval) clearInterval(readInterval);
+            hasStartedQuiz = true;
+            quizEndTime = Date.now() + QUIZ_DURATION * 1000;
+            safeSaveProgress();
+            resumeQuizMode();
+        }
+
+        function resumeQuizMode() {
+            let readOverlay = document.getElementById("read-overlay");
+            let readDisplay = document.getElementById("read-timer-display");
+            let quizDisplay = document.getElementById("quiz-timer-display");
+
+            if (readOverlay) readOverlay.style.display = "none";
+            if (readDisplay) readDisplay.style.display = "none";
+            if (quizDisplay) quizDisplay.style.display = "flex";
+
+            if (!quizEndTime) {
+                quizEndTime = Date.now() + QUIZ_DURATION * 1000;
+            }
+
+            if (quizInterval) clearInterval(quizInterval);
+
+            quizInterval = setInterval(() => {
+                let now = Date.now();
+                let remaining = Math.max(0, Math.ceil((quizEndTime - now) / 1000));
+
+                let m = Math.floor(remaining / 60).toString().padStart(2, '0');
+                let s = (remaining % 60).toString().padStart(2, '0');
+
+                if (quizDisplay) quizDisplay.innerText = `⏳ Waktu Kuis: ${m}:${s}`;
+
+                if (remaining <= 0) {
+                    clearInterval(quizInterval);
+                    alert("Waktu pengerjaan kuis telah habis!");
+                    submitQuiz();
+                }
+            }, 1000);
+        }
+
+        function populateJumpSelect() {
+            let select = document.getElementById("jump-select");
+            if (!select) return;
+            select.innerHTML = "";
+            allQuestions.forEach((q, idx) => {
+                let opt = document.createElement("option");
+                opt.value = idx;
+                opt.innerText = `Soal ${idx + 1}`;
+                select.appendChild(opt);
+            });
+        }
+
+        function renderCurrentQuestion() {
+            let q = allQuestions[currentIndex];
+            let container = document.getElementById("question-card-container");
+            if (!container) return;
+
+            let numElem = document.getElementById("question-number");
+            if (numElem) numElem.innerText = `Soal ${currentIndex + 1} dari ${allQuestions.length}`;
+            
+            let selectElem = document.getElementById("jump-select");
+            if (selectElem) selectElem.value = currentIndex;
+
+            let badge = document.getElementById("question-type-badge");
+            if (badge) {
+                if(q.type === "pg") badge.innerText = "Pilihan Ganda";
+                else if(q.type === "pg_kompleks") badge.innerText = "Pilihan Ganda Kompleks (Bisa >1 Jawaban)";
+                else if(q.type === "isian") badge.innerText = "Isian Singkat";
+                else if(q.type === "essai") badge.innerText = "Soal Essai";
+            }
+
+            let html = `<div class="question-card"><h3>${currentIndex + 1}. ${q.q}</h3>`;
+
+            if(q.type === "pg") {
+                html += `<div class="options">`;
+                q.o.forEach((opt, i) => {
+                    let checked = (userAnswers[q.id] === i) ? "checked" : "";
+                    html += `
+                    <label>
+                        <input type="radio" name="q_${q.id}" value="${i}" ${checked} onchange="saveAnswer(${q.id}, ${i})">
+                        ${String.fromCharCode(65 + i)}. ${opt}
+                    </label>`;
+                });
+                html += `</div>`;
+            } else if(q.type === "pg_kompleks") {
+                html += `<div class="options"><p style="font-size: 0.85rem; color: #666; margin-bottom: 8px;">*Pilih 2 jawaban yang menurutmu benar:</p>`;
+                q.o.forEach((opt, i) => {
+                    let currentArr = userAnswers[q.id] || [];
+                    let checked = currentArr.includes(i) ? "checked" : "";
+                    html += `
+                    <label>
+                        <input type="checkbox" name="q_${q.id}" value="${i}" ${checked} onchange="saveAnswerKompleks(${q.id}, ${i})">
+                        ${String.fromCharCode(65 + i)}. ${opt}
+                    </label>`;
+                });
+                html += `</div>`;
+            } else if(q.type === "isian") {
+                let val = userAnswers[q.id] || "";
+                html += `<input type="text" value="${val}" placeholder="Ketik jawaban singkat di sini..." oninput="saveAnswerText(${q.id}, this.value)">`;
+            } else if(q.type === "essai") {
+                let val = userAnswers[q.id] || "";
+                html += `<textarea rows="5" placeholder="Ketik jawaban lengkap di sini..." oninput="saveAnswerText(${q.id}, this.value)">${val}</textarea>`;
+            }
+
+            html += `</div>`;
+            container.innerHTML = html;
+
+            let prevBtn = document.getElementById("btn-prev");
+            if (prevBtn) prevBtn.disabled = (currentIndex === 0);
+
+            let nextBtn = document.getElementById("btn-next");
+            let submitBtn = document.getElementById("btn-submit");
+
+            if(currentIndex === allQuestions.length - 1) {
+                if (nextBtn) nextBtn.style.display = "none";
+                if (submitBtn) submitBtn.style.display = "block";
+            } else {
+                if (nextBtn) nextBtn.style.display = "block";
+                if (submitBtn) submitBtn.style.display = "none";
+            }
+        }
+
+        function saveAnswer(qId, val) {
+            userAnswers[qId] = val;
+            safeSaveProgress();
+        }
+
+        function saveAnswerKompleks(qId, val) {
+            if(!userAnswers[qId]) userAnswers[qId] = [];
+            let idx = userAnswers[qId].indexOf(val);
+            if(idx > -1) {
+                userAnswers[qId].splice(idx, 1);
+            } else {
+                userAnswers[qId].push(val);
+            }
+            safeSaveProgress();
+        }
+
+        function saveAnswerText(qId, val) {
+            userAnswers[qId] = val;
+            safeSaveProgress();
+        }
+
+        function prevQuestion() {
+            if(currentIndex > 0) {
+                currentIndex--;
+                renderCurrentQuestion();
+            }
+        }
+
+        function nextQuestion() {
+            if(currentIndex < allQuestions.length - 1) {
+                currentIndex++;
+                renderCurrentQuestion();
+            }
+        }
+
+        function jumpToQuestion(idx) {
+            currentIndex = parseInt(idx);
+            renderCurrentQuestion();
+        }
+
+        async function submitQuiz() {
+            if(confirm("Apakah Anda yakin ingin menyelesaikan kuis ini?")) {
+                if (quizInterval) clearInterval(quizInterval);
+
+                let name = document.getElementById("student-name") ? document.getElementById("student-name").value || "Siswa Kelas 3" : "Siswa Kelas 3";
+                let sClass = document.getElementById("student-class") ? document.getElementById("student-class").value || "3 SDIT" : "3 SDIT";
+
+                let autoScore = 0;
+
+                allQuestions.forEach(q => {
+                    let ans = userAnswers[q.id];
+                    if(q.type === "pg" && ans !== undefined) {
+                        if(ans === q.a) autoScore += 4;
+                    } else if(q.type === "pg_kompleks" && Array.isArray(ans)) {
+                        let sortedAns = [...ans].sort().join(',');
+                        let sortedTarget = [...q.a].sort().join(',');
+                        if(sortedAns === sortedTarget) autoScore += 4;
+                    } else if(q.type === "isian" && typeof ans === 'string') {
+                        if(ans.trim().toLowerCase().includes(q.a.toLowerCase())) autoScore += 4;
+                    }
+                });
+
+                let quizWrapper = document.getElementById("quiz-wrapper");
+                let resultSec = document.getElementById("result-section");
+                if (quizWrapper) quizWrapper.style.display = "none";
+                if (resultSec) resultSec.style.display = "block";
+
+                let resName = document.getElementById("res-name");
+                let resClass = document.getElementById("res-class");
+                let resScore = document.getElementById("res-score");
+
+                if (resName) resName.innerText = name;
+                if (resClass) resClass.innerText = sClass;
+                if (resScore) resScore.innerText = `${autoScore} / 80 (Maksimal PG, Kompleks & Isian)`;
+
+                fetchGroqEvaluation(name, autoScore);
+            }
+        }
+
+        async function fetchGroqEvaluation(studentName, autoScore) {
+            let aiLoading = document.getElementById("ai-loading");
+            if (aiLoading) aiLoading.style.display = "block";
+
+            let sClass = document.getElementById("student-class") ? document.getElementById("student-class").value || "Kelas 3 SD" : "Kelas 3 SD";
+            let essayAnswers = [];
+            allQuestions.filter(q => q.type === "essai").forEach((q, idx) => {
+                let ansText = userAnswers[q.id] || "(Tidak dijawab)";
+                essayAnswers.push(`Soal Essai ${idx + 1}: ${q.q}\\nJawaban Siswa: ${ansText}`);
+            });
+
+            let promptText = `Kamu adalah seorang guru Informatika/TIK SD Kelas 3. Berikan umpan balik ringkas, ramah, menyemangati, dan beri nilai/kesimpulan untuk 5 jawaban essai siswa bernama ${studentName} mengenai materi Pengenalan Komputer, K3, Algoritma Pola & Pengolah Kata.
+
+Skor Otomatis (10 PG, 5 Kompleks, 5 Isian): ${autoScore}/80
+
+Jawaban Essai Siswa:
+${essayAnswers.join("\\n\\n")}
+
+Berikan:
+1. Penilaian singkat tiap jawaban essai (Skor maksimal total untuk 5 essai adalah 20, yaitu 4 poin per soal).
+2. Total Nilai Akhir Keseluruhan (Skor Otomatis + Nilai Essai = Maksimal 100).
+3. Catatan evaluasi/kesimpulan belajar yang ramah dan positif untuk siswa kelas 3 SD.`;
+
+            let feedbackText = "";
+
+            try {
+                let response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${GROQ_API_KEY}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        model: "llama-3.3-70b-versatile",
+                        messages: [{ role: "user", content: promptText }],
+                        temperature: 0.5
+                    })
+                });
+
+                let data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error?.message || `HTTP Error status: ${response.status}`);
+                }
+
+                feedbackText = data.choices[0].message.content;
+                if (aiLoading) aiLoading.style.display = "none";
+                let aiFeedback = document.getElementById("ai-feedback");
+                if (aiFeedback) aiFeedback.innerText = feedbackText;
+
+            } catch (err) {
+                feedbackText = `Gagal memuat evaluasi AI: ${err.message}\\n\\nEvaluasi Manual Guru: Mohon periksa jawaban essai secara langsung.`;
+                if (aiLoading) aiLoading.style.display = "none";
+                let aiFeedback = document.getElementById("ai-feedback");
+                if (aiFeedback) aiFeedback.innerText = feedbackText;
+            } finally {
+                sendDataToGoogleSheets({
+                    name: studentName,
+                    studentClass: sClass,
+                    autoScore: autoScore,
+                    aiFeedback: feedbackText,
+                    userAnswers: userAnswers
+                });
+            }
+        }
+
+        async function sendDataToGoogleSheets(studentData) {
+            if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.includes("PASTE_URL_WEB_APP")) {
+                console.warn("URL Google Apps Script belum diisi!");
+                return;
+            }
+
+            try {
+                await fetch(APPS_SCRIPT_URL, {
+                    method: "POST",
+                    mode: "no-cors",
+                    headers: {
+                        "Content-Type": "text/plain;charset=utf-8"
+                    },
+                    body: JSON.stringify(studentData)
+                });
+                console.log("Data kuis berhasil terkirim ke Google Sheets!");
+            } catch (err) {
+                console.error("Gagal mengirim data ke Google Sheets:", err);
+            }
+        }
+    </script>
+</body>
+</html>
