@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Game Edukasi: Mengenal Sinyal, Kuota, dan WiFi - Kelas 1 SD</title>
+  
+  <!-- Tailwind CSS & Font Awesome -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Google Fonts for Kids (Fredoka & Nunito) -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@600;700;800;900&display=swap">
+
+  <style>
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: linear-gradient(135deg, #e0f2fe 0%, #f0fdf4 50%, #fef3c7 100%);
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+    }
+    
+    h1, h2, h3, h4, .font-kids {
+      font-family: 'Fredoka', cursive, sans-serif;
+    }
+
+    /* Prevent default scrolling while dragging on touch devices */
+    .draggable-item {
+      touch-action: none;
+      cursor: grab;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    
+    .draggable-item:active {
+      cursor: grabbing;
+    }
+
+    /* Target Drop Box highlight */
+    .drop-target {
+      transition: all 0.2s ease;
+    }
+
+    .drop-target.hover-active {
+      border-color: #22c55e !important;
+      background-color: #f0fdf4 !important;
+      transform: scale(1.02);
+    }
+
+    /* Animations */
+    @keyframes wobble {
+      0%, 100% { transform: translateX(0); }
+      15% { transform: translateX(-12px) rotate(-4deg); }
+      30% { transform: translateX(10px) rotate(4deg); }
+      45% { transform: translateX(-8px) rotate(-2deg); }
+      60% { transform: translateX(6px) rotate(2deg); }
+      75% { transform: translateX(-3px) rotate(-1deg); }
+    }
+
+    .animate-wobble {
+      animation: wobble 0.6s ease-in-out;
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0.8); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .animate-pop-in {
+      animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+
+    @keyframes bounceGlow {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    .animate-bounce-glow {
+      animation: bounceGlow 2s infinite;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between overflow-x-hidden p-2 sm:p-4">
+
+  <!-- Confetti Canvas overlay -->
+  <canvas id="confetti-canvas" class="fixed inset-0 pointer-events-none z-50"></canvas>
+
+  <!-- Top Header Navigation -->
+  <header class="max-w-5xl mx-auto w-full bg-white/90 backdrop-blur-md rounded-2xl p-3 sm:p-4 shadow-lg border-2 border-sky-200 flex flex-wrap items-center justify-between gap-3 mb-4">
+    <!-- Title & Grade Tag -->
+    <div class="flex items-center gap-3">
+      <div class="bg-gradient-to-tr from-sky-400 to-blue-600 text-white p-3 rounded-2xl shadow-md flex items-center justify-center">
+        <i class="fa-solid fa-wifi text-2xl sm:text-3xl animate-pulse"></i>
+      </div>
+      <div>
+        <h1 class="text-xl sm:text-2xl font-bold text-slate-800 leading-tight">Game Sinyal &amp; WiFi</h1>
+        <p class="text-xs sm:text-sm font-semibold text-sky-600">Bab 3: Pulsa, Kuota, &amp; WiFi (Kelas 1 SD)</p>
+      </div>
+    </div>
+
+    <!-- Sound Controls & Scoreboard -->
+    <div class="flex items-center gap-2 sm:gap-4 ml-auto">
+      <!-- Voice Instruction Button -->
+      <button id="btn-tts-instruction" title="Dengarkan Petunjuk" class="bg-amber-100 hover:bg-amber-200 text-amber-700 px-3 py-2 rounded-xl border-2 border-amber-300 font-bold text-xs sm:text-sm flex items-center gap-2 transition active:scale-95 shadow-sm">
+        <i class="fa-solid fa-volume-high text-lg text-amber-600"></i>
+        <span class="hidden sm:inline">Bacakan Petunjuk</span>
+      </button>
+
+      <!-- Mute Toggle -->
+      <button id="btn-sound-toggle" title="Matikan/Hidupkan Suara" class="bg-slate-100 hover:bg-slate-200 text-slate-700 w-10 h-10 rounded-xl border-2 border-slate-300 flex items-center justify-center text-lg transition active:scale-95 shadow-sm">
+        <i id="icon-sound" class="fa-solid fa-volume-low"></i>
+      </button>
+
+      <!-- Score & Stars -->
+      <div class="bg-gradient-to-r from-amber-400 to-yellow-500 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl shadow-md border-2 border-yellow-300 flex items-center gap-2">
+        <i class="fa-solid fa-star text-yellow-100 text-base sm:text-lg"></i>
+        <span id="score-text" class="font-kids text-lg sm:text-xl font-bold">0</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Game Container -->
+  <main class="max-w-5xl mx-auto w-full flex-grow flex flex-col gap-4">
+
+    <!-- Level Selection Tabs -->
+    <div class="flex justify-center gap-2 sm:gap-4">
+      <button id="tab-lvl1" onclick="switchLevel(1)" class="level-tab bg-sky-500 text-white font-kids font-bold px-4 py-2 sm:px-6 sm:py-2.5 rounded-2xl shadow-md border-b-4 border-sky-700 text-sm sm:text-base flex items-center gap-2 transition transform active:scale-95">
+        <i class="fa-solid fa-icons"></i>
+        <span>Level 1: Mengenal Ikon &amp; Alat</span>
+      </button>
+      <button id="tab-lvl2" onclick="switchLevel(2)" class="level-tab bg-slate-200 text-slate-600 font-kids font-bold px-4 py-2 sm:px-6 sm:py-2.5 rounded-2xl shadow-md border-b-4 border-slate-300 text-sm sm:text-base flex items-center gap-2 transition transform active:scale-95">
+        <i class="fa-solid fa-puzzle-piece"></i>
+        <span>Level 2: Kegunaan &amp; Fungsi</span>
+      </button>
+    </div>
+
+    <!-- Instructions Banner -->
+    <div class="bg-amber-50/90 border-2 border-amber-200 rounded-2xl p-3 sm:p-4 text-center shadow-sm relative flex items-center justify-between gap-2">
+      <div class="w-full">
+        <h2 id="level-title" class="text-base sm:text-lg font-bold text-amber-900">Level 1: Pasangkan Ikon dan Gambar yang Cocok!</h2>
+        <p id="level-desc" class="text-xs sm:text-sm text-amber-800 font-semibold">Tarik kartu gambar di sebelah kiri, lalu lepas di kotak jawaban yang pas di sebelah kanan.</p>
+      </div>
+    </div>
+
+    <!-- Play Area Layout (Grid Responsive) -->
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-start flex-grow">
+      
+      <!-- LEFT COLUMN: Draggable Cards Pool -->
+      <div class="md:col-span-5 bg-white/80 backdrop-blur-sm border-2 border-sky-200 rounded-2xl p-4 shadow-md">
+        <div class="flex items-center justify-between border-b-2 border-sky-100 pb-2 mb-3">
+          <h3 class="font-kids text-base sm:text-lg text-sky-800 font-bold flex items-center gap-2">
+            <i class="fa-solid fa-hand-pointer text-sky-500"></i>
+            Tarik Kartu Ini
+          </h3>
+          <span class="text-xs font-bold text-sky-600 bg-sky-100 px-2.5 py-1 rounded-full">Geser Kartu</span>
+        </div>
+
+        <div id="draggables-container" class="flex flex-col gap-3 min-h-[220px]">
+          <!-- Draggable items rendered dynamically via JavaScript -->
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN: Drop Targets Zone -->
+      <div class="md:col-span-7 bg-white/80 backdrop-blur-sm border-2 border-emerald-200 rounded-2xl p-4 shadow-md">
+        <div class="flex items-center justify-between border-b-2 border-emerald-100 pb-2 mb-3">
+          <h3 class="font-kids text-base sm:text-lg text-emerald-800 font-bold flex items-center gap-2">
+            <i class="fa-solid fa-bullseye text-emerald-500"></i>
+            Kotak Pasangan Jawaban
+          </h3>
+          <span class="text-xs font-bold text-emerald-600 bg-emerald-100 px-2.5 py-1 rounded-full">Lepas di Sini</span>
+        </div>
+
+        <div id="targets-container" class="flex flex-col gap-3 min-h-[220px]">
+          <!-- Drop targets rendered dynamically via JavaScript -->
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Footer Controls -->
+  <footer class="max-w-5xl mx-auto w-full mt-4 text-center text-xs sm:text-sm font-semibold text-slate-500">
+    <p>Media Pembelajaran Interaktif Kelas 1 SD • Kurikulum Merdeka</p>
+  </footer>
+
+  <!-- VICTORY MODAL DIALOG -->
+  <div id="victory-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md hidden items-center justify-center z-50 p-4">
+    <div class="bg-white border-4 border-yellow-400 rounded-3xl p-6 sm:p-8 max-w-md w-full text-center shadow-2xl animate-pop-in relative">
+      <!-- Decorative Badges -->
+      <div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-yellow-400 border-4 border-white text-yellow-900 w-20 h-20 rounded-full flex items-center justify-center text-4xl shadow-lg">
+        <i class="fa-solid fa-trophy"></i>
+      </div>
+
+      <div class="mt-8 mb-4">
+        <h3 id="victory-title" class="font-kids text-2xl sm:text-3xl font-bold text-slate-800">Hore! Luar Biasa! 🎉</h3>
+        <p id="victory-message" class="text-slate-600 font-bold mt-2 text-sm sm:text-base">Kamu berhasil memasangkan semua dengan benar!</p>
+      </div>
+
+      <!-- Star Rating Display -->
+      <div id="stars-container" class="flex justify-center gap-2 text-3xl sm:text-4xl text-yellow-400 my-4">
+        <i class="fa-solid fa-star animate-bounce"></i>
+        <i class="fa-solid fa-star animate-bounce" style="animation-delay: 0.1s;"></i>
+        <i class="fa-solid fa-star animate-bounce" style="animation-delay: 0.2s;"></i>
+      </div>
+
+      <div class="bg-amber-50 rounded-2xl p-3 border border-amber-200 mb-6">
+        <p class="text-xs text-amber-800 font-bold">Skor Akhir Level Ini:</p>
+        <p id="victory-score" class="font-kids text-2xl text-amber-600 font-bold">100 Poin</p>
+      </div>
+
+      <div class="flex flex-col sm:flex-row gap-3 justify-center">
+        <button onclick="restartCurrentLevel()" class="bg-slate-200 hover:bg-slate-300 text-slate-800 font-kids font-bold px-5 py-3 rounded-2xl border-b-4 border-slate-400 transition active:scale-95 flex items-center justify-center gap-2 text-sm">
+          <i class="fa-solid fa-rotate-right"></i>
+          <span>Coba Lagi</span>
+        </button>
+        <button id="btn-next-level" onclick="nextLevelOrFinish()" class="bg-emerald-500 hover:bg-emerald-600 text-white font-kids font-bold px-6 py-3 rounded-2xl border-b-4 border-emerald-700 transition active:scale-95 flex items-center justify-center gap-2 text-sm shadow-md">
+          <span>Lanjut Level 2</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ===================================================================
+       1. GAME DATA DEFINITIONS
+       =================================================================== */
+    const LEVEL_DATA = {
+      1: {
+        title: "Level 1: Pasangkan Ikon dan Gambar!",
+        desc: "Jodohkan lambang atau benda di kiri dengan namanya di kanan.",
+        items: [
+          { id: "item-sig", text: "", subtext: "", icon: "fa-signal", type: "signal", color: "from-blue-500 to-indigo-600", bgLight: "bg-blue-50" },
+          { id: "item-wifi", text: "", subtext: "", icon: "fa-wifi", type: "wifi", color: "from-emerald-500 to-teal-600", bgLight: "bg-emerald-50" },
+          { id: "item-router", text: "", subtext: "", icon: "fa-network-wired", type: "router", color: "from-purple-500 to-indigo-600", bgLight: "bg-purple-50" },
+          { id: "item-botol", text: "", subtext: "", icon: "fa-bottle-water", type: "kuota-air", color: "from-amber-500 to-orange-600", bgLight: "bg-amber-50" },
+          { id: "item-keran", text: "", subtext: "", icon: "fa-faucet-drip", type: "wifi-air", color: "from-cyan-500 to-blue-600", bgLight: "bg-cyan-50" }
+        ],
+        targets: [
+          { targetType: "signal", title: "Sinyal Seluler", hint: "Sinyal HP bentuk batang" },
+          { targetType: "wifi", title: "Sinyal WiFi", hint: "Internet nirkabel bentuk lengkung" },
+          { targetType: "router", title: "Router WiFi", hint: "Alat penyebar WiFi rumah/sekolah" },
+          { targetType: "kuota-air", title: "Kuota (Perumpamaan Air Botol)", hint: "Internet di HP yang bisa habis" },
+          { targetType: "wifi-air", title: "WiFi (Perumpamaan Keran Air)", hint: "Internet melimpah dekat alatnya" }
+        ]
+      },
+      2: {
+        title: "Level 2: Pasangkan Kegiatan & Fungsi!",
+        desc: "Jodohkan kegiatan Bimo dengan layanan yang digunakan.",
+        items: [
+          { id: "item-tlp", text: "Menelepon & SMS Nenek", subtext: "Bicara langsung lewat suara", icon: "fa-phone-volume", type: "pulsa", color: "from-blue-600 to-blue-800", bgLight: "bg-blue-50" },
+          { id: "item-jalan", text: "Nonton Video saat Bepergian", icon: "fa-car-side", subtext: "Di luar rumah / kebun binatang", type: "kuota", color: "from-amber-500 to-amber-700", bgLight: "bg-amber-50" },
+          { id: "item-rumah", text: "Nonton Video di Rumah", icon: "fa-house-laptop", subtext: "Tersambung ke router rumah", type: "wifi-home", color: "from-emerald-500 to-emerald-700", bgLight: "bg-emerald-50" }
+        ],
+        targets: [
+          { targetType: "pulsa", title: "PULSA", hint: "Khusus menelepon & kirim SMS" },
+          { targetType: "kuota", title: "KUOTA", hint: "Internet HP di mana saja" },
+          { targetType: "wifi-home", title: "WIFI", hint: "Internet hemat di dekat router" }
+        ]
+      }
+    };
+
+    /* ===================================================================
+       2. STATE VARIABLES & AUDIO SYNTHESIZER (WEB AUDIO API)
+       =================================================================== */
+    let currentLevel = 1;
+    let score = 0;
+    let mistakes = 0;
+    let matchesFound = 0;
+    let isSoundMuted = false;
+    let audioCtx = null;
+
+    // Initialize Web Audio API
+    function getAudioContext() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    // Play synthesized sound effects
+    function playSound(type) {
+      if (isSoundMuted) return;
+      try {
+        const ctx = getAudioContext();
+        const now = ctx.currentTime;
+
+        if (type === 'correct') {
+          // Success Chime Arpeggio (C5 -> E5 -> G5 -> C6)
+          const notes = [523.25, 659.25, 783.99, 1046.50];
+          notes.forEach((freq, idx) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, now + idx * 0.08);
+            gain.gain.setValueAtTime(0.2, now + idx * 0.08);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.08 + 0.25);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(now + idx * 0.08);
+            osc.stop(now + idx * 0.08 + 0.25);
+          });
+        } else if (type === 'wrong') {
+          // Error Buzz (Descending Sawtooth)
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(180, now);
+          osc.frequency.exponentialRampToValueAtTime(90, now + 0.3);
+          gain.gain.setValueAtTime(0.25, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.3);
+        } else if (type === 'fanfare') {
+          // Victory Fanfare
+          const fanfareNotes = [523.25, 659.25, 783.99, 1046.50, 880, 1046.50];
+          const durations = [0.12, 0.12, 0.12, 0.25, 0.15, 0.4];
+          let timeOffset = 0;
+          fanfareNotes.forEach((freq, idx) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, now + timeOffset);
+            gain.gain.setValueAtTime(0.3, now + timeOffset);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + timeOffset + durations[idx]);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(now + timeOffset);
+            osc.stop(now + timeOffset + durations[idx]);
+            timeOffset += durations[idx] * 0.9;
+          });
+        }
+      } catch (e) {
+        console.log("Audio play error:", e);
+      }
+    }
+
+    /* ===================================================================
+       3. TEXT-TO-SPEECH (INDONESIAN TTS)
+       =================================================================== */
+    function speakText(text) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel(); // Stop active speech
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'id-ID';
+        utterance.rate = 0.9; // Friendly slower rate for kids
+        utterance.pitch = 1.1;
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+
+    /* ===================================================================
+       4. GAME RENDER & INITIALIZATION
+       =================================================================== */
+    function shuffleArray(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function initLevel(lvlNum) {
+      currentLevel = lvlNum;
+      matchesFound = 0;
+      mistakes = 0;
+
+      const data = LEVEL_DATA[lvlNum];
+
+      // Update UI Header & Titles
+      document.getElementById('level-title').innerText = data.title;
+      document.getElementById('level-desc').innerText = data.desc;
+
+      // Update Active Tab Styles
+      document.querySelectorAll('.level-tab').forEach((tab, index) => {
+        if (index + 1 === lvlNum) {
+          tab.className = "level-tab bg-sky-500 text-white font-kids font-bold px-4 py-2 sm:px-6 sm:py-2.5 rounded-2xl shadow-md border-b-4 border-sky-700 text-sm sm:text-base flex items-center gap-2 transition transform active:scale-95";
+        } else {
+          tab.className = "level-tab bg-slate-200 text-slate-600 font-kids font-bold px-4 py-2 sm:px-6 sm:py-2.5 rounded-2xl shadow-md border-b-4 border-slate-300 text-sm sm:text-base flex items-center gap-2 transition transform active:scale-95";
+        }
+      });
+
+      // Render Draggables Pool (Shuffled)
+      const draggablesContainer = document.getElementById('draggables-container');
+      draggablesContainer.innerHTML = '';
+      const shuffledItems = shuffleArray(data.items);
+
+      shuffledItems.forEach(item => {
+        const itemEl = document.createElement('div');
+        itemEl.className = `draggable-item bg-white border-2 border-slate-200 rounded-2xl p-3 shadow-md flex items-center justify-between gap-3 active:shadow-xl`;
+        itemEl.setAttribute('data-type', item.type);
+        itemEl.setAttribute('id', item.id);
+
+        itemEl.innerHTML = `
+          <div class="flex items-center gap-3 pointer-events-none">
+            <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-tr ${item.color} text-white flex items-center justify-center text-xl shadow-sm">
+              <i class="fa-solid ${item.icon}"></i>
+            </div>
+            <div>
+              <p class="font-kids text-sm sm:text-base font-bold text-slate-800 leading-tight">${item.text}</p>
+              <p class="text-xs font-semibold text-slate-500">${item.subtext}</p>
+            </div>
+          </div>
+          <button onclick="event.stopPropagation(); speakText('${item.text}')" title="Dengarkan Suara" class="text-slate-400 hover:text-amber-500 p-2 text-base transition">
+            <i class="fa-solid fa-volume-high"></i>
+          </button>
+        `;
+
+        draggablesContainer.appendChild(itemEl);
+      });
+
+      // Render Drop Targets Container
+      const targetsContainer = document.getElementById('targets-container');
+      targetsContainer.innerHTML = '';
+      const shuffledTargets = shuffleArray(data.targets);
+
+      shuffledTargets.forEach(target => {
+        const targetEl = document.createElement('div');
+        targetEl.className = `drop-target bg-slate-50 border-2 border-dashed border-slate-300 rounded-2xl p-3 sm:p-4 min-h-[76px] flex items-center justify-between gap-3 transition`;
+        targetEl.setAttribute('data-target-type', target.targetType);
+
+        targetEl.innerHTML = `
+          <div class="pointer-events-none">
+            <p class="font-kids text-sm sm:text-base font-bold text-slate-700">${target.title}</p>
+            <p class="text-xs text-slate-500 font-semibold">${target.hint}</p>
+          </div>
+          <div class="placeholder-icon text-slate-300 text-2xl pointer-events-none">
+            <i class="fa-regular fa-square"></i>
+          </div>
+        `;
+
+        targetsContainer.appendChild(targetEl);
+      });
+
+      // Attach Pointer Event Drag Engine
+      attachUniversalDragEngine();
+    }
+
+    /* ===================================================================
+       5. UNIVERSAL DRAG AND DROP ENGINE (POINTER EVENTS FOR MOBILE & DESKTOP)
+       =================================================================== */
+    let activeDragEl = null;
+    let cloneEl = null;
+    let touchOffsetX = 0;
+    let touchOffsetY = 0;
+
+    function attachUniversalDragEngine() {
+      const draggables = document.querySelectorAll('.draggable-item');
+
+      draggables.forEach(item => {
+        item.addEventListener('pointerdown', onPointerDown);
+      });
+    }
+
+    function onPointerDown(e) {
+      if (e.button !== 0 && e.pointerType === 'mouse') return;
+
+      getAudioContext(); // Ensure Web Audio is unlocked
+      activeDragEl = e.currentTarget;
+
+      // Calculate bounding rect offset
+      const rect = activeDragEl.getBoundingClientRect();
+      touchOffsetX = e.clientX - rect.left;
+      touchOffsetY = e.clientY - rect.top;
+
+      // Create floating visual drag clone
+      cloneEl = activeDragEl.cloneNode(true);
+      cloneEl.style.position = 'fixed';
+      cloneEl.style.left = `${rect.left}px`;
+      cloneEl.style.top = `${rect.top}px`;
+      cloneEl.style.width = `${rect.width}px`;
+      cloneEl.style.zIndex = '1000';
+      cloneEl.style.pointerEvents = 'none';
+      cloneEl.style.opacity = '0.9';
+      cloneEl.style.transform = 'scale(1.05) rotate(2deg)';
+      cloneEl.style.boxShadow = '0 20px 25px -5px rgba(0, 0, 0, 0.2)';
+
+      document.body.appendChild(cloneEl);
+      activeDragEl.style.opacity = '0.3';
+
+      // Capture Pointer
+      window.addEventListener('pointermove', onPointerMove);
+      window.addEventListener('pointerup', onPointerUp);
+      window.addEventListener('pointercancel', onPointerUp);
+    }
+
+    function onPointerMove(e) {
+      if (!cloneEl) return;
+
+      // Move clone with pointer
+      const x = e.clientX - touchOffsetX;
+      const y = e.clientY - touchOffsetY;
+      cloneEl.style.left = `${x}px`;
+      cloneEl.style.top = `${y}px`;
+
+      // Check hover status over drop targets
+      const targets = document.querySelectorAll('.drop-target');
+      targets.forEach(target => {
+        const targetRect = target.getBoundingClientRect();
+        if (
+          e.clientX >= targetRect.left &&
+          e.clientX <= targetRect.right &&
+          e.clientY >= targetRect.top &&
+          e.clientY <= targetRect.bottom &&
+          !target.classList.contains('solved')
+        ) {
+          target.classList.add('hover-active');
+        } else {
+          target.classList.remove('hover-active');
+        }
+      });
+    }
+
+    function onPointerUp(e) {
+      if (!cloneEl || !activeDragEl) return;
+
+      window.removeEventListener('pointermove', onPointerMove);
+      window.removeEventListener('pointerup', onPointerUp);
+      window.removeEventListener('pointercancel', onPointerUp);
+
+      // Find drop target under cursor/pointer
+      const targets = document.querySelectorAll('.drop-target');
+      let droppedTarget = null;
+
+      targets.forEach(target => {
+        target.classList.remove('hover-active');
+        const targetRect = target.getBoundingClientRect();
+        if (
+          e.clientX >= targetRect.left &&
+          e.clientX <= targetRect.right &&
+          e.clientY >= targetRect.top &&
+          e.clientY <= targetRect.bottom &&
+          !target.classList.contains('solved')
+        ) {
+          droppedTarget = target;
+        }
+      });
+
+      // Remove floating clone
+      document.body.removeChild(cloneEl);
+      cloneEl = null;
+
+      if (droppedTarget) {
+        const dragType = activeDragEl.getAttribute('data-type');
+        const targetType = droppedTarget.getAttribute('data-target-type');
+
+        if (dragType === targetType) {
+          // CORRECT MATCH!
+          handleCorrectDrop(activeDragEl, droppedTarget);
+        } else {
+          // INCORRECT MATCH!
+          handleWrongDrop(activeDragEl);
+        }
+      } else {
+        // Reset item opacity if dropped in empty space
+        activeDragEl.style.opacity = '1';
+      }
+
+      activeDragEl = null;
+    }
+
+    function handleCorrectDrop(itemEl, targetEl) {
+      playSound('correct');
+      score += 20;
+      matchesFound++;
+      document.getElementById('score-text').innerText = score;
+
+      // Mark target as solved
+      targetEl.classList.add('solved', 'bg-emerald-100/80', 'border-emerald-400', 'border-solid');
+      targetEl.classList.remove('bg-slate-50', 'border-dashed');
+
+      // Append content nicely inside target
+      targetEl.innerHTML = `
+        <div class="flex items-center justify-between w-full p-1 animate-pop-in">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-emerald-500 text-white flex items-center justify-center text-xl">
+              <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <div>
+              <p class="font-kids text-sm font-bold text-emerald-900">${itemEl.querySelector('.font-kids').innerText}</p>
+              <p class="text-xs font-semibold text-emerald-700">${targetEl.querySelector('.font-kids').innerText}</p>
+            </div>
+          </div>
+          <span class="text-xs font-bold text-white bg-emerald-600 px-3 py-1.5 rounded-xl shadow-sm">Benar! ✓</span>
+        </div>
+      `;
+
+      // Hide original item from pool
+      itemEl.remove();
+
+      // Check Level Victory
+      const totalRequired = LEVEL_DATA[currentLevel].items.length;
+      if (matchesFound >= totalRequired) {
+        setTimeout(showVictoryModal, 600);
+      }
+    }
+
+    function handleWrongDrop(itemEl) {
+      playSound('wrong');
+      mistakes++;
+      itemEl.style.opacity = '1';
+
+      // Shake animation effect
+      itemEl.classList.add('animate-wobble', 'border-red-400', 'bg-red-50');
+      setTimeout(() => {
+        itemEl.classList.remove('animate-wobble', 'border-red-400', 'bg-red-50');
+      }, 600);
+    }
+
+    /* ===================================================================
+       6. LEVEL SWITCHING & VICTORY CELEBRATION
+       =================================================================== */
+    function switchLevel(lvlNum) {
+      initLevel(lvlNum);
+    }
+
+    function restartCurrentLevel() {
+      document.getElementById('victory-modal').classList.add('hidden');
+      document.getElementById('victory-modal').classList.remove('flex');
+      initLevel(currentLevel);
+    }
+
+    function showVictoryModal() {
+      playSound('fanfare');
+      startConfetti();
+
+      const modal = document.getElementById('victory-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+
+      document.getElementById('victory-score').innerText = `${score} Poin`;
+
+      const btnNext = document.getElementById('btn-next-level');
+      if (currentLevel === 1) {
+        document.getElementById('victory-title').innerText = "Hore! Level 1 Selesai! 🎉";
+        document.getElementById('victory-message').innerText = "Kamu sudah pinter mengenal ikon sinyal & WiFi!";
+        btnNext.innerHTML = `<span>Lanjut Level 2</span> <i class="fa-solid fa-arrow-right"></i>`;
+      } else {
+        document.getElementById('victory-title').innerText = "Hebat! Kamu Anak Cerdas! 🏆";
+        document.getElementById('victory-message').innerText = "Kamu telah menyelesaikan seluruh level game ini!";
+        btnNext.innerHTML = `<span>Main Lagi dari Level 1</span> <i class="fa-solid fa-rotate-right"></i>`;
+      }
+    }
+
+    function nextLevelOrFinish() {
+      document.getElementById('victory-modal').classList.add('hidden');
+      document.getElementById('victory-modal').classList.remove('flex');
+      stopConfetti();
+
+      if (currentLevel === 1) {
+        switchLevel(2);
+      } else {
+        score = 0;
+        document.getElementById('score-text').innerText = score;
+        switchLevel(1);
+      }
+    }
+
+    /* ===================================================================
+       7. CONFETTI CELEBRATION CANVAS ANIMATION
+       =================================================================== */
+    let confettiAnimationId = null;
+    let confettiParticles = [];
+
+    function startConfetti() {
+      const canvas = document.getElementById('confetti-canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      confettiParticles = [];
+      const colors = ['#f59e0b', '#10b981', '#3b82f6', '#ec4899', '#8b5cf6'];
+
+      for (let i = 0; i < 100; i++) {
+        confettiParticles.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height - canvas.height,
+          size: Math.random() * 8 + 4,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          speedY: Math.random() * 3 + 2,
+          speedX: Math.random() * 2 - 1,
+          angle: Math.random() * 360,
+          spin: Math.random() * 10 - 5
+        });
+      }
+
+      function updateAndDraw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        confettiParticles.forEach(p => {
+          p.y += p.speedY;
+          p.x += p.speedX;
+          p.angle += p.spin;
+
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate((p.angle * Math.PI) / 180);
+          ctx.fillStyle = p.color;
+          ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+          ctx.restore();
+
+          if (p.y > canvas.height) {
+            p.y = -20;
+            p.x = Math.random() * canvas.width;
+          }
+        });
+
+        confettiAnimationId = requestAnimationFrame(updateAndDraw);
+      }
+
+      updateAndDraw();
+    }
+
+    function stopConfetti() {
+      if (confettiAnimationId) {
+        cancelAnimationFrame(confettiAnimationId);
+      }
+      const canvas = document.getElementById('confetti-canvas');
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    /* ===================================================================
+       8. INITIAL EVENT LISTENERS & BOOTSTRAP
+       =================================================================== */
+    document.addEventListener('DOMContentLoaded', () => {
+      initLevel(1);
+
+      // Sound Mute Toggle Button Listener
+      document.getElementById('btn-sound-toggle').addEventListener('click', () => {
+        isSoundMuted = !isSoundMuted;
+        const icon = document.getElementById('icon-sound');
+        if (isSoundMuted) {
+          icon.className = 'fa-solid fa-volume-xmark text-red-500';
+        } else {
+          icon.className = 'fa-solid fa-volume-low text-slate-700';
+        }
+      });
+
+      // TTS Instruction Button Listener
+      document.getElementById('btn-tts-instruction').addEventListener('click', () => {
+        const title = LEVEL_DATA[currentLevel].title;
+        const desc = LEVEL_DATA[currentLevel].desc;
+        speakText(`${title}. ${desc}`);
+      });
+    });
+
+    window.addEventListener('resize', () => {
+      const canvas = document.getElementById('confetti-canvas');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+  </script>
+</body>
+</html>
