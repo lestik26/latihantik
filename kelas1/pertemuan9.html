@@ -91,6 +91,15 @@
       background: #cbd5e1;
       border-radius: 10px;
     }
+
+    body {
+  /* Mencegah teks terblok/terseleksi */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+    
   </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between overflow-x-hidden p-2 sm:p-4">
@@ -770,6 +779,32 @@
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
     });
+
+  // Mencegah klik kanan di seluruh halaman
+document.addEventListener('contextmenu', function (e) {
+  e.preventDefault();
+});
+
+    // Mencegah klik kanan
+document.addEventListener('contextmenu', function(e) {
+  e.preventDefault();
+});
+
+// Mencegah F12, Ctrl+U, Ctrl+Shift+I, Ctrl+Shift+J
+document.addEventListener('keydown', function(e) {
+  // Mencegah F12
+  if (e.key === 'F12') {
+    e.preventDefault();
+  }
+  // Mencegah Ctrl+U (View Source)
+  if (e.ctrlKey && e.key === 'u') {
+    e.preventDefault();
+  }
+  // Mencegah Ctrl+Shift+I atau Ctrl+Shift+J (DevTools)
+  if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j')) {
+    e.preventDefault();
+  }
+});
   </script>
 </body>
 </html>
