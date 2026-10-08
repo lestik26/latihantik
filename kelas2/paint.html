@@ -1,588 +1,789 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kids Drawing & Coloring App</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        body { font-family: 'Comic Sans MS', 'Chalkboard SE', sans-serif; background-color: #f3f4f6; overflow: hidden; }
-        .canvas-container { position: relative; width: 800px; height: 600px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); background: white; border-radius: 8px; overflow: hidden; }
-        canvas { position: absolute; top: 0; left: 0; cursor: crosshair; touch-action: none; }
-        .tool-btn { transition: all 0.2s; }
-        .tool-btn.active { background-color: #3b82f6; color: white; border-color: #2563eb; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kids Drawing & Coloring App</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+    body { font-family: 'Comic Sans MS', 'Chalkboard SE', sans-serif; background-color: #f3f4f6; overflow: hidden; }
+    .canvas-container { position: relative; width: 800px; height: 600px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); background: white; border-radius: 8px; overflow: hidden; }
+    canvas { position: absolute; top: 0; left: 0; cursor: crosshair; touch-action: none; }
+    .tool-btn { transition: all 0.2s; }
+    .tool-btn.active { background-color: #3b82f6; color: white; border-color: #2563eb; }
+    .sketch-btn { transition: all 0.15s; }
+    .sketch-btn:hover { background-color: #dbeafe; transform: translateX(2px); }
+    .category-label { font-size: 11px; font-weight: bold; color: #6b7280; margin-top: 6px; padding: 0 4px; letter-spacing: 0.5px; }
+    #sketchToolbar { transition: opacity 0.15s; }
+</style>
 </head>
 <body class="flex flex-col h-screen">
 
-    <!-- Top Menu Bar -->
-    <div class="bg-white p-3 shadow flex items-center justify-between z-10">
-        <div class="flex space-x-2 border-r pr-4">
-            <button id="btnNew" class="p-2 border rounded hover:bg-gray-100 flex items-center gap-2"><i class="fas fa-file"></i> New</button>
-            <input type="file" id="fileOpen" accept="image/*" class="hidden">
-            <button id="btnOpen" class="p-2 border rounded hover:bg-gray-100 flex items-center gap-2"><i class="fas fa-folder-open"></i> Open</button>
-            <button id="btnSave" class="p-2 border rounded hover:bg-gray-100 flex items-center gap-2"><i class="fas fa-save"></i> Save</button>
+<!-- Top Menu Bar -->
+<div class="bg-white p-3 shadow flex items-center justify-between z-10">
+    <div class="flex space-x-2 border-r pr-4">
+        <button id="btnNew" class="p-2 border rounded hover:bg-gray-100 flex items-center gap-2"><i class="fas fa-file"></i> New</button>
+        <input type="file" id="fileOpen" accept="image/*" class="hidden">
+        <button id="btnOpen" class="p-2 border rounded hover:bg-gray-100 flex items-center gap-2"><i class="fas fa-folder-open"></i> Open</button>
+        <button id="btnSave" class="p-2 border rounded hover:bg-gray-100 flex items-center gap-2"><i class="fas fa-save"></i> Save</button>
+    </div>
+    <div class="flex space-x-2">
+        <button id="btnUndo" class="p-2 border rounded hover:bg-gray-100"><i class="fas fa-undo"></i> Undo</button>
+        <button id="btnRedo" class="p-2 border rounded hover:bg-gray-100"><i class="fas fa-redo"></i> Redo</button>
+    </div>
+</div>
+
+<div class="flex flex-1 overflow-hidden">
+    <!-- Tools Sidebar -->
+    <div class="w-20 bg-white shadow flex flex-col items-center py-4 space-y-4 z-10 overflow-y-auto">
+        <button class="tool-btn active w-12 h-12 border rounded-xl flex items-center justify-center text-xl" data-tool="pencil" title="Pencil"><i class="fas fa-pencil-alt"></i></button>
+        <button class="tool-btn w-12 h-12 border rounded-xl flex items-center justify-center text-xl" data-tool="fill" title="Fill"><i class="fas fa-fill-drip"></i></button>
+        <button class="tool-btn w-12 h-12 border rounded-xl flex items-center justify-center text-xl" data-tool="eraser" title="Eraser"><i class="fas fa-eraser"></i></button>
+        <button class="tool-btn w-12 h-12 border rounded-xl flex items-center justify-center text-xl" data-tool="picker" title="Color Picker"><i class="fas fa-eye-dropper"></i></button>
+        <button class="tool-btn w-12 h-12 border rounded-xl flex items-center justify-center text-xl" data-tool="text" title="Text Tool"><i class="fas fa-font"></i></button>
+
+        <div class="w-full border-t my-2"></div>
+
+        <div class="flex flex-col items-center">
+            <span class="text-xs mb-1">Size</span>
+            <input type="range" id="sizeSlider" min="1" max="50" value="5" class="h-24" style="writing-mode: vertical-lr; direction: rtl;">
         </div>
-        <div class="flex space-x-2">
-            <button id="btnUndo" class="p-2 border rounded hover:bg-gray-100"><i class="fas fa-undo"></i> Undo</button>
-            <button id="btnRedo" class="p-2 border rounded hover:bg-gray-100"><i class="fas fa-redo"></i> Redo</button>
+
+        <div class="w-full border-t my-2"></div>
+
+        <input type="color" id="colorPicker" value="#000000" class="w-10 h-10 border-0 p-0 cursor-pointer rounded">
+        <div class="grid grid-cols-2 gap-1 px-2">
+            <button class="color-swatch w-6 h-6 rounded-full border border-gray-300" style="background-color: #000000"></button>
+            <button class="color-swatch w-6 h-6 rounded-full border border-gray-300" style="background-color: #ffffff"></button>
+            <button class="color-swatch w-6 h-6 rounded-full border border-gray-300" style="background-color: #ef4444"></button>
+            <button class="color-swatch w-6 h-6 rounded-full border border-gray-300" style="background-color: #3b82f6"></button>
+            <button class="color-swatch w-6 h-6 rounded-full border border-gray-300" style="background-color: #22c55e"></button>
+            <button class="color-swatch w-6 h-6 rounded-full border border-gray-300" style="background-color: #eab308"></button>
+            <button class="color-swatch w-6 h-6 rounded-full border border-gray-300" style="background-color: #a855f7"></button>
+            <button class="color-swatch w-6 h-6 rounded-full border border-gray-300" style="background-color: #ec4899"></button>
         </div>
     </div>
 
-    <div class="flex flex-1 overflow-hidden">
-        <!-- Tools Sidebar -->
-        <div class="w-20 bg-white shadow flex flex-col items-center py-4 space-y-4 z-10 overflow-y-auto">
-            <button class="tool-btn active w-12 h-12 border rounded-xl flex items-center justify-center text-xl" data-tool="pencil" title="Pencil"><i class="fas fa-pencil-alt"></i></button>
-            <button class="tool-btn w-12 h-12 border rounded-xl flex items-center justify-center text-xl" data-tool="fill" title="Fill"><i class="fas fa-fill-drip"></i></button>
-            <button class="tool-btn w-12 h-12 border rounded-xl flex items-center justify-center text-xl" data-tool="eraser" title="Eraser"><i class="fas fa-eraser"></i></button>
-            <button class="tool-btn w-12 h-12 border rounded-xl flex items-center justify-center text-xl" data-tool="picker" title="Color Picker"><i class="fas fa-eye-dropper"></i></button>
-            <button class="tool-btn w-12 h-12 border rounded-xl flex items-center justify-center text-xl" data-tool="text" title="Text Tool"><i class="fas fa-font"></i></button>
+    <!-- Canvas Area -->
+    <div class="flex-1 flex justify-center items-center bg-gray-200 p-4">
+        <div class="canvas-container" id="canvasContainer">
+            <canvas id="bgCanvas" width="800" height="600"></canvas>
+            <canvas id="overlayCanvas" width="800" height="600"></canvas>
 
-            <div class="w-full border-t my-2"></div>
-
-            <!-- Size -->
-            <div class="flex flex-col items-center">
-                <span class="text-xs mb-1">Size</span>
-                <input type="range" id="sizeSlider" min="1" max="50" value="5" class="h-24"
-                       style="writing-mode: vertical-lr; direction: rtl;">
+            <!-- Floating toolbar for resizing selected sketch -->
+            <div id="sketchToolbar" class="hidden absolute bottom-3 left-1/2 -translate-x-1/2 bg-white/95 backdrop-blur shadow-lg rounded-full px-2 py-1.5 flex items-center gap-1.5 z-30 border border-gray-200">
+                <button id="btnShrink" class="w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 active:scale-95 flex items-center justify-center text-xl font-bold text-gray-700" title="Perkecil">−</button>
+                <span id="scaleLabel" class="text-sm font-bold text-gray-700 w-14 text-center select-none">100%</span>
+                <button id="btnGrow" class="w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 active:scale-95 flex items-center justify-center text-xl font-bold text-gray-700" title="Perbesar">+</button>
+                <div class="w-px h-6 bg-gray-300 mx-1"></div>
+                <button id="btnDone" class="px-3 h-9 rounded-full bg-blue-500 text-white text-sm font-bold hover:bg-blue-600 active:scale-95 flex items-center gap-1" title="Tempel sketsa"><i class="fas fa-check"></i> Selesai</button>
+                <button id="btnDeleteObj" class="w-9 h-9 rounded-full bg-red-50 hover:bg-red-100 active:scale-95 flex items-center justify-center text-red-500" title="Hapus"><i class="fas fa-times"></i></button>
             </div>
-
-            <div class="w-full border-t my-2"></div>
-
-            <!-- Colors -->
-            <input type="color" id="colorPicker" value="#000000" class="w-10 h-10 border-0 p-0 cursor-pointer rounded">
-            <div class="grid grid-cols-2 gap-1 px-2">
-                <button class="color-swatch w-6 h-6 rounded-full border border-gray-300" style="background-color: #000000"></button>
-                <button class="color-swatch w-6 h-6 rounded-full border border-gray-300" style="background-color: #ffffff"></button>
-                <button class="color-swatch w-6 h-6 rounded-full border border-gray-300" style="background-color: #ef4444"></button>
-                <button class="color-swatch w-6 h-6 rounded-full border border-gray-300" style="background-color: #3b82f6"></button>
-                <button class="color-swatch w-6 h-6 rounded-full border border-gray-300" style="background-color: #22c55e"></button>
-                <button class="color-swatch w-6 h-6 rounded-full border border-gray-300" style="background-color: #eab308"></button>
-                <button class="color-swatch w-6 h-6 rounded-full border border-gray-300" style="background-color: #a855f7"></button>
-                <button class="color-swatch w-6 h-6 rounded-full border border-gray-300" style="background-color: #ec4899"></button>
-            </div>
-        </div>
-
-        <!-- Canvas Area -->
-        <div class="flex-1 flex justify-center items-center bg-gray-200 p-4">
-            <div class="canvas-container">
-                <canvas id="bgCanvas" width="800" height="600"></canvas>
-                <canvas id="overlayCanvas" width="800" height="600"></canvas>
-            </div>
-        </div>
-
-        <!-- Right Sidebar (Sketches) -->
-        <div class="w-32 bg-white shadow flex flex-col items-center py-4 space-y-4 z-10">
-            <span class="font-bold text-gray-700">Sketches</span>
-            <button class="sketch-btn p-2 border rounded hover:bg-gray-100" data-animal="cat">🐱 Cat</button>
-            <button class="sketch-btn p-2 border rounded hover:bg-gray-100" data-animal="rabbit">🐰 Rabbit</button>
-            <button class="sketch-btn p-2 border rounded hover:bg-gray-100" data-animal="fish">🐟 Fish</button>
-            <button class="sketch-btn p-2 border rounded hover:bg-gray-100" data-animal="bird">🐦 Bird</button>
-            <p class="text-xs text-center text-gray-500 mt-2 px-1">Click to add, then drag it to position.</p>
         </div>
     </div>
 
-    <script>
-        const bgCanvas = document.getElementById('bgCanvas');
-        const overlayCanvas = document.getElementById('overlayCanvas');
-        const bgCtx = bgCanvas.getContext('2d', { willReadFrequently: true });
-        const overCtx = overlayCanvas.getContext('2d');
+    <!-- Right Sidebar (Sketches) -->
+    <div class="w-44 bg-white shadow flex flex-col py-3 px-2 gap-1 z-10 overflow-y-auto">
+        <span class="font-bold text-gray-700 text-center mb-1">Sketches</span>
 
-        const FONT_FAMILY = "'Comic Sans MS', 'Chalkboard SE', cursive";
+        <div class="category-label">🐾 ANIMALS</div>
+        <button class="sketch-btn text-sm p-2 border rounded text-left" data-animal="cat">🐱 Cat</button>
+        <button class="sketch-btn text-sm p-2 border rounded text-left" data-animal="rabbit">🐰 Rabbit</button>
+        <button class="sketch-btn text-sm p-2 border rounded text-left" data-animal="bird">🐦 Bird</button>
+        <button class="sketch-btn text-sm p-2 border rounded text-left" data-animal="fish">🐟 Fish</button>
 
-        let currentTool = 'pencil';
-        let currentColor = '#000000';   // ALWAYS stored as #rrggbb
-        let currentSize = 5;
-        let isDrawing = false;
+        <div class="category-label">🌿 NATURE</div>
+        <button class="sketch-btn text-sm p-2 border rounded text-left" data-animal="flower">🌸 Flower</button>
+        <button class="sketch-btn text-sm p-2 border rounded text-left" data-animal="tree">🌳 Tree</button>
+        <button class="sketch-btn text-sm p-2 border rounded text-left" data-animal="sun">☀️ Sun</button>
 
-        // History
-        let undoStack = [];
-        let redoStack = [];
+        <div class="category-label">🚗 FUN THINGS</div>
+        <button class="sketch-btn text-sm p-2 border rounded text-left" data-animal="car">🚗 Car</button>
+        <button class="sketch-btn text-sm p-2 border rounded text-left" data-animal="icecream">🍦 Ice Cream</button>
 
-        // Floating object (sketch or text) — draggable until stamped down
-        let floatingObj = null;
-        let isDragging = false;
-        let dragOffset = { x: 0, y: 0 };
+        <p class="text-[10px] text-center text-gray-400 mt-3 px-1 leading-tight">
+            Klik sketsa → atur ukuran → seret → <b>Selesai</b>.<br>
+            Tebalkan garis putus-putus sampai tertutup rapat sebelum mewarnai.
+        </p>
+    </div>
+</div>
 
-        /* ---------------- COLOR HELPERS ---------------- */
-        // Accepts "#rgb", "#rrggbb", "rgb(r,g,b)" and always returns "#rrggbb"
-        function toHex(color) {
-            if (!color) return '#000000';
-            color = String(color).trim();
-            if (color.charAt(0) === '#') {
-                if (color.length === 4) {
-                    return '#' + color[1] + color[1] + color[2] + color[2] + color[3] + color[3];
-                }
-                return color.toLowerCase();
-            }
-            const nums = color.match(/[\d.]+/g);
-            if (!nums || nums.length < 3) return '#000000';
-            return '#' + nums.slice(0, 3).map(n => {
-                const v = Math.max(0, Math.min(255, Math.round(parseFloat(n))));
-                return v.toString(16).padStart(2, '0');
-            }).join('');
+<script>
+/* ================= SETUP ================= */
+const bgCanvas = document.getElementById('bgCanvas');
+const overlayCanvas = document.getElementById('overlayCanvas');
+const bgCtx = bgCanvas.getContext('2d', { willReadFrequently: true });
+const overCtx = overlayCanvas.getContext('2d');
+const FONT_FAMILY = "'Comic Sans MS', 'Chalkboard SE', cursive";
+
+const BASE_SIZE = 300;
+const MIN_SCALE = 0.25;
+const MAX_SCALE = 4;
+
+let currentTool = 'pencil';
+let currentColor = '#000000';
+let currentSize = 5;
+let isDrawing = false;
+
+let undoStack = [];
+let redoStack = [];
+
+let floatingObj = null;
+let isDragging = false;
+let dragOffset = { x: 0, y: 0 };
+
+/* ================= COLOR HELPERS ================= */
+function toHex(color) {
+    if (!color) return '#000000';
+    color = String(color).trim();
+    if (color.charAt(0) === '#') {
+        if (color.length === 4) return '#' + color[1]+color[1]+color[2]+color[2]+color[3]+color[3];
+        return color.toLowerCase();
+    }
+    const nums = color.match(/[\d.]+/g);
+    if (!nums || nums.length < 3) return '#000000';
+    return '#' + nums.slice(0, 3).map(n => {
+        const v = Math.max(0, Math.min(255, Math.round(parseFloat(n))));
+        return v.toString(16).padStart(2, '0');
+    }).join('');
+}
+function hexToRgb(hex) {
+    const h = toHex(hex).slice(1);
+    const n = parseInt(h, 16);
+    return [(n >> 16) & 255, (n >> 8) & 255, n & 255, 255];
+}
+function rgbToHexStr(r, g, b) {
+    return '#' + [r, g, b].map(v => v.toString(16).padStart(2, '0')).join('');
+}
+
+/* ================= SKETCH LIBRARY ================= */
+const SKETCHES = {
+
+    /* ---------- ANIMALS ---------- */
+    cat(ctx) {
+        ctx.moveTo(50, 22);
+        ctx.bezierCurveTo(30, 22, 18, 36, 18, 54);
+        ctx.bezierCurveTo(18, 74, 32, 88, 50, 88);
+        ctx.bezierCurveTo(68, 88, 82, 74, 82, 54);
+        ctx.bezierCurveTo(82, 36, 70, 22, 50, 22);
+        ctx.closePath();
+        ctx.moveTo(24, 44); ctx.lineTo(14, 12); ctx.lineTo(42, 30); ctx.closePath();
+        ctx.moveTo(76, 44); ctx.lineTo(86, 12); ctx.lineTo(58, 30); ctx.closePath();
+        ctx.moveTo(41.5, 52); ctx.arc(38, 52, 3.5, 0, Math.PI*2);
+        ctx.moveTo(65.5, 52); ctx.arc(62, 52, 3.5, 0, Math.PI*2);
+        ctx.moveTo(39.5, 52); ctx.arc(38, 52, 1.5, 0, Math.PI*2);
+        ctx.moveTo(63.5, 52); ctx.arc(62, 52, 1.5, 0, Math.PI*2);
+        ctx.moveTo(46, 63); ctx.lineTo(54, 63); ctx.lineTo(50, 68); ctx.closePath();
+        ctx.moveTo(50, 68); ctx.lineTo(50, 72);
+        ctx.moveTo(50, 72); ctx.quadraticCurveTo(45, 77, 40, 73);
+        ctx.moveTo(50, 72); ctx.quadraticCurveTo(55, 77, 60, 73);
+        ctx.moveTo(32, 60); ctx.lineTo(15, 57);
+        ctx.moveTo(32, 66); ctx.lineTo(15, 68);
+        ctx.moveTo(68, 60); ctx.lineTo(85, 57);
+        ctx.moveTo(68, 66); ctx.lineTo(85, 68);
+    },
+    rabbit(ctx) {
+        ctx.moveTo(38, 55);
+        ctx.bezierCurveTo(30, 30, 26, 8, 34, 6);
+        ctx.bezierCurveTo(42, 4, 46, 28, 46, 48);
+        ctx.closePath();
+        ctx.moveTo(62, 55);
+        ctx.bezierCurveTo(70, 30, 74, 8, 66, 6);
+        ctx.bezierCurveTo(58, 4, 54, 28, 54, 48);
+        ctx.closePath();
+        ctx.moveTo(37, 48);
+        ctx.bezierCurveTo(34, 30, 32, 16, 36, 14);
+        ctx.bezierCurveTo(40, 14, 42, 30, 42, 44);
+        ctx.closePath();
+        ctx.moveTo(63, 48);
+        ctx.bezierCurveTo(66, 30, 68, 16, 64, 14);
+        ctx.bezierCurveTo(60, 14, 58, 30, 58, 44);
+        ctx.closePath();
+        ctx.moveTo(50, 45);
+        ctx.bezierCurveTo(30, 45, 22, 60, 22, 72);
+        ctx.bezierCurveTo(22, 86, 35, 93, 50, 93);
+        ctx.bezierCurveTo(65, 93, 78, 86, 78, 72);
+        ctx.bezierCurveTo(78, 60, 70, 45, 50, 45);
+        ctx.closePath();
+        ctx.moveTo(40.5, 68); ctx.arc(37, 68, 3.5, 0, Math.PI*2);
+        ctx.moveTo(65.5, 68); ctx.arc(62, 68, 3.5, 0, Math.PI*2);
+        ctx.moveTo(38.5, 68); ctx.arc(37, 68, 1.5, 0, Math.PI*2);
+        ctx.moveTo(63.5, 68); ctx.arc(62, 68, 1.5, 0, Math.PI*2);
+        ctx.moveTo(46, 78); ctx.lineTo(54, 78); ctx.lineTo(50, 82); ctx.closePath();
+        ctx.moveTo(50, 82); ctx.lineTo(50, 85);
+        ctx.moveTo(50, 85); ctx.quadraticCurveTo(45, 89, 41, 86);
+        ctx.moveTo(50, 85); ctx.quadraticCurveTo(55, 89, 59, 86);
+        ctx.moveTo(32, 76); ctx.lineTo(16, 74);
+        ctx.moveTo(32, 81); ctx.lineTo(16, 83);
+        ctx.moveTo(68, 76); ctx.lineTo(84, 74);
+        ctx.moveTo(68, 81); ctx.lineTo(84, 83);
+    },
+    bird(ctx) {
+        ctx.moveTo(30, 55);
+        ctx.bezierCurveTo(25, 42, 38, 32, 55, 34);
+        ctx.bezierCurveTo(75, 37, 82, 55, 78, 70);
+        ctx.bezierCurveTo(72, 82, 40, 82, 30, 55);
+        ctx.closePath();
+        ctx.moveTo(83, 42); ctx.lineTo(97, 45); ctx.lineTo(83, 50); ctx.closePath();
+        ctx.moveTo(78.5, 40); ctx.arc(76, 40, 2.5, 0, Math.PI*2);
+        ctx.moveTo(45, 50);
+        ctx.bezierCurveTo(50, 44, 65, 48, 68, 60);
+        ctx.bezierCurveTo(60, 68, 42, 65, 45, 50);
+        ctx.closePath();
+        ctx.moveTo(30, 55); ctx.lineTo(10, 42); ctx.lineTo(15, 60);
+        ctx.lineTo(10, 68); ctx.lineTo(30, 62); ctx.closePath();
+        ctx.moveTo(50, 80); ctx.lineTo(50, 92);
+        ctx.moveTo(45, 92); ctx.lineTo(55, 92);
+        ctx.moveTo(65, 80); ctx.lineTo(65, 92);
+        ctx.moveTo(60, 92); ctx.lineTo(70, 92);
+    },
+    fish(ctx) {
+        ctx.moveTo(18, 50);
+        ctx.bezierCurveTo(25, 25, 60, 22, 78, 50);
+        ctx.bezierCurveTo(60, 78, 25, 75, 18, 50);
+        ctx.closePath();
+        ctx.moveTo(18, 50);
+        ctx.bezierCurveTo(12, 42, 4, 32, 2, 28);
+        ctx.bezierCurveTo(8, 42, 8, 58, 2, 72);
+        ctx.bezierCurveTo(4, 68, 12, 58, 18, 50);
+        ctx.closePath();
+        ctx.moveTo(40, 30);
+        ctx.quadraticCurveTo(48, 10, 65, 25);
+        ctx.quadraticCurveTo(55, 30, 40, 30);
+        ctx.closePath();
+        ctx.moveTo(40, 70);
+        ctx.quadraticCurveTo(48, 90, 65, 75);
+        ctx.quadraticCurveTo(55, 70, 40, 70);
+        ctx.closePath();
+        ctx.moveTo(68, 38); ctx.quadraticCurveTo(64, 50, 68, 62);
+        ctx.moveTo(70, 44); ctx.arc(67, 44, 3, 0, Math.PI*2);
+        ctx.moveTo(80, 50); ctx.quadraticCurveTo(78, 53, 75, 53);
+    },
+
+    /* ---------- NATURE ---------- */
+    flower(ctx) {
+        const cx = 50, cy = 32, petalR = 11, dist = 12;
+        for (let i = 0; i < 5; i++) {
+            const a = -Math.PI/2 + i * (Math.PI*2/5);
+            const px = cx + Math.cos(a) * dist;
+            const py = cy + Math.sin(a) * dist;
+            ctx.moveTo(px + petalR, py);
+            ctx.arc(px, py, petalR, 0, Math.PI*2);
         }
-
-        function hexToRgb(hex) {
-            const h = toHex(hex).slice(1);
-            const n = parseInt(h, 16);
-            return [(n >> 16) & 255, (n >> 8) & 255, n & 255, 255];
+        ctx.moveTo(cx + 6, cy); ctx.arc(cx, cy, 6, 0, Math.PI*2);
+        ctx.moveTo(50, 52);
+        ctx.bezierCurveTo(52, 65, 48, 80, 50, 95);
+        ctx.moveTo(50, 68);
+        ctx.bezierCurveTo(38, 62, 28, 68, 26, 74);
+        ctx.bezierCurveTo(32, 78, 42, 76, 50, 70);
+        ctx.closePath();
+        ctx.moveTo(50, 78);
+        ctx.bezierCurveTo(62, 72, 72, 78, 74, 84);
+        ctx.bezierCurveTo(68, 88, 58, 86, 50, 80);
+        ctx.closePath();
+    },
+    tree(ctx) {
+        ctx.moveTo(43, 92); ctx.lineTo(43, 68);
+        ctx.moveTo(57, 92); ctx.lineTo(57, 68);
+        ctx.moveTo(43, 92); ctx.lineTo(57, 92);
+        ctx.moveTo(43, 92); ctx.lineTo(37, 92);
+        ctx.moveTo(57, 92); ctx.lineTo(63, 92);
+        ctx.moveTo(72, 30); ctx.arc(50, 30, 22, 0, Math.PI*2);
+        ctx.moveTo(48, 45); ctx.arc(30, 45, 18, 0, Math.PI*2);
+        ctx.moveTo(88, 45); ctx.arc(70, 45, 18, 0, Math.PI*2);
+        ctx.moveTo(70, 52); ctx.arc(50, 52, 20, 0, Math.PI*2);
+    },
+    sun(ctx) {
+        const cx = 50, cy = 50, r = 22;
+        ctx.moveTo(cx + r, cy); ctx.arc(cx, cy, r, 0, Math.PI*2);
+        for (let i = 0; i < 8; i++) {
+            const a = (Math.PI*2/8) * i + Math.PI/8;
+            ctx.moveTo(cx + Math.cos(a)*26, cy + Math.sin(a)*26);
+            ctx.lineTo(cx + Math.cos(a)*40, cy + Math.sin(a)*40);
         }
+        ctx.moveTo(45.5, 45); ctx.arc(43, 45, 2.5, 0, Math.PI*2);
+        ctx.moveTo(59.5, 45); ctx.arc(57, 45, 2.5, 0, Math.PI*2);
+        ctx.moveTo(42, 55); ctx.quadraticCurveTo(50, 64, 58, 55);
+        ctx.moveTo(39, 55); ctx.arc(36, 55, 3, 0, Math.PI*2);
+        ctx.moveTo(67, 55); ctx.arc(64, 55, 3, 0, Math.PI*2);
+    },
 
-        function rgbToHexStr(r, g, b) {
-            return '#' + [r, g, b].map(v => v.toString(16).padStart(2, '0')).join('');
-        }
+    /* ---------- FUN THINGS ---------- */
+    car(ctx) {
+        ctx.moveTo(10, 68); ctx.lineTo(10, 52); ctx.lineTo(28, 52);
+        ctx.lineTo(38, 38); ctx.lineTo(62, 38); ctx.lineTo(72, 52);
+        ctx.lineTo(90, 52); ctx.lineTo(90, 68); ctx.closePath();
+        ctx.moveTo(40, 41); ctx.lineTo(48, 41); ctx.lineTo(48, 51); ctx.lineTo(35, 51); ctx.closePath();
+        ctx.moveTo(52, 41); ctx.lineTo(60, 41); ctx.lineTo(65, 51); ctx.lineTo(52, 51); ctx.closePath();
+        ctx.moveTo(33, 68); ctx.arc(25, 68, 8, 0, Math.PI*2);
+        ctx.moveTo(83, 68); ctx.arc(75, 68, 8, 0, Math.PI*2);
+        ctx.moveTo(28, 68); ctx.arc(25, 68, 3, 0, Math.PI*2);
+        ctx.moveTo(78, 68); ctx.arc(75, 68, 3, 0, Math.PI*2);
+        ctx.moveTo(90, 58);
+        ctx.quadraticCurveTo(93, 58, 93, 62);
+        ctx.quadraticCurveTo(93, 66, 90, 66);
+    },
+    icecream(ctx) {
+        ctx.moveTo(35, 55); ctx.lineTo(50, 95); ctx.lineTo(65, 55);
+        ctx.moveTo(38, 60); ctx.lineTo(56, 82);
+        ctx.moveTo(46, 60); ctx.lineTo(62, 76);
+        ctx.moveTo(54, 60); ctx.lineTo(64, 70);
+        ctx.moveTo(68, 52); ctx.arc(50, 52, 18, 0, Math.PI*2);
+        ctx.moveTo(64, 30); ctx.arc(50, 30, 14, 0, Math.PI*2);
+        ctx.moveTo(55, 12); ctx.arc(50, 12, 5, 0, Math.PI*2);
+        ctx.moveTo(50, 7); ctx.quadraticCurveTo(54, 0, 58, 2);
+    }
+};
 
-        /* ---------------- TOOL SELECTION ---------------- */
-        function setTool(tool) {
-            currentTool = tool;
-            document.querySelectorAll('.tool-btn').forEach(b => {
-                b.classList.toggle('active', b.dataset.tool === tool);
-            });
-        }
+/* ==========================================================
+   Gambar sketsa HANYA sebagai garis putus-putus hitam.
+   Tidak ada garis abu-abu padat apapun. Siswa harus
+   menebalkan sendiri untuk menutup bentuk.
+========================================================== */
+function paintSketch(ctx, animal, x, y, w, h) {
+    ctx.save();
+    ctx.translate(x, y);
+    const sx = w / 100;
+    const sy = h / 100;
+    ctx.scale(sx, sy);
+    ctx.beginPath();
+    if (SKETCHES[animal]) SKETCHES[animal](ctx);
 
-        document.querySelectorAll('.tool-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const tool = btn.dataset.tool;
-                if (tool === currentTool) return;
+    // Kompensasi supaya ketebalan & pola dash konsisten walau di-scale
+    const avg = (sx + sy) / 2 || 1;
+    ctx.lineWidth = 3.5 / avg;
+    ctx.strokeStyle = '#111111';
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'butt';
+    ctx.setLineDash([12 / avg, 9 / avg]);
+    ctx.stroke();
+    ctx.restore();
+}
 
-                // stamp any floating object before switching tools
-                if (floatingObj) stampFloatingObject();
+/* ================= TOOL SELECTION ================= */
+function setTool(tool) {
+    currentTool = tool;
+    document.querySelectorAll('.tool-btn').forEach(b => {
+        b.classList.toggle('active', b.dataset.tool === tool);
+    });
+}
 
-                setTool(tool);
+document.querySelectorAll('.tool-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const tool = btn.dataset.tool;
+        if (tool === currentTool && tool !== 'text') return;
 
-                if (tool === 'text') {
-                    const text = prompt("Enter text:");
-                    if (text) {
-                        overCtx.font = `${currentSize * 5}px ${FONT_FAMILY}`;
-                        floatingObj = {
-                            type: 'text',
-                            content: text,
-                            x: 400,
-                            y: 300,
-                            color: currentColor,
-                            size: currentSize * 5
-                        };
-                        drawOverlay();
-                    } else {
-                        setTool('pencil');
-                    }
-                }
-            });
-        });
+        if (floatingObj) stampFloatingObject();
+        setTool(tool);
 
-        /* ---------------- COLOR & SIZE ---------------- */
-        document.getElementById('colorPicker').addEventListener('input', (e) => {
-            currentColor = toHex(e.target.value);
-            if (floatingObj && floatingObj.type === 'text') { floatingObj.color = currentColor; drawOverlay(); }
-        });
-
-        document.querySelectorAll('.color-swatch').forEach(btn => {
-            btn.addEventListener('click', () => {
-                currentColor = toHex(btn.style.backgroundColor);   // <- fixed: always hex
-                document.getElementById('colorPicker').value = currentColor;
-                if (floatingObj && floatingObj.type === 'text') { floatingObj.color = currentColor; drawOverlay(); }
-            });
-        });
-
-        document.getElementById('sizeSlider').addEventListener('input', (e) => {
-            currentSize = parseInt(e.target.value);
-        });
-
-        /* ---------------- TOP MENU ---------------- */
-        document.getElementById('btnNew').addEventListener('click', () => {
-            if (confirm("Create new canvas? Unsaved work will be lost.")) {
-                bgCtx.fillStyle = '#ffffff';
-                bgCtx.fillRect(0, 0, bgCanvas.width, bgCanvas.height);
-                floatingObj = null;
-                drawOverlay();
-                undoStack = [];
-                redoStack = [];
-                saveState();
-            }
-        });
-
-        const fileOpen = document.getElementById('fileOpen');
-        document.getElementById('btnOpen').addEventListener('click', () => fileOpen.click());
-        fileOpen.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function (event) {
-                const img = new Image();
-                img.onload = function () {
-                    bgCtx.fillStyle = '#ffffff';
-                    bgCtx.fillRect(0, 0, bgCanvas.width, bgCanvas.height);
-                    bgCtx.drawImage(img, 0, 0, bgCanvas.width, bgCanvas.height);
-                    saveState();
-                };
-                img.src = event.target.result;
-            };
-            reader.readAsDataURL(file);
-            fileOpen.value = '';
-        });
-
-        document.getElementById('btnSave').addEventListener('click', () => {
-            if (floatingObj) stampFloatingObject();
-
-            // merge bg + overlay so saved file matches what you see
-            const out = document.createElement('canvas');
-            out.width = bgCanvas.width;
-            out.height = bgCanvas.height;
-            const octx = out.getContext('2d');
-            octx.fillStyle = '#ffffff';
-            octx.fillRect(0, 0, out.width, out.height);
-            octx.drawImage(bgCanvas, 0, 0);
-            octx.drawImage(overlayCanvas, 0, 0);
-
-            const link = document.createElement('a');
-            link.download = 'my_drawing.png';
-            link.href = out.toDataURL('image/png');
-            link.click();
-        });
-
-        document.getElementById('btnUndo').addEventListener('click', () => {
-            if (undoStack.length > 1) {
-                redoStack.push(undoStack.pop());
-                restoreState(undoStack[undoStack.length - 1]);
-            }
-        });
-        document.getElementById('btnRedo').addEventListener('click', () => {
-            if (redoStack.length > 0) {
-                const state = redoStack.pop();
-                undoStack.push(state);
-                restoreState(state);
-            }
-        });
-
-        function saveState() {
-            undoStack.push(bgCanvas.toDataURL());
-            if (undoStack.length > 40) undoStack.shift();
-            redoStack = [];
-        }
-
-        function restoreState(dataUrl) {
-            const img = new Image();
-            img.onload = () => {
-                bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
-                bgCtx.drawImage(img, 0, 0);
-            };
-            img.src = dataUrl;
-        }
-
-        /* ---------------- SKETCHES ---------------- */
-        document.querySelectorAll('.sketch-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                if (floatingObj) stampFloatingObject();
+        if (tool === 'text') {
+            const text = prompt("Enter text:");
+            if (text) {
+                overCtx.font = `${currentSize * 5}px ${FONT_FAMILY}`;
                 floatingObj = {
-                    type: 'sketch',
-                    animal: btn.dataset.animal,
-                    x: 250,
-                    y: 150,
-                    width: 300,
-                    height: 300
+                    type: 'text',
+                    content: text,
+                    x: 400, y: 300,
+                    color: currentColor,
+                    size: currentSize * 5
                 };
                 drawOverlay();
-            });
-        });
-
-        function drawAnimalPath(ctx, animal, x, y, w, h) {
-            ctx.save();
-            ctx.translate(x, y);
-            ctx.scale(w / 100, h / 100);
-            ctx.beginPath();
-            if (animal === 'cat') {
-                ctx.arc(50, 50, 40, 0, Math.PI * 2);
-                ctx.moveTo(20, 25); ctx.lineTo(10, -10); ctx.lineTo(40, 15);
-                ctx.moveTo(80, 25); ctx.lineTo(90, -10); ctx.lineTo(60, 15);
-            } else if (animal === 'rabbit') {
-                ctx.arc(50, 60, 30, 0, Math.PI * 2);
-                ctx.ellipse(35, 20, 10, 30, 0, 0, Math.PI * 2);
-                ctx.ellipse(65, 20, 10, 30, 0, 0, Math.PI * 2);
-            } else if (animal === 'fish') {
-                ctx.ellipse(50, 50, 40, 25, 0, 0, Math.PI * 2);
-                ctx.moveTo(10, 50); ctx.lineTo(-20, 20); ctx.lineTo(-20, 80); ctx.closePath();
-            } else if (animal === 'bird') {
-                ctx.arc(50, 50, 25, 0, Math.PI * 2);
-                ctx.arc(70, 30, 15, 0, Math.PI * 2);
-                ctx.moveTo(85, 30); ctx.lineTo(100, 35); ctx.lineTo(85, 40);
+            } else {
+                setTool('pencil');
             }
-            ctx.restore();
         }
+    });
+});
 
-        // Bounding box of the floating object (generous padding = easy to grab)
-        function getFloatingBounds() {
-            if (!floatingObj) return null;
-            if (floatingObj.type === 'sketch') {
-                const padX = floatingObj.width * 0.25;
-                const padY = floatingObj.height * 0.15;
-                return {
-                    x: floatingObj.x - padX,
-                    y: floatingObj.y - padY,
-                    w: floatingObj.width + padX * 2,
-                    h: floatingObj.height + padY * 2
-                };
-            }
-            overCtx.font = `${floatingObj.size}px ${FONT_FAMILY}`;
-            const m = overCtx.measureText(floatingObj.content);
-            return {
-                x: floatingObj.x - 10,
-                y: floatingObj.y - 10,
-                w: m.width + 20,
-                h: floatingObj.size * 1.3 + 20
-            };
-        }
+/* ================= COLOR & SIZE ================= */
+document.getElementById('colorPicker').addEventListener('input', (e) => {
+    currentColor = toHex(e.target.value);
+    if (floatingObj && floatingObj.type === 'text') { floatingObj.color = currentColor; drawOverlay(); }
+});
+document.querySelectorAll('.color-swatch').forEach(btn => {
+    btn.addEventListener('click', () => {
+        currentColor = toHex(btn.style.backgroundColor);
+        document.getElementById('colorPicker').value = currentColor;
+        if (floatingObj && floatingObj.type === 'text') { floatingObj.color = currentColor; drawOverlay(); }
+    });
+});
+document.getElementById('sizeSlider').addEventListener('input', (e) => {
+    currentSize = parseInt(e.target.value);
+});
 
-        function drawOverlay() {
-            overCtx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
-            if (!floatingObj) return;
-
-            if (floatingObj.type === 'sketch') {
-                // faint solid outline (so the fill tool has a boundary)
-                overCtx.strokeStyle = 'rgba(0,0,0,0.10)';
-                overCtx.lineWidth = 1;
-                overCtx.setLineDash([]);
-                drawAnimalPath(overCtx, floatingObj.animal, floatingObj.x, floatingObj.y, floatingObj.width, floatingObj.height);
-                overCtx.stroke();
-
-                // dashed guide line for tracing
-                overCtx.strokeStyle = 'rgba(0,0,0,0.55)';
-                overCtx.lineWidth = 4;
-                overCtx.setLineDash([10, 10]);
-                drawAnimalPath(overCtx, floatingObj.animal, floatingObj.x, floatingObj.y, floatingObj.width, floatingObj.height);
-                overCtx.stroke();
-                overCtx.setLineDash([]);
-            } else if (floatingObj.type === 'text') {
-                overCtx.font = `${floatingObj.size}px ${FONT_FAMILY}`;
-                overCtx.fillStyle = floatingObj.color;
-                overCtx.textBaseline = 'top';
-                overCtx.fillText(floatingObj.content, floatingObj.x, floatingObj.y);
-            }
-
-            // selection box
-            const b = getFloatingBounds();
-            overCtx.strokeStyle = '#3b82f6';
-            overCtx.lineWidth = 1.5;
-            overCtx.setLineDash([6, 4]);
-            overCtx.strokeRect(b.x, b.y, b.w, b.h);
-            overCtx.setLineDash([]);
-        }
-
-        function stampFloatingObject() {
-            if (!floatingObj) return;
-
-            if (floatingObj.type === 'sketch') {
-                bgCtx.strokeStyle = 'rgba(0,0,0,0.10)';
-                bgCtx.lineWidth = 1;
-                bgCtx.setLineDash([]);
-                drawAnimalPath(bgCtx, floatingObj.animal, floatingObj.x, floatingObj.y, floatingObj.width, floatingObj.height);
-                bgCtx.stroke();
-
-                bgCtx.strokeStyle = '#000000';
-                bgCtx.lineWidth = 4;
-                bgCtx.setLineDash([10, 10]);
-                drawAnimalPath(bgCtx, floatingObj.animal, floatingObj.x, floatingObj.y, floatingObj.width, floatingObj.height);
-                bgCtx.stroke();
-                bgCtx.setLineDash([]);
-            } else if (floatingObj.type === 'text') {
-                bgCtx.font = `${floatingObj.size}px ${FONT_FAMILY}`;
-                bgCtx.fillStyle = floatingObj.color;
-                bgCtx.textBaseline = 'top';
-                bgCtx.fillText(floatingObj.content, floatingObj.x, floatingObj.y);
-            }
-
-            floatingObj = null;
-            drawOverlay();
-            saveState();
-        }
-
-        /* ---------------- POINTER EVENTS ---------------- */
-        function getPos(e) {
-            const rect = overlayCanvas.getBoundingClientRect();
-            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-            return {
-                x: (clientX - rect.left) * (overlayCanvas.width / rect.width),
-                y: (clientY - rect.top) * (overlayCanvas.height / rect.height)
-            };
-        }
-
-        overlayCanvas.addEventListener('mousedown', startAction);
-        overlayCanvas.addEventListener('touchstart', startAction, { passive: false });
-        overlayCanvas.addEventListener('mousemove', moveAction);
-        overlayCanvas.addEventListener('touchmove', moveAction, { passive: false });
-        window.addEventListener('mouseup', endAction);
-        window.addEventListener('touchend', endAction);
-
-        function startAction(e) {
-            e.preventDefault();
-            const pos = getPos(e);
-
-            // 1) Floating object? drag it, or stamp it down if clicked outside
-            if (floatingObj) {
-                const b = getFloatingBounds();
-                const inside = pos.x >= b.x && pos.x <= b.x + b.w &&
-                               pos.y >= b.y && pos.y <= b.y + b.h;
-                if (inside) {
-                    isDragging = true;
-                    dragOffset.x = pos.x - floatingObj.x;
-                    dragOffset.y = pos.y - floatingObj.y;
-                    return;
-                }
-                stampFloatingObject();
-            }
-
-            const x = Math.floor(pos.x);
-            const y = Math.floor(pos.y);
-            const inBounds = x >= 0 && y >= 0 && x < bgCanvas.width && y < bgCanvas.height;
-
-            // 2) Color picker
-            if (currentTool === 'picker') {
-                if (!inBounds) return;
-                const px = bgCtx.getImageData(x, y, 1, 1).data;
-                currentColor = rgbToHexStr(px[0], px[1], px[2]);
-                document.getElementById('colorPicker').value = currentColor;
-                return;
-            }
-
-            // 3) Flood fill
-            if (currentTool === 'fill') {
-                if (!inBounds) return;
-                floodFill(x, y, hexToRgb(currentColor));
-                saveState();
-                return;
-            }
-
-            // 4) Free drawing
-            if (!inBounds) return;
-            isDrawing = true;
-            bgCtx.beginPath();
-            bgCtx.moveTo(pos.x, pos.y);
-            bgCtx.lineTo(pos.x + 0.01, pos.y + 0.01); // dot on a single click
-            bgCtx.strokeStyle = currentTool === 'eraser' ? '#ffffff' : currentColor;
-            bgCtx.lineWidth = currentSize;
-            bgCtx.lineCap = 'round';
-            bgCtx.lineJoin = 'round';
-            bgCtx.stroke();
-        }
-
-        function moveAction(e) {
-            if (isDragging && floatingObj) {
-                e.preventDefault();
-                const pos = getPos(e);
-                floatingObj.x = pos.x - dragOffset.x;
-                floatingObj.y = pos.y - dragOffset.y;
-                drawOverlay();
-                return;
-            }
-
-            if (!isDrawing) return;
-            e.preventDefault();
-            const pos = getPos(e);
-
-            bgCtx.lineTo(pos.x, pos.y);
-            bgCtx.strokeStyle = currentTool === 'eraser' ? '#ffffff' : currentColor;
-            bgCtx.lineWidth = currentSize;
-            bgCtx.lineCap = 'round';
-            bgCtx.lineJoin = 'round';
-            bgCtx.stroke();
-        }
-
-        function endAction() {
-            if (isDrawing) {
-                isDrawing = false;
-                saveState();
-            }
-            isDragging = false;
-        }
-
-        /* ---------------- FLOOD FILL (FIXED) ---------------- */
-        function floodFill(startX, startY, fillColor) {
-            const W = bgCanvas.width;
-            const H = bgCanvas.height;
-            if (startX < 0 || startY < 0 || startX >= W || startY >= H) return;
-
-            const imgData = bgCtx.getImageData(0, 0, W, H);
-            const data = imgData.data;
-
-            const startPos = (startY * W + startX) * 4;
-            const sr = data[startPos];
-            const sg = data[startPos + 1];
-            const sb = data[startPos + 2];
-
-            // tolerance helps cover the soft anti-aliased edges of the pencil line
-            const tol = 60;
-
-            // nothing to do if the target area already has (almost) this color
-            if (Math.abs(sr - fillColor[0]) <= tol &&
-                Math.abs(sg - fillColor[1]) <= tol &&
-                Math.abs(sb - fillColor[2]) <= tol) {
-                return;
-            }
-
-            const visited = new Uint8Array(W * H);
-
-            function isTarget(p) {
-                const pi = p >> 2;
-                if (visited[pi]) return false;
-                return Math.abs(data[p] - sr) <= tol &&
-                       Math.abs(data[p + 1] - sg) <= tol &&
-                       Math.abs(data[p + 2] - sb) <= tol;
-            }
-
-            const stack = [[startX, startY]];
-
-            while (stack.length) {
-                let [x, y] = stack.pop();
-                let pos = (y * W + x) * 4;
-
-                // scan upwards
-                while (y >= 0 && isTarget(pos)) {
-                    y--;
-                    pos -= W * 4;
-                }
-                pos += W * 4;
-                y++;
-
-                let reachLeft = false;
-                let reachRight = false;
-
-                // scan downwards, filling the span
-                while (y < H && isTarget(pos)) {
-                    visited[pos >> 2] = 1;
-                    data[pos]     = fillColor[0];
-                    data[pos + 1] = fillColor[1];
-                    data[pos + 2] = fillColor[2];
-                    data[pos + 3] = 255;
-
-                    if (x > 0) {
-                        if (isTarget(pos - 4)) {
-                            if (!reachLeft) { stack.push([x - 1, y]); reachLeft = true; }
-                        } else {
-                            reachLeft = false;
-                        }
-                    }
-                    if (x < W - 1) {
-                        if (isTarget(pos + 4)) {
-                            if (!reachRight) { stack.push([x + 1, y]); reachRight = true; }
-                        } else {
-                            reachRight = false;
-                        }
-                    }
-
-                    y++;
-                    pos += W * 4;
-                }
-            }
-
-            bgCtx.putImageData(imgData, 0, 0);
-        }
-
-        /* ---------------- INIT ---------------- */
+/* ================= TOP MENU ================= */
+document.getElementById('btnNew').addEventListener('click', () => {
+    if (confirm("Create new canvas? Unsaved work will be lost.")) {
         bgCtx.fillStyle = '#ffffff';
         bgCtx.fillRect(0, 0, bgCanvas.width, bgCanvas.height);
+        floatingObj = null;
+        drawOverlay();
+        undoStack = [];
+        redoStack = [];
         saveState();
-    </script>
+    }
+});
+
+const fileOpen = document.getElementById('fileOpen');
+document.getElementById('btnOpen').addEventListener('click', () => fileOpen.click());
+fileOpen.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function (event) {
+        const img = new Image();
+        img.onload = function () {
+            bgCtx.fillStyle = '#ffffff';
+            bgCtx.fillRect(0, 0, bgCanvas.width, bgCanvas.height);
+            bgCtx.drawImage(img, 0, 0, bgCanvas.width, bgCanvas.height);
+            saveState();
+        };
+        img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
+    fileOpen.value = '';
+});
+
+document.getElementById('btnSave').addEventListener('click', () => {
+    if (floatingObj) stampFloatingObject();
+    const out = document.createElement('canvas');
+    out.width = bgCanvas.width;
+    out.height = bgCanvas.height;
+    const octx = out.getContext('2d');
+    octx.fillStyle = '#ffffff';
+    octx.fillRect(0, 0, out.width, out.height);
+    octx.drawImage(bgCanvas, 0, 0);
+    octx.drawImage(overlayCanvas, 0, 0);
+    const link = document.createElement('a');
+    link.download = 'my_drawing.png';
+    link.href = out.toDataURL('image/png');
+    link.click();
+});
+
+document.getElementById('btnUndo').addEventListener('click', () => {
+    if (undoStack.length > 1) {
+        redoStack.push(undoStack.pop());
+        restoreState(undoStack[undoStack.length - 1]);
+    }
+});
+document.getElementById('btnRedo').addEventListener('click', () => {
+    if (redoStack.length > 0) {
+        const state = redoStack.pop();
+        undoStack.push(state);
+        restoreState(state);
+    }
+});
+
+function saveState() {
+    undoStack.push(bgCanvas.toDataURL());
+    if (undoStack.length > 40) undoStack.shift();
+    redoStack = [];
+}
+function restoreState(dataUrl) {
+    const img = new Image();
+    img.onload = () => {
+        bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+        bgCtx.drawImage(img, 0, 0);
+    };
+    img.src = dataUrl;
+}
+
+/* ================= SKETCH BUTTONS ================= */
+document.querySelectorAll('.sketch-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        if (floatingObj) stampFloatingObject();
+        floatingObj = {
+            type: 'sketch',
+            animal: btn.dataset.animal,
+            x: 250, y: 150,
+            width: BASE_SIZE,
+            height: BASE_SIZE
+        };
+        drawOverlay();
+    });
+});
+
+/* ================= FLOATING OBJECT BOUNDS ================= */
+function getFloatingBounds() {
+    if (!floatingObj) return null;
+    if (floatingObj.type === 'sketch') {
+        const padX = floatingObj.width * 0.28;
+        const padY = floatingObj.height * 0.20;
+        return {
+            x: floatingObj.x - padX,
+            y: floatingObj.y - padY,
+            w: floatingObj.width + padX * 2,
+            h: floatingObj.height + padY * 2
+        };
+    }
+    overCtx.font = `${floatingObj.size}px ${FONT_FAMILY}`;
+    const m = overCtx.measureText(floatingObj.content);
+    return {
+        x: floatingObj.x - 10, y: floatingObj.y - 10,
+        w: m.width + 20, h: floatingObj.size * 1.3 + 20
+    };
+}
+
+/* ================= UPDATE TOOLBAR ================= */
+function updateSketchToolbar() {
+    const tb = document.getElementById('sketchToolbar');
+    if (floatingObj && floatingObj.type === 'sketch') {
+        tb.classList.remove('hidden');
+        const pct = Math.round((floatingObj.width / BASE_SIZE) * 100);
+        document.getElementById('scaleLabel').textContent = pct + '%';
+    } else {
+        tb.classList.add('hidden');
+    }
+}
+
+/* ================= OVERLAY RENDERING ================= */
+function drawOverlay() {
+    overCtx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
+    updateSketchToolbar();
+    if (!floatingObj) return;
+
+    if (floatingObj.type === 'sketch') {
+        // HANYA garis putus-putus hitam — tidak ada layer abu-abu
+        paintSketch(overCtx, floatingObj.animal,
+            floatingObj.x, floatingObj.y, floatingObj.width, floatingObj.height);
+    } else if (floatingObj.type === 'text') {
+        overCtx.font = `${floatingObj.size}px ${FONT_FAMILY}`;
+        overCtx.fillStyle = floatingObj.color;
+        overCtx.textBaseline = 'top';
+        overCtx.fillText(floatingObj.content, floatingObj.x, floatingObj.y);
+    }
+
+    // Kotak seleksi
+    const b = getFloatingBounds();
+    overCtx.strokeStyle = '#3b82f6';
+    overCtx.lineWidth = 1.5;
+    overCtx.setLineDash([6, 4]);
+    overCtx.strokeRect(b.x, b.y, b.w, b.h);
+    overCtx.setLineDash([]);
+}
+
+/* ================= STAMP FLOATING OBJECT ================= */
+function stampFloatingObject() {
+    if (!floatingObj) return;
+
+    if (floatingObj.type === 'sketch') {
+        // HANYA garis putus-putus hitam — sengaja agar siswa melihat
+        // bahwa bentuk belum tertutup, dan belajar menebalkannya.
+        paintSketch(bgCtx, floatingObj.animal,
+            floatingObj.x, floatingObj.y, floatingObj.width, floatingObj.height);
+    } else if (floatingObj.type === 'text') {
+        bgCtx.font = `${floatingObj.size}px ${FONT_FAMILY}`;
+        bgCtx.fillStyle = floatingObj.color;
+        bgCtx.textBaseline = 'top';
+        bgCtx.fillText(floatingObj.content, floatingObj.x, floatingObj.y);
+    }
+
+    floatingObj = null;
+    drawOverlay();
+    saveState();
+}
+
+/* ================= RESIZE HANDLERS ================= */
+function setSketchScale(newScale) {
+    if (!floatingObj || floatingObj.type !== 'sketch') return;
+    newScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, newScale));
+
+    const cx = floatingObj.x + floatingObj.width / 2;
+    const cy = floatingObj.y + floatingObj.height / 2;
+
+    floatingObj.width  = BASE_SIZE * newScale;
+    floatingObj.height = BASE_SIZE * newScale;
+    floatingObj.x = cx - floatingObj.width / 2;
+    floatingObj.y = cy - floatingObj.height / 2;
+
+    drawOverlay();
+}
+
+document.getElementById('btnGrow').addEventListener('click', () => {
+    if (!floatingObj || floatingObj.type !== 'sketch') return;
+    setSketchScale(floatingObj.width / BASE_SIZE * 1.2);
+});
+document.getElementById('btnShrink').addEventListener('click', () => {
+    if (!floatingObj || floatingObj.type !== 'sketch') return;
+    setSketchScale(floatingObj.width / BASE_SIZE / 1.2);
+});
+document.getElementById('btnDone').addEventListener('click', () => {
+    if (floatingObj) stampFloatingObject();
+});
+document.getElementById('btnDeleteObj').addEventListener('click', () => {
+    floatingObj = null;
+    drawOverlay();
+});
+
+overlayCanvas.addEventListener('wheel', (e) => {
+    if (!floatingObj || floatingObj.type !== 'sketch') return;
+    e.preventDefault();
+    const factor = Math.pow(1.0015, -e.deltaY);
+    setSketchScale(floatingObj.width / BASE_SIZE * factor);
+}, { passive: false });
+
+/* ================= POINTER EVENTS ================= */
+function getPos(e) {
+    const rect = overlayCanvas.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    return {
+        x: (clientX - rect.left) * (overlayCanvas.width / rect.width),
+        y: (clientY - rect.top) * (overlayCanvas.height / rect.height)
+    };
+}
+
+overlayCanvas.addEventListener('mousedown', startAction);
+overlayCanvas.addEventListener('touchstart', startAction, { passive: false });
+overlayCanvas.addEventListener('mousemove', moveAction);
+overlayCanvas.addEventListener('touchmove', moveAction, { passive: false });
+window.addEventListener('mouseup', endAction);
+window.addEventListener('touchend', endAction);
+
+function startAction(e) {
+    e.preventDefault();
+    const pos = getPos(e);
+    const x = Math.floor(pos.x);
+    const y = Math.floor(pos.y);
+    const inBounds = x >= 0 && y >= 0 && x < bgCanvas.width && y < bgCanvas.height;
+
+    if (floatingObj) {
+        if (currentTool === 'fill' || currentTool === 'picker') {
+            stampFloatingObject();
+        } else {
+            const b = getFloatingBounds();
+            const inside = pos.x >= b.x && pos.x <= b.x + b.w &&
+                           pos.y >= b.y && pos.y <= b.y + b.h;
+            if (inside) {
+                isDragging = true;
+                dragOffset.x = pos.x - floatingObj.x;
+                dragOffset.y = pos.y - floatingObj.y;
+                return;
+            }
+            stampFloatingObject();
+        }
+    }
+
+    if (currentTool === 'picker') {
+        if (!inBounds) return;
+        const px = bgCtx.getImageData(x, y, 1, 1).data;
+        currentColor = rgbToHexStr(px[0], px[1], px[2]);
+        document.getElementById('colorPicker').value = currentColor;
+        return;
+    }
+
+    if (currentTool === 'fill') {
+        if (!inBounds) return;
+        floodFill(x, y, hexToRgb(currentColor));
+        saveState();
+        return;
+    }
+
+    if (!inBounds) return;
+    isDrawing = true;
+    bgCtx.beginPath();
+    bgCtx.moveTo(pos.x, pos.y);
+    bgCtx.lineTo(pos.x + 0.01, pos.y + 0.01);
+    bgCtx.strokeStyle = currentTool === 'eraser' ? '#ffffff' : currentColor;
+    bgCtx.lineWidth = currentSize;
+    bgCtx.lineCap = 'round';
+    bgCtx.lineJoin = 'round';
+    bgCtx.stroke();
+}
+
+function moveAction(e) {
+    if (isDragging && floatingObj) {
+        e.preventDefault();
+        const pos = getPos(e);
+        floatingObj.x = pos.x - dragOffset.x;
+        floatingObj.y = pos.y - dragOffset.y;
+        drawOverlay();
+        return;
+    }
+    if (!isDrawing) return;
+    e.preventDefault();
+    const pos = getPos(e);
+    bgCtx.lineTo(pos.x, pos.y);
+    bgCtx.strokeStyle = currentTool === 'eraser' ? '#ffffff' : currentColor;
+    bgCtx.lineWidth = currentSize;
+    bgCtx.lineCap = 'round';
+    bgCtx.lineJoin = 'round';
+    bgCtx.stroke();
+}
+
+function endAction() {
+    if (isDrawing) { isDrawing = false; saveState(); }
+    isDragging = false;
+}
+
+/* ================= FLOOD FILL ================= */
+function floodFill(startX, startY, fillColor) {
+    const W = bgCanvas.width;
+    const H = bgCanvas.height;
+    if (startX < 0 || startY < 0 || startX >= W || startY >= H) return;
+
+    const imgData = bgCtx.getImageData(0, 0, W, H);
+    const data = imgData.data;
+
+    const startPos = (startY * W + startX) * 4;
+    const sr = data[startPos], sg = data[startPos+1], sb = data[startPos+2];
+
+    // Toleransi rendah: hanya melewati piksel yang HAMPIR sama persis.
+    // Tepi anti-alias tebal pensil tetap jadi penghalang, sehingga
+    // siswa dituntut menutup garis dengan rapat.
+    const tol = 20;
+
+    if (Math.abs(sr - fillColor[0]) <= tol &&
+        Math.abs(sg - fillColor[1]) <= tol &&
+        Math.abs(sb - fillColor[2]) <= tol) return;
+
+    const visited = new Uint8Array(W * H);
+    function isTarget(p) {
+        if (visited[p >> 2]) return false;
+        return Math.abs(data[p]     - sr) <= tol &&
+               Math.abs(data[p + 1] - sg) <= tol &&
+               Math.abs(data[p + 2] - sb) <= tol;
+    }
+
+    const stack = [[startX, startY]];
+
+    while (stack.length) {
+        let [x, y] = stack.pop();
+        let pos = (y * W + x) * 4;
+
+        while (y >= 0 && isTarget(pos)) { y--; pos -= W * 4; }
+        pos += W * 4; y++;
+
+        let reachLeft = false, reachRight = false;
+
+        while (y < H && isTarget(pos)) {
+            visited[pos >> 2] = 1;
+            data[pos]     = fillColor[0];
+            data[pos + 1] = fillColor[1];
+            data[pos + 2] = fillColor[2];
+            data[pos + 3] = 255;
+
+            if (x > 0) {
+                if (isTarget(pos - 4)) {
+                    if (!reachLeft) { stack.push([x - 1, y]); reachLeft = true; }
+                } else reachLeft = false;
+            }
+            if (x < W - 1) {
+                if (isTarget(pos + 4)) {
+                    if (!reachRight) { stack.push([x + 1, y]); reachRight = true; }
+                } else reachRight = false;
+            }
+            y++; pos += W * 4;
+        }
+    }
+    bgCtx.putImageData(imgData, 0, 0);
+}
+
+/* ================= INIT ================= */
+bgCtx.fillStyle = '#ffffff';
+bgCtx.fillRect(0, 0, bgCanvas.width, bgCanvas.height);
+saveState();
+</script>
 </body>
 </html>
