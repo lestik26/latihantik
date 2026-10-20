@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LKS Informatika - Logika IF Google Sheets</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      width: 100vw;
+      height: 100vh;
+      background-color: #2c3e50;
+      background-image: radial-gradient(#34495e 1px, transparent 1px);
+      background-size: 20px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      overflow: hidden;
+    }
+
+    /* Container Buku */
+    .book {
+      width: 96vw;
+      height: 94vh;
+      background: #fffdf9;
+      border-radius: 12px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), inset 0 0 100px rgba(0, 0, 0, 0.05);
+      display: flex;
+      position: relative;
+      border: 2px solid #dcd1c4;
+    }
+
+    /* Garis Tengah Lipatan Buku */
+    .book::before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: linear-gradient(to right, rgba(0,0,0,0.15), rgba(0,0,0,0.02), rgba(0,0,0,0.15));
+      z-index: 10;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+
+    /* Halaman Buku */
+    .page {
+      flex: 1;
+      padding: 22px 35px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+    }
+
+    .page-left {
+      border-right: 1px solid #e8dfd5;
+      background: linear-gradient(to right, #fbf8f3, #fffdf9 10%);
+    }
+
+    .page-right {
+      background: linear-gradient(to left, #fbf8f3, #fffdf9 10%);
+    }
+
+    /* Header */
+    .header-tag {
+      background-color: #27ae60;
+      color: white;
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: bold;
+      display: inline-block;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    h1 {
+      font-size: 1.25rem;
+      color: #2c3e50;
+      margin-top: 6px;
+      margin-bottom: 2px;
+      border-bottom: 2px solid #27ae60;
+      padding-bottom: 4px;
+    }
+
+    .meta-info {
+      font-size: 0.8rem;
+      color: #7f8c8d;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    h2 {
+      font-size: 1.05rem;
+      color: #d35400;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Cerita Pendek */
+    .story-container {
+      font-size: 0.81rem;
+      line-height: 1.33;
+      color: #34495e;
+      text-align: justify;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .story-container p {
+      text-indent: 15px;
+    }
+
+    .highlight-name {
+      font-weight: bold;
+      color: #27ae60;
+    }
+
+    /* Instruksi Tugas */
+    .instruction-list {
+      font-size: 0.83rem;
+      line-height: 1.35;
+      color: #2c3e50;
+      margin-left: 18px;
+    }
+
+    .instruction-list li {
+      margin-bottom: 6px;
+    }
+
+    .structure-box {
+      background-color: #f8f9fa;
+      border-left: 4px solid #2980b9;
+      padding: 8px 12px;
+      margin: 6px 0;
+      border-radius: 0 6px 6px 0;
+      font-size: 0.8rem;
+    }
+
+    .structure-box ul {
+      list-style-type: none;
+      margin-top: 4px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3px;
+    }
+
+    .structure-box li {
+      font-family: monospace;
+      font-size: 0.78rem;
+      background: #edf2f7;
+      padding: 2px 6px;
+      border-radius: 3px;
+      color: #2d3748;
+    }
+
+    /* Box Ketentuan IF */
+    .rule-box {
+      background-color: #fef9e7;
+      border: 1px solid #f9e79f;
+      border-left: 4px solid #f1c40f;
+      padding: 10px 14px;
+      border-radius: 6px;
+      margin-top: 6px;
+    }
+
+    .rule-box h3 {
+      font-size: 0.9rem;
+      color: #d35400;
+      margin-bottom: 4px;
+    }
+
+    .rule-box ul {
+      font-size: 0.81rem;
+      color: #7e5109;
+      margin-left: 16px;
+      line-height: 1.35;
+    }
+
+    .code-badge {
+      background-color: #f39c12;
+      color: white;
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-family: monospace;
+      font-weight: bold;
+      font-size: 0.78rem;
+    }
+
+    /* Page Footer */
+    .page-footer {
+      font-size: 0.75rem;
+      color: #bdc3c7;
+      text-align: center;
+      margin-top: 6px;
+      border-top: 1px solid #f0eae1;
+      padding-top: 4px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="book">
+    
+    <!-- HALAMAN KIRI -->
+    <div class="page page-left">
+      <div>
+        <span class="header-tag">Lembar Kerja Siswa (LKS)</span>
+        <h1>INFORMATIKA - LOGIKA IF TUNGGAL</h1>
+        <div class="meta-info">Topik: Analisis Cerita & Ekstraksi Data | Kelas: VI (Enam) SD</div>
+
+        <h2>📖 Cerita Pendek: Tabungan Piknik Kelas VI SD Budi Mulia</h2>
+
+        <div class="story-container">
+          <p>Menjelang akhir semester, siswa kelas VI SD Budi Mulia mengadakan kegiatan tabungan bersama untuk persiapan piknik ke Taman Safari. Pak Budi selaku wali kelas menetapkan bahwa setiap siswa harus mengumpulkan tabungan minimal sebesar Rp 100.000 agar biaya pikniknya dinyatakan lunas.</p>
+
+          <p>Sejak awal bulan, <span class="highlight-name">Adit</span> sangat rajin menyisihkan uang sakunya setiap hari. Hasilnya, Adit berhasil mengumpulkan total tabungan sebesar Rp 120.000. Sementara itu, <span class="highlight-name">Bagas</span> yang sering jajan di kantin hanya sempat menyisihkan uang hingga terkumpul Rp 85.000.</p>
+
+          <p><span class="highlight-name">Chika</span> selalu disiplin menabung setiap minggu dan total uang tabungannya pas menyentuh angka Rp 100.000. Di sisi lain, <span class="highlight-name">Dion</span> sempat lupa menabung pada beberapa minggu terakhir sehingga total tabungannya hanya mencapai Rp 95.000.</p>
+
+          <p>Berbeda dengan teman-temannya, <span class="highlight-name">Fani</span> mendapat hadiah tambahan dari orang tuanya karena mendapat nilai bagus, sehingga ia bisa menabung hingga Rp 150.000. Adapun <span class="highlight-name">Galih</span> sempat menggunakan sebagian tabungannya untuk membeli buku gambar baru, sehingga sisa tabungannya menjadi Rp 70.000.</p>
+
+          <p><span class="highlight-name">Hana</span> sangat bersemangat ingin ikut piknik dan berhasil mengumpulkan tabungan sebesar Rp 110.000. Pada hari penutupan tabungan, <span class="highlight-name">Irfan</span> menyerahkan uang simpanannya yang berjumlah tepat Rp 100.000.</p>
+
+          <p><span class="highlight-name">Kiki</span> yang baru pindah sekolah pada pertengahan semester baru sempat menabung sebesar Rp 60.000. Terakhir, <span class="highlight-name">Laras</span> menjadi salah satu penabung terbanyak di kelas dengan total tabungan mencapai Rp 130.000.</p>
+
+          <p>Pak Budi ingin merekap seluruh data tabungan ini ke dalam Google Sheets untuk menentukan status pembayaran masing-masing siswa secara otomatis.</p>
+        </div>
+      </div>
+
+      <div class="page-footer">Halaman 1</div>
+    </div>
+
+    <!-- HALAMAN KANAN -->
+    <div class="page page-right">
+      <div>
+        <h2>🎯 Instruksi Tugas Siswa</h2>
+        <ol class="instruction-list">
+          <li>Bukalah aplikasi <strong>Google Sheets</strong> di komputer atau perangkat Anda.</li>
+          <li>Bacalah cerita di halaman sebelah kiri dengan teliti, lalu buatlah tabel di Google Sheets dengan struktur kolom berikut:
+            <div class="structure-box">
+              <strong>Struktur Kolom Tabel:</strong>
+              <ul>
+                <li><strong>Kolom A:</strong> Nama Siswa</li>
+                <li><strong>Kolom B:</strong> Target Tabungan (Rp)</li>
+                <li><strong>Kolom C:</strong> Total Tabungan (Rp)</li>
+                <li><strong>Kolom D:</strong> Status Pembayaran</li>
+              </ul>
+            </div>
+          </li>
+          <li>Isikan angka Target Tabungan sebesar <strong>100000</strong> pada seluruh baris siswa di Kolom B.</li>
+          <li>Isikan angka Total Tabungan masing-masing siswa pada Kolom C sesuai dengan data di dalam cerita.</li>
+          <li>Tuliskan rumus <code>IF</code> tunggal pada kolom <strong>Status Pembayaran</strong> mulai dari sel <code>D2</code> hingga <code>D11</code>.</li>
+        </ol>
+
+        <div class="rule-box">
+          <h3>📌 Ketentuan Rumus IF:</h3>
+          <ul>
+            <li>Batas minimal tabungan untuk dinyatakan lunas adalah <strong>Rp 100.000</strong>.</li>
+            <li>Jika <strong>Total Tabungan 100.000 atau lebih</strong>, tampilkan teks <strong>"LUNAS"</strong>.</li>
+            <li>Jika <strong>Total Tabungan kurang dari 100.000</strong>, tampilkan teks <strong>"BELUM LUNAS"</strong>.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="page-footer">Halaman 2 — Kerjakan Lembar Kerja Ini Pada Google Sheets Masing-Masing</div>
+    </div>
+
+  </div>
+
+</body>
+</html>
