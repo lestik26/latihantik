@@ -1,0 +1,1327 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Petualang Komputer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Lexend:wght@400;500;600&display=swap">
+<style>
+/* Layout concept: a bright schoolyard world. Paper-and-ink "sticker" panels float over a 3D first-person view; keycaps and badges carry the lesson itself. */
+:root{
+  color-scheme:light;
+  --ink:#10233f;
+  --ink2:#44566f;
+  --paper:#ffffff;
+  --wash:#eef6fb;
+  --sky:#a6dcf6;
+  --sun:#ffc42e;
+  --sun-d:#e5a200;
+  --mint:#14a06e;
+  --mint-bg:#e1f5ec;
+  --rose:#e0434a;
+  --rose-bg:#fdeaea;
+  --royal:#2a68dc;
+  --royal-bg:#eaf1ff;
+  --line:#cddae7;
+  --f-display:'Baloo 2','Trebuchet MS',system-ui,sans-serif;
+  --f-body:'Lexend','Segoe UI',system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+[hidden]:not([hidden=until-found i]){display:none!important}
+img{max-width:100%}
+html,body{height:100%;overflow:hidden}
+body{
+  margin:0;
+  background:var(--sky);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:0;
+}
+:focus-visible{outline:3px solid var(--royal);outline-offset:2px}
+h1,h2,h3,h4{font-family:var(--f-display);line-height:1.15;margin:0;text-wrap:balance}
+p{margin:0}
+button{font-family:inherit}
+kbd,.key{
+  display:inline-block;font-family:var(--f-body);font-weight:600;font-size:.82em;line-height:1;
+  padding:.28em .6em .2em;border:2px solid var(--ink);border-bottom-width:4px;border-radius:7px;
+  background:#fff;color:var(--ink);margin:0 1px;white-space:nowrap;
+}
+.keys{display:inline-flex;align-items:center;gap:2px;flex-wrap:wrap}
+.keys i{font-style:normal;font-weight:600;color:var(--ink2);font-size:.8em}
+
+/* ---------- buttons ---------- */
+.btn{
+  font-family:var(--f-display);font-weight:700;font-size:1.2rem;line-height:1.1;
+  padding:.6em 1.4em;border:2px solid var(--ink);border-radius:999px;background:var(--sun);color:var(--ink);
+  box-shadow:0 4px 0 var(--ink);cursor:pointer;transition:transform .08s,box-shadow .08s,background .15s;
+}
+.btn:hover{background:#ffd04f}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.btn[disabled]{background:#dfe7ef;color:#7b8ba0;border-color:#9fb0c4;box-shadow:0 4px 0 #9fb0c4;cursor:not-allowed;transform:none}
+.btn.alt{background:#fff}
+.btn.alt:hover{background:var(--wash)}
+.btn.small{font-size:1rem;padding:.45em 1em}
+.linkbtn{background:none;border:0;color:var(--ink2);text-decoration:underline;cursor:pointer;font-size:.85rem;padding:6px}
+
+/* ---------- full screens ---------- */
+#gl{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:0;touch-action:none;visibility:hidden}
+#gl.on{visibility:visible}
+.screen{
+  position:fixed;inset:0;z-index:20;overflow-y:auto;overflow-x:hidden;
+  padding-top:calc(env(safe-area-inset-top,0px) + 20px);
+  padding-bottom:calc(env(safe-area-inset-bottom,0px) + 28px);
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+}
+.wrap{max-width:1040px;margin:0 auto;min-width:0}
+
+/* intro */
+#intro{background:var(--sky)}
+.intro-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:32px;align-items:center;min-height:calc(100vh - 80px)}
+.eyebrow{font-weight:600;font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink2)}
+.title{font-size:clamp(2.6rem,7vw,4.6rem);font-weight:800;margin:10px 0 14px}
+.title .mark{background:var(--sun);padding:0 .22em;border-radius:.2em;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.lead{font-size:1.1rem;max-width:34em;color:var(--ink)}
+.mission{list-style:none;padding:0;margin:22px 0;display:grid;gap:10px;max-width:34em}
+.mission li{display:flex;gap:12px;align-items:flex-start;background:#fff;border:2px solid var(--ink);border-radius:14px;padding:10px 14px;box-shadow:0 3px 0 var(--ink)}
+.mission b{font-family:var(--f-display);font-size:1.4rem;line-height:1;width:1.6em;height:1.6em;flex:none;display:grid;place-items:center;background:var(--sun);border:2px solid var(--ink);border-radius:50%}
+.namebox{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:6px}
+.namebox label{font-weight:600;font-size:.9rem;width:100%}
+.namebox input{
+  font:inherit;padding:.65em .9em;border:2px solid var(--ink);border-radius:12px;background:#fff;color:var(--ink);
+  min-width:0;flex:1 1 220px;max-width:340px;
+}
+.sticker{
+  background:#fff;border:2px solid var(--ink);border-radius:20px;box-shadow:0 6px 0 var(--ink);padding:18px;
+  display:grid;gap:14px;min-width:0;
+}
+.sticker h2{font-size:1.2rem}
+.demo-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;min-width:0}
+.demo-row span.t{font-weight:500;min-width:0}
+.legend-grid{display:grid;grid-template-columns:auto 1fr;gap:8px 12px;align-items:center;font-size:.95rem}
+
+/* reading */
+#baca{background:var(--wash)}
+#baca{padding-top:0}
+.rbar{
+  position:sticky;top:0;z-index:5;
+  padding:calc(env(safe-area-inset-top,0px) + 14px) 0 12px;background:var(--wash);
+}
+.rbar-in{display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.rbar h1{font-size:clamp(1.5rem,4vw,2.1rem)}
+.rbar p{color:var(--ink2);font-size:.9rem}
+.timer{display:flex;align-items:center;gap:12px}
+.clock{
+  font-family:var(--f-display);font-weight:800;font-size:2rem;line-height:1;font-variant-numeric:tabular-nums;
+  background:var(--ink);color:#fff;padding:.25em .6em;border-radius:14px;min-width:3.6em;text-align:center;
+}
+.clock.done{background:var(--mint)}
+.pbar{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin-top:10px}
+.pbar i{display:block;height:100%;width:0;background:var(--sun);border-right:2px solid var(--ink);transition:width .3s linear}
+.sec{margin-top:30px;display:grid;gap:14px;min-width:0}
+.sec>h2{font-size:1.5rem}
+.sec>.sub{color:var(--ink2);max-width:46em}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.card{background:#fff;border:2px solid var(--line);border-radius:16px;padding:16px;display:grid;gap:10px;align-content:start;min-width:0}
+.card h3{font-size:1.25rem;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.card ul{margin:0;padding-left:1.15em;display:grid;gap:3px}
+.card .lab{font-weight:600;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink2)}
+.acard{border-color:var(--ink);box-shadow:0 3px 0 var(--ink)}
+.tablewrap{overflow-x:auto;border:2px solid var(--ink);border-radius:14px;background:#fff}
+table{border-collapse:collapse;width:100%;min-width:620px;font-size:.92rem}
+th{background:var(--ink);color:#fff;text-align:left;padding:10px 12px;font-family:var(--f-display);font-weight:700;font-size:1rem}
+td{padding:10px 12px;border-top:1px solid var(--line);vertical-align:middle}
+td:first-child{font-weight:600}
+.tip{border-left:6px solid var(--sun);background:#fff;border-radius:6px 14px 14px 6px;padding:10px 14px}
+.tip b{display:block;font-family:var(--f-display);font-size:1.05rem}
+.ready-bar{display:flex;gap:14px;align-items:center;justify-content:center;flex-wrap:wrap;margin:36px 0 8px;text-align:center}
+.ready-bar .note{width:100%;color:var(--ink2);font-size:.9rem}
+.btn.pulse{animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{50%{transform:scale(1.05)}}
+.err{background:var(--rose-bg);border:2px solid var(--rose);border-radius:12px;padding:10px 14px;color:#7a1b20;max-width:34em}
+
+/* HUD */
+#hud{position:fixed;inset:0;pointer-events:none;z-index:10}
+.hp{
+  position:absolute;background:#fff;border:2px solid var(--ink);border-radius:14px;box-shadow:0 3px 0 var(--ink);padding:8px 12px;
+}
+#hProg{top:calc(env(safe-area-inset-top,0px) + 12px);left:max(12px,env(safe-area-inset-left,0px));min-width:160px}
+#hProg .n{font-family:var(--f-display);font-weight:800;font-size:1.5rem;line-height:1;font-variant-numeric:tabular-nums}
+#hProg .l{font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink2)}
+#hProg .pb{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin-top:6px}
+#hProg .pb i{display:block;height:100%;width:0;background:var(--mint);transition:width .4s}
+#hScore{top:calc(env(safe-area-inset-top,0px) + 12px);right:max(12px,env(safe-area-inset-right,0px));display:flex;gap:12px;align-items:center;pointer-events:auto}
+#hScore .n{font-family:var(--f-display);font-weight:800;font-size:1.5rem;line-height:1;font-variant-numeric:tabular-nums}
+#hScore .l{font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink2)}
+#zone{
+  position:absolute;top:calc(env(safe-area-inset-top,0px) + 12px);left:50%;transform:translateX(-50%);
+  background:var(--ink);color:#fff;border-radius:99px;padding:6px 16px;font-family:var(--f-display);font-weight:700;font-size:1.05rem;white-space:nowrap;
+  max-width:36vw;overflow:hidden;text-overflow:ellipsis;
+}
+#mapbox{top:calc(env(safe-area-inset-top,0px) + 92px);left:max(12px,env(safe-area-inset-left,0px));padding:4px;line-height:0}
+#mini{width:140px;height:140px;border-radius:9px;display:block}
+.cross{position:absolute;left:50%;top:50%;width:10px;height:10px;margin:-5px 0 0 -5px;border:2px solid #fff;border-radius:50%;box-shadow:0 0 0 1.5px var(--ink);opacity:.9}
+#prompt{
+  position:absolute;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 26px);transform:translateX(-50%);
+  display:flex;align-items:center;gap:12px;background:#fff;border:2px solid var(--ink);border-radius:99px;box-shadow:0 4px 0 var(--ink);
+  padding:8px 10px 8px 18px;pointer-events:auto;max-width:calc(100vw - 24px);
+}
+#prompt.quiet{background:var(--mint-bg);padding:8px 18px}
+#prompt .pt{font-weight:500;min-width:0}
+#pause{
+  position:absolute;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 86px);transform:translateX(-50%);
+  background:var(--ink);color:#fff;border-radius:12px;padding:8px 14px;font-size:.9rem;text-align:center;width:max-content;max-width:calc(100vw - 32px)
+}
+#toast{
+  position:absolute;top:calc(env(safe-area-inset-top,0px) + 17vh);left:50%;transform:translateX(-50%);
+  background:var(--rose);color:#fff;border:2px solid var(--ink);border-radius:14px;box-shadow:0 4px 0 var(--ink);
+  padding:9px 16px;font-weight:600;text-align:center;width:max-content;max-width:calc(100vw - 32px)
+}
+#legend{
+  position:absolute;right:max(12px,env(safe-area-inset-right,0px));bottom:calc(env(safe-area-inset-bottom,0px) + 14px);
+  background:rgba(255,255,255,.92);border:2px solid var(--ink);border-radius:12px;padding:8px 12px;font-size:.78rem;display:grid;gap:5px
+}
+#legend div{display:flex;gap:8px;align-items:center;justify-content:space-between}
+body.touch #legend,body.touch #pause{display:none}
+#tzL,#tzR{position:fixed;top:22%;bottom:0;width:50%;z-index:5;touch-action:none;display:none}
+#tzL{left:0}#tzR{right:0}
+body.touch.playing #tzL,body.touch.playing #tzR{display:block}
+#joyBase{position:fixed;width:112px;height:112px;margin:-56px 0 0 -56px;border-radius:50%;border:3px solid rgba(255,255,255,.9);background:rgba(16,35,63,.25);z-index:6;pointer-events:none}
+#joyKnob{position:absolute;left:50%;top:50%;width:48px;height:48px;margin:-24px 0 0 -24px;border-radius:50%;background:#fff;border:2px solid var(--ink)}
+
+/* modals */
+.modal{
+  position:fixed;inset:0;z-index:30;background:rgba(16,35,63,.58);overflow-y:auto;
+  padding-top:calc(env(safe-area-inset-top,0px) + 14px);padding-bottom:calc(env(safe-area-inset-bottom,0px) + 14px);
+  padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px));
+  display:flex;align-items:flex-start;justify-content:center;
+}
+.dcard{
+  width:100%;max-width:660px;margin:auto;background:var(--paper);border:2px solid var(--ink);border-radius:20px;box-shadow:0 6px 0 var(--ink);
+  padding:16px;display:grid;gap:12px;outline:none;
+}
+.dhead{display:flex;gap:12px;align-items:center}
+.av{
+  width:46px;height:46px;border-radius:50%;border:2px solid var(--ink);display:grid;place-items:center;flex:none;
+  font-family:var(--f-display);font-weight:800;font-size:1.3rem;color:#fff;
+}
+.dname{font-family:var(--f-display);font-weight:800;font-size:1.3rem;line-height:1.1}
+.drole{font-size:.85rem;color:var(--ink2)}
+.x{margin-left:auto;width:38px;height:38px;border-radius:50%;border:2px solid var(--ink);background:#fff;cursor:pointer;display:grid;place-items:center;flex:none}
+.bubble{background:var(--wash);border-radius:14px 14px 14px 4px;padding:10px 14px;font-size:.95rem}
+.qbox{display:grid;gap:10px}
+.qtag{display:inline-block;justify-self:start;background:var(--sun);border:2px solid var(--ink);border-radius:99px;padding:3px 12px;font-size:.78rem;font-weight:600}
+.qs{font-weight:500;font-size:1.05rem}
+.opts{display:grid;gap:8px}
+.opt{
+  position:relative;display:flex;gap:12px;align-items:flex-start;padding:11px 14px;border:2px solid var(--line);border-radius:14px;background:#fff;cursor:pointer;
+  transition:border-color .1s,background .1s;min-width:0;
+}
+.opt:hover{border-color:var(--ink2)}
+.opt input{position:absolute;opacity:0;width:1px;height:1px}
+.opt .box{flex:none;width:26px;height:26px;border:2px solid var(--ink);border-radius:7px;background:#fff;display:grid;place-items:center;margin-top:1px}
+.opt .box::after{content:"";width:12px;height:7px;border-left:3px solid #fff;border-bottom:3px solid #fff;transform:rotate(-45deg) translate(1px,-1px);opacity:0}
+.opt.sel{border-color:var(--royal);background:var(--royal-bg)}
+.opt.sel .box{background:var(--royal)}
+.opt.sel .box::after{opacity:1}
+.opt input:focus-visible+.box{outline:3px solid var(--royal);outline-offset:2px}
+.opt .ot{min-width:0;flex:1}
+.opt .tag{font-size:.74rem;font-weight:600;white-space:nowrap;align-self:center}
+.opt.lock{cursor:default}
+.opt.ok{border-color:var(--mint);background:var(--mint-bg)}
+.opt.ok .box{background:var(--mint)}
+.opt.ok .tag{color:#0b6a47}
+.opt.miss{border-color:var(--mint);border-style:dashed}
+.opt.miss .tag{color:#0b6a47}
+.opt.bad{border-color:var(--rose);background:var(--rose-bg)}
+.opt.bad .box{background:var(--rose)}
+.opt.bad .tag{color:#9a1c23}
+.res{border-radius:14px;padding:12px 14px;display:grid;gap:4px;border:2px solid var(--ink)}
+.res.good{background:var(--mint-bg)}.res.part{background:#fff6d6}.res.nope{background:var(--rose-bg)}
+.res b{font-family:var(--f-display);font-size:1.2rem}
+.dfoot{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+.hint{font-size:.82rem;color:var(--ink2)}
+.list{list-style:none;margin:0;padding:0;display:grid;gap:6px;max-height:min(58vh,520px);overflow-y:auto}
+.list li{display:flex;gap:10px;align-items:center;border:2px solid var(--line);border-radius:12px;padding:8px 12px;min-width:0}
+.list li.done{background:var(--mint-bg);border-color:var(--mint)}
+.list .dot{flex:none;width:22px;height:22px;border-radius:50%;border:2px solid var(--ink);background:#fff;display:grid;place-items:center}
+.list li.done .dot{background:var(--mint)}
+.list .who{min-width:0;flex:1}
+.list .who b{display:block;font-family:var(--f-display);font-size:1.05rem;line-height:1.2}
+.list .who span{font-size:.82rem;color:var(--ink2)}
+.list .p{font-family:var(--f-display);font-weight:800;font-variant-numeric:tabular-nums}
+
+/* results */
+#hasil{background:var(--sky)}
+.rhead{display:grid;gap:8px;justify-items:start}
+.rhead h1{font-size:clamp(2.2rem,6vw,3.6rem);font-weight:800}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:18px 0}
+.stat{background:#fff;border:2px solid var(--ink);border-radius:16px;box-shadow:0 4px 0 var(--ink);padding:14px}
+.stat .n{font-family:var(--f-display);font-weight:800;font-size:2.4rem;line-height:1;font-variant-numeric:tabular-nums}
+.stat .l{font-size:.78rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink2);margin-top:4px}
+#rList{grid-template-columns:repeat(2,minmax(0,1fr));max-height:none;overflow:visible}
+#rList li.part{background:#fff6d6;border-color:var(--sun-d)}
+#rList li.bad{background:var(--rose-bg);border-color:var(--rose)}
+#rList li.part .dot{background:var(--sun)}
+#rList li.bad .dot{background:var(--rose)}
+.ractions{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}
+
+@media (max-width:760px){
+  .intro-grid{grid-template-columns:minmax(0,1fr);min-height:0;gap:22px}
+  .grid2{grid-template-columns:minmax(0,1fr)}
+  .stats{grid-template-columns:minmax(0,1fr)}
+  #rList{grid-template-columns:minmax(0,1fr)}
+  #zone{top:calc(env(safe-area-inset-top,0px) + 76px);left:auto;right:max(12px,env(safe-area-inset-right,0px));transform:none;max-width:44vw;font-size:.85rem;padding:5px 12px}
+  #hProg{min-width:130px}
+  #mini{width:104px;height:104px}
+  #mapbox{top:calc(env(safe-area-inset-top,0px) + 84px)}
+}
+@media (prefers-reduced-motion:reduce){
+  .btn.pulse{animation:none}
+  *{transition:none!important}
+}
+
+/* dialog soal: muat satu layar, tombol Periksa Jawaban selalu terlihat */
+#dialog{align-items:center;padding-top:calc(env(safe-area-inset-top,0px) + 8px);padding-bottom:calc(env(safe-area-inset-bottom,0px) + 8px)}
+#dcard{max-width:min(900px,100%);max-height:calc(100vh - 16px);max-height:calc(100dvh - 16px);display:flex;flex-direction:column;gap:8px;padding:12px 16px;margin:0 auto}
+#dcard .dhead{flex:none}
+#dcard .av{width:38px;height:38px;font-size:1.1rem}
+#dcard .dname{font-size:1.15rem}
+#dcard .bubble{flex:none;padding:6px 12px;font-size:.9rem}
+#dcard .qbox{flex:1 1 auto;min-height:0;overflow-y:auto;gap:8px;align-content:start}
+#dcard .qs{font-size:clamp(.95rem,2.2vh,1.05rem)}
+#dcard .opts{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+#dcard .opt{padding:8px 12px;font-size:.92rem;gap:10px}
+#dcard .opt .box{width:22px;height:22px}
+#dcard .dfoot{flex:none;padding-top:2px}
+#dcard .btn{padding:.5em 1.2em;font-size:1.05rem}
+@media (max-width:700px){#dcard .opts{grid-template-columns:minmax(0,1fr)}}
+@media (max-height:720px){#dcard .hint,#dcard .bubble{display:none}}
+.btn.danger{background:#d12f38;color:#fff}
+.btn.danger:hover{background:#e0434a}
+#btnFinish{position:absolute;left:max(12px,env(safe-area-inset-left,0px));bottom:calc(env(safe-area-inset-bottom,0px) + 14px);pointer-events:auto}
+</style>
+</head>
+<body>
+
+<canvas id="gl" aria-label="Dunia sekolah 3D"></canvas>
+
+<!-- ======= INTRO ======= -->
+<section id="intro" class="screen">
+  <div class="wrap intro-grid">
+    <div>
+      <div class="eyebrow">Informatika Kelas 3 SD · Sistem Komputer</div>
+      <h1 class="title">Petualang <span class="mark">Komputer</span></h1>
+      <p class="lead">Jalan-jalan keliling sekolah, temui 20 teman, dan bantu mereka mengenal jenis komputer dan perangkat kerasnya. Setiap teman punya satu soal. Pilih semua jawaban yang benar!</p>
+      <ol class="mission">
+        <li><b>1</b><span>Baca materi dulu selama <strong>3 menit</strong>.</span></li>
+        <li><b>2</b><span>Cari <strong>20 teman</strong> di halaman sekolah. Tanda seru kuning muncul kalau mereka dekat.</span></li>
+        <li><b>3</b><span>Jawab soal pilihan ganda (benarnya bisa <strong>2, 3, 4, atau semuanya</strong>). Kalau belum tepat, temanmu <strong>kabur</strong> dan harus kamu cari lagi sampai semua soal benar!</span></li>
+      </ol>
+      <form class="namebox" id="nameForm">
+        <label for="nama">Nama siswa</label>
+        <input id="nama" type="text" maxlength="30" placeholder="Tulis namamu di sini" autocomplete="off">
+        <button class="btn" type="submit" id="btnMulai">Mulai Membaca</button>
+      </form>
+    </div>
+    <div class="sticker" aria-label="Cara bermain">
+      <h2>Cara bermain</h2>
+      <div class="legend-grid">
+        <span class="keys"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd></span><span>Berjalan (atau tombol panah)</span>
+        <span class="keys"><kbd>Shift</kbd></span><span>Berlari</span>
+        <span class="keys"><kbd>Mouse</kbd></span><span>Klik layar lalu gerakkan mouse untuk melihat sekeliling</span>
+        <span class="keys"><kbd>E</kbd></span><span>Bicara dengan teman di dekatmu</span>
+        <span class="keys"><kbd>Tab</kbd></span><span>Daftar teman dan petunjuk tempatnya</span>
+      </div>
+      <p class="hint">Di tablet atau HP: geser jari di sisi kiri layar untuk berjalan, sisi kanan untuk melihat sekeliling.</p>
+      <div class="demo-row"><span class="keys"><kbd>Desktop</kbd><kbd>Laptop</kbd><kbd>Tablet</kbd><kbd>Chromebook</kbd></span><span class="t">Empat jenis komputer yang akan kamu kenali.</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ======= READING ======= -->
+<section id="baca" class="screen" hidden>
+  <div class="wrap">
+    <div class="rbar">
+      <div class="rbar-in">
+        <div>
+          <h1>Baca Dulu Materinya</h1>
+          <p>Waktu membaca 3 menit. Tombol mulai terbuka saat waktu habis.</p>
+        </div>
+        <div class="timer"><div class="clock" id="clock" role="timer" aria-live="off">03:00</div></div>
+      </div>
+      <div class="pbar"><i id="rProg"></i></div>
+    </div>
+
+    <div class="sec">
+      <h2>Apa itu komputer?</h2>
+      <p class="sub"><strong>Komputer</strong> adalah alat elektronik serbaguna yang membantu kita belajar, bekerja, dan berkreasi sehari-hari.</p>
+      <div class="grid2">
+        <div class="card acard"><h3>Mengetik &amp; Menulis</h3><p>Membantu membuat cerita, laporan, dan dokumen sekolah.</p></div>
+        <div class="card acard"><h3>Menggambar Karya</h3><p>Mewarnai dan mewujudkan imajinasi secara digital.</p></div>
+        <div class="card acard"><h3>Game Edukasi</h3><p>Bermain kuis dan mencari informasi materi pelajaran.</p></div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <h2>4 jenis komputer</h2>
+      <div class="grid2">
+        <div class="card acard">
+          <h3><span class="keys"><kbd>1</kbd></span>Komputer Meja (Desktop)</h3>
+          <ul><li><strong>Komponen terpisah:</strong> layar, CPU, keyboard, dan mouse terpisah.</li><li><strong>Penempatan tetap:</strong> diletakkan diam di meja dan memakai aliran listrik langsung.</li><li><strong>Penggunaan umum:</strong> ruang guru, laboratorium komputer, atau kantor.</li></ul>
+        </div>
+        <div class="card acard">
+          <h3><span class="keys"><kbd>2</kbd></span>Komputer Jinjing (Laptop)</h3>
+          <ul><li><strong>Praktis dilipat:</strong> dilipat rapi seperti buku tebal, disimpan dalam tas.</li><li><strong>Baterai terintegrasi:</strong> dipakai tanpa colokan listrik saat baterai terisi.</li><li><strong>Mudah dibawa:</strong> fleksibel dibawa belajar dari rumah ke sekolah.</li></ul>
+        </div>
+        <div class="card acard">
+          <h3><span class="keys"><kbd>3</kbd></span>Komputer Tablet</h3>
+          <ul><li><strong>Layar sentuh (touchscreen):</strong> cukup menyentuh layar dengan jari, tanpa mouse.</li><li><strong>Ringan &amp; tipis:</strong> berbentuk papan tipis yang nyaman dipegang.</li><li><strong>Fitur interaktif:</strong> seru untuk menggambar digital, membaca, dan kuis.</li></ul>
+        </div>
+        <div class="card acard">
+          <h3><span class="keys"><kbd>4</kbd></span>Chromebook</h3>
+          <ul><li><strong>Laptop khusus pembelajaran:</strong> dirancang untuk kegiatan belajar sekolah (berbasis ChromeOS).</li><li><strong>Cepat &amp; berbasis cloud:</strong> menyimpan tugas dengan aman di internet tanpa perlu memori besar.</li><li><strong>Baterai tahan lama:</strong> siap dipakai sepanjang jam pelajaran.</li></ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <h2>Bandingkan jenis komputer</h2>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Jenis komputer</th><th>Mudah dibawa</th><th>Layar sentuh</th><th>Layar besar</th></tr></thead>
+          <tbody>
+            <tr><td>Komputer Meja</td><td>Tidak</td><td>Tidak</td><td>Ya</td></tr>
+            <tr><td>Laptop</td><td>Ya</td><td>Jarang</td><td>Ya</td></tr>
+            <tr><td>Tablet</td><td>Ya (sangat praktis)</td><td>Ya (utama)</td><td>Sedang</td></tr>
+            <tr><td>Chromebook</td><td>Ya</td><td>Sebagian tipe</td><td>Ya</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="tip"><b>Urutan ukuran (besar ke kecil)</b>Komputer Meja &gt; Laptop &gt; Chromebook &gt; Tablet</div>
+    </div>
+
+    <div class="sec">
+      <h2>3 komponen utama sistem komputer</h2>
+      <div class="grid2">
+        <div class="card acard"><h3><span class="keys"><kbd>01</kbd></span>Hardware</h3><p><strong>Perangkat Keras:</strong> komponen fisik yang bisa dilihat dan disentuh langsung.</p></div>
+        <div class="card acard"><h3><span class="keys"><kbd>02</kbd></span>Software</h3><p><strong>Perangkat Lunak:</strong> program atau aplikasi pemberi perintah sistem.</p></div>
+        <div class="card acard"><h3><span class="keys"><kbd>03</kbd></span>Brainware</h3><p><strong>Pengguna:</strong> manusia yang mengoperasikan dan mengendalikan komputer.</p></div>
+      </div>
+      <p class="sub">Materi hari ini membahas <strong>Hardware</strong>. Software dan Brainware dipelajari di Bagian 2.</p>
+    </div>
+
+    <div class="sec">
+      <h2>Komputer seperti tubuh manusia</h2>
+      <div class="grid2">
+        <div class="card"><h3>Mata &amp; Tangan = Input</h3><p>Keyboard &amp; Mouse bertugas menerima perintah.</p></div>
+        <div class="card"><h3>Otak = Prosesor (CPU)</h3><p>Prosesor bertugas berpikir dan menghitung cepat.</p></div>
+        <div class="card"><h3>Mulut &amp; Tulisan = Output</h3><p>Monitor &amp; Speaker menampilkan hasil perintah.</p></div>
+        <div class="card"><h3>Ingatan = Penyimpanan</h3><p>Harddisk &amp; Flashdisk menyimpan data agar tidak hilang.</p></div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <h2>Perangkat keras (hardware)</h2>
+      <div class="grid2">
+        <div class="card acard">
+          <h3>Kelompok 1: Perangkat Masukan (Input)</h3>
+          <ul><li><strong>Keyboard:</strong> mengetik huruf, angka, dan simbol.</li><li><strong>Mouse &amp; Touchpad:</strong> menggerakkan penunjuk kursor di layar.</li><li><strong>Mikrofon &amp; Kamera:</strong> memasukkan suara dan merekam gambar atau video.</li></ul>
+        </div>
+        <div class="card acard">
+          <h3>Kelompok 2: Perangkat Proses (Otak Komputer)</h3>
+          <ul><li><strong>Prosesor (CPU):</strong> otak komputer, berpikir dan mengolah perintah dengan sangat cepat.</li><li><strong>RAM (memori sementara):</strong> tempat menyimpan data sementara saat komputer hidup.</li></ul>
+        </div>
+        <div class="card acard">
+          <h3>Kelompok 3: Perangkat Keluaran (Output)</h3>
+          <ul><li><strong>Monitor / Layar:</strong> menampilkan teks, gambar, dan video.</li><li><strong>Speaker &amp; Headset:</strong> mengeluarkan suara, musik, dan audio.</li><li><strong>Printer:</strong> mencetak tulisan dan gambar ke atas kertas.</li></ul>
+        </div>
+        <div class="card acard">
+          <h3>Kelompok 4: Perangkat Penyimpanan (Storage)</h3>
+          <ul><li><strong>Harddisk &amp; SSD:</strong> penyimpanan utama di dalam sistem komputer.</li><li><strong>Flashdisk:</strong> penyimpanan kecil praktis yang mudah dibawa.</li><li><strong>Penyimpanan awan (Cloud):</strong> menyimpan file di internet, seperti Google Drive.</li></ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <h2>Hardware pada 4 jenis komputer</h2>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Jenis</th><th>Masukan</th><th>Proses</th><th>Keluaran</th><th>Penyimpanan</th></tr></thead>
+          <tbody>
+            <tr><td>Desktop</td><td>Keyboard &amp; Mouse terpisah</td><td>CPU kotak khusus</td><td>Monitor terpisah</td><td>Harddisk / SSD</td></tr>
+            <tr><td>Laptop</td><td>Touchpad &amp; Keyboard menyatu</td><td>CPU di dalam badan</td><td>Layar menyatu</td><td>SSD / Harddisk</td></tr>
+            <tr><td>Tablet</td><td>Layar sentuh (touchscreen)</td><td>CPU di dalam badan</td><td>Layar menyatu</td><td>Memori internal</td></tr>
+            <tr><td>Chromebook</td><td>Keyboard &amp; Touchpad</td><td>CPU di dalam badan</td><td>Layar menyatu</td><td>Memori + Cloud Drive</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="sec">
+      <h2>Kegiatan seru</h2>
+      <div class="grid2">
+        <div class="card"><h3>Detektif Hardware</h3><p>Amati komputer di kelas. Catat mana yang termasuk perangkat masukan, keluaran, dan penyimpanan!</p></div>
+        <div class="card"><h3>Main Peran Komputer</h3><p>Perankan Keyboard (pemberi pesan), CPU (pikirkan jawaban), dan Monitor (tulis di papan tulis).</p></div>
+      </div>
+    </div>
+
+    <div class="ready-bar">
+      <button class="btn pulse" id="btnSiap" disabled>Tunggu waktu membaca…</button>
+      <div class="note" id="siapNote">Baca pelan-pelan. Soal akan menanyakan penerapan materi ini di kehidupan sehari-hari.</div>
+      <div id="glErr" class="err" hidden>Maaf, browser ini belum bisa menampilkan dunia 3D (WebGL). Coba buka di Chrome, Edge, atau Firefox versi terbaru.</div>
+      <button class="linkbtn" id="btnSkip" type="button">.</button>
+    </div>
+  </div>
+</section>
+
+<!-- ======= HUD ======= -->
+<div id="hud" hidden>
+  <div class="hp" id="hProg"><div class="l">Dijawab benar</div><div class="n"><span id="hN">0</span> / 20</div><div class="pb"><i id="hBar"></i></div></div>
+  <div id="zone">Lapangan Upacara</div>
+  <div class="hp" id="hScore"><div><div class="l">Poin</div><div class="n" id="hPts">0</div></div><button class="btn alt small" id="btnList" type="button">Daftar</button></div>
+  <div class="hp" id="mapbox"><canvas id="mini" width="140" height="140" aria-label="Peta sekolah"></canvas></div>
+  <div class="cross"></div>
+  <div id="prompt" hidden><span class="pt" id="pTxt"></span><button class="btn small" id="btnTalk" type="button">Bicara</button></div>
+  <div id="toast" hidden role="status"></div>
+  <div id="pause" hidden>Klik layar untuk mengunci kamera, atau tahan klik dan geser untuk melihat sekeliling</div>
+  <button class="btn danger small" id="btnFinish" type="button">Selesaikan Ujian</button>
+  <div id="legend">
+    <div><span>Jalan</span><span class="keys"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd></span></div>
+    <div><span>Lari</span><span class="keys"><kbd>Shift</kbd></span></div>
+    <div><span>Bicara</span><span class="keys"><kbd>E</kbd></span></div>
+    <div><span>Daftar teman</span><span class="keys"><kbd>Tab</kbd></span></div>
+  </div>
+</div>
+<div id="tzL"></div><div id="tzR"></div>
+<div id="joyBase" hidden><div id="joyKnob"></div></div>
+
+<!-- ======= DIALOG ======= -->
+<div id="dialog" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="dName">
+  <div class="dcard" id="dcard" tabindex="-1">
+    <div class="dhead">
+      <div class="av" id="dAv"></div>
+      <div><div class="dname" id="dName"></div><div class="drole" id="dRole"></div></div>
+      <button class="x" id="dClose" type="button" aria-label="Tutup"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M3 3l10 10M13 3L3 13"/></svg></button>
+    </div>
+    <p class="bubble" id="dHi"></p>
+    <div class="qbox">
+      <span class="qtag">Pilih SEMUA jawaban yang benar</span>
+      <p class="qs" id="dQ"></p>
+      <div class="opts" id="dOpts"></div>
+      <div class="res" id="dRes" hidden></div>
+      <p class="hint" id="dHint">Bisa 2, 3, 4, atau semua jawaban yang benar. Tombol angka 1 sampai 5 juga bisa dipakai. Kalau belum benar semua, temanmu akan kabur!</p>
+    </div>
+    <div class="dfoot">
+      <button class="btn alt" id="dLater" type="button">Nanti dulu</button>
+      <button class="btn" id="dSubmit" type="button">Periksa Jawaban</button>
+    </div>
+  </div>
+</div>
+
+<!-- ======= KONFIRMASI SELESAI ======= -->
+<div id="konfirm" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="kTitle">
+  <div class="dcard" tabindex="-1" id="kcard">
+    <div class="dname" id="kTitle">Selesaikan ujian sekarang?</div>
+    <p id="kMsg"></p>
+    <div class="dfoot">
+      <button class="btn alt" id="kNo" type="button">Lanjut Mencari</button>
+      <button class="btn danger" id="kYes" type="button">Ya, Selesaikan</button>
+    </div>
+  </div>
+</div>
+
+<!-- ======= LIST ======= -->
+<div id="daftar" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="lTitle">
+  <div class="dcard" tabindex="-1" id="lcard">
+    <div class="dhead">
+      <div><div class="dname" id="lTitle">Daftar teman</div><div class="drole">Petunjuk tempat mereka berdiri</div></div>
+      <button class="x" id="lClose" type="button" aria-label="Tutup"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M3 3l10 10M13 3L3 13"/></svg></button>
+    </div>
+    <ul class="list" id="lList"></ul>
+  </div>
+</div>
+
+<!-- ======= RESULTS ======= -->
+<section id="hasil" class="screen" hidden>
+  <div class="wrap">
+    <div class="rhead">
+      <div class="eyebrow" id="rName">Misi selesai</div>
+      <h1 id="rTitle">Hebat!</h1>
+      <p class="lead" id="rMsg"></p>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="n" id="rScore">0</div><div class="l">Nilai (0–100)</div></div>
+      <div class="stat"><div class="n" id="rPerfect">0 / 20</div><div class="l">Benar di percobaan pertama</div></div>
+      <div class="stat"><div class="n" id="rPts">0</div><div class="l">Total percobaan salah</div></div>
+    </div>
+    <ul class="list" id="rList"></ul>
+    <div class="ractions">
+      <button class="btn" id="btnAgain" type="button">Main Lagi</button>
+      <button class="btn alt" id="btnReread" type="button">Baca Materi Lagi</button>
+    </div>
+  </div>
+</section>
+
+<script>
+/* ===== DATA SOAL =====
+   Materi: Jenis-Jenis Komputer + Sistem Komputer (Hardware), Informatika Kelas 3 SD.
+   Format tiap soal: o = [teks pilihan, 1 jika benar / 0 jika salah]. Selalu 5 pilihan, benar 2 sampai 5.
+   hots: true menandai soal HOTS (berpikir tingkat tinggi). */
+window.GAME_DATA = {
+  npcs: [
+    { n: 'Bu Syifa', r: 'Guru Kelas 1', x: -34, z: -26, clue: 'Dekat pintu Kelas 4', look: 'hijab', skin: 0xe0ac84, hair: 0x2b1b12, c: 0x2f6be0, p: 0x24344f, v: 0x1f4aa8,
+      hi: 'Halo! Ibu mau bertanya, komputer itu gunanya untuk apa saja, ya?',
+      s: 'Komputer adalah alat elektronik serbaguna. Komputer bisa membantu kita melakukan apa saja?',
+      o: [['Membuat cerita, laporan, dan dokumen sekolah', 1], ['Mewarnai dan menggambar secara digital', 1], ['Bermain kuis dan mencari informasi pelajaran', 1], ['Komputer tidak bisa membantu kita belajar', 0], ['Komputer tidak bisa dipakai untuk menggambar', 0]],
+      w: 'Komputer membantu kita belajar, bekerja, dan berkreasi: mengetik, menggambar, bermain kuis, dan mencari informasi.' },
+    { n: 'Bu Septy', r: 'Guru Kelas 2', x: 22, z: 44, clue: 'Di depan Kantin', look: 'long', skin: 0xf1c7a0, hair: 0x2b1b12, c: 0xd65f8a, p: 0x24344f,
+      hi: 'Di lab komputer ada komputer yang besar. Itu namanya apa, ya?',
+      s: 'Mana saja ciri-ciri Komputer Meja (Desktop)?',
+      o: [['Bagian-bagiannya terpisah (layar, kotak CPU, keyboard, mouse)', 1], ['Diletakkan tetap di atas meja dan layarnya besar', 1], ['Memakai aliran listrik langsung', 1], ['Ukurannya kecil dan bisa dimasukkan ke dalam saku', 0], ['Dipakai dengan layar sentuh tanpa keyboard', 0]],
+      w: 'Komputer meja punya bagian yang terpisah, diletakkan tetap di meja, layarnya besar, dan memakai listrik langsung.' },
+    { n: 'Bu Lina', r: 'Guru Kelas 3A', x: -48, z: 14, clue: 'Di bangku Taman Sekolah', look: 'hijab', skin: 0xe0ac84, hair: 0xdcdcdc, c: 0x8a3f9e, p: 0x5b3a29, v: 0x6b2c7e,
+      hi: 'Cucuku, Nenek lihat komputer meja di mana-mana. Di mana saja tempatnya?',
+      s: 'Komputer Meja (Desktop) sering kita temukan di mana?',
+      o: [['Di ruang guru', 1], ['Di laboratorium komputer', 1], ['Di kantor', 1], ['Selalu dibawa di dalam tas setiap hari', 0], ['Dimasukkan ke dalam saku baju', 0]],
+      w: 'Komputer meja sering ada di ruang guru, laboratorium komputer, atau kantor karena diletakkan diam di meja.' },
+    { n: 'Bu Ayu', r: 'Guru Kelas 3B', x: -4, z: -40, clue: 'Di depan Perpustakaan', look: 'long', skin: 0xc68a5e, hair: 0x1c1c1c, c: 0x3b9a4d, p: 0x24344f,
+      hi: 'Bapak punya laptop untuk mencatat buku perpustakaan.',
+      s: 'Mana pernyataan yang benar tentang Laptop?',
+      o: [['Bisa dilipat seperti buku tebal dan disimpan di dalam tas', 1], ['Punya baterai, jadi bisa dipakai tanpa colokan listrik saat baterai terisi', 1], ['Mudah dibawa belajar dari rumah ke sekolah', 1], ['Punya kotak CPU besar yang terpisah', 0], ['Tidak bisa dibawa karena harus tetap di atas meja', 0]],
+      w: 'Laptop bisa dilipat, punya baterai, dan mudah dibawa. Kotak CPU besar yang terpisah adalah ciri komputer meja.' },
+    { n: 'Bu Nurul', r: 'Guru Kelas 4B', x: 34, z: -30, clue: 'Di samping Lab Komputer', look: 'hijab', skin: 0xe0ac84, hair: 0x1c1c1c, c: 0x1f6f8b, p: 0x24344f, v: 0x1f6f8b,
+      hi: 'Di lab ada tablet untuk menggambar. Kamu tahu apa istimewanya?',
+      s: 'Mana pernyataan yang benar tentang Komputer Tablet?',
+      o: [['Layarnya bisa disentuh dengan jari, tanpa mouse', 1], ['Bentuknya tipis seperti papan, ringan, dan nyaman dipegang', 1], ['Seru untuk menggambar digital, membaca, dan kuis', 1], ['Harus memakai mouse dan kotak CPU yang terpisah', 0], ['Ukurannya paling besar dari semua jenis komputer', 0]],
+      w: 'Tablet punya layar sentuh, ringan, dan tipis. Tablet juga paling kecil di antara empat jenis komputer.' },
+    { n: 'Bu Sena', r: 'Guru Kelas 5', x: 8, z: -8, clue: 'Di Lapangan Upacara', look: 'long', skin: 0xc68a5e, hair: 0x1c1c1c, c: 0xe0763a, p: 0x333d4f,
+      hi: 'Sekolahku punya komputer khusus belajar yang namanya Chromebook.',
+      s: 'Mana pernyataan yang benar tentang Chromebook?',
+      o: [['Laptop yang dibuat khusus untuk kegiatan belajar di sekolah', 1], ['Menyimpan tugas sekolah dengan aman di internet (cloud)', 1], ['Baterainya tahan lama, siap dipakai sepanjang jam pelajaran', 1], ['Komputer meja yang punya kotak CPU besar', 0], ['Tidak boleh dipakai untuk belajar', 0]],
+      w: 'Chromebook adalah laptop khusus belajar. Tugasnya disimpan di cloud, dan baterainya tahan lama.' },
+    { n: 'Bu Nurhayati', r: 'Guru Kelas 6', x: -9, z: 6, clue: 'Di Lapangan Upacara', look: 'hijab', skin: 0xf1c7a0, hair: 0x3a2418, c: 0x7a3b5e, p: 0x24344f, v: 0x7a3b5e,
+      hi: 'Aku mau membawa komputer ke sekolah. Pilih yang mana, ya?',
+      s: '{n} ingin membawa komputer dari rumah ke sekolah. Jenis komputer apa saja yang mudah dibawa?',
+      o: [['Laptop', 1], ['Tablet', 1], ['Chromebook', 1], ['Komputer Meja (Desktop)', 0], ['Kotak CPU besar dengan monitor yang terpisah', 0]],
+      w: 'Laptop, tablet, dan Chromebook mudah dibawa. Komputer meja tidak mudah dibawa karena bagiannya terpisah.' },
+    { n: 'Bu Sari', r: 'Guru Agama', x: 6, z: 58, clue: 'Dekat Gerbang Sekolah', look: 'hijab', skin: 0x9a6440, hair: 0x1c1c1c, c: 0x2f8f6a, p: 0x24344f, v: 0xffffff,
+      hi: 'Bapak melihat ada komputer yang layarnya bisa disentuh. Jenis apa saja, ya?',
+      s: 'Lihat tabel perbandingan. Mana pernyataan tentang layar sentuh yang benar?',
+      o: [['Tablet memakai layar sentuh sebagai cara utama', 1], ['Sebagian Chromebook punya layar sentuh', 1], ['Laptop jarang memakai layar sentuh', 1], ['Komputer meja biasanya memakai layar sentuh', 0], ['Semua laptop pasti memakai layar sentuh', 0]],
+      w: 'Layar sentuh: Tablet (utama), Chromebook (sebagian tipe), Laptop (jarang), dan Komputer Meja (tidak).' },
+    { n: 'Bu Ati', r: 'Guru Agama', x: 30, z: 42, clue: 'Di depan Kantin', look: 'hijab', skin: 0xe0ac84, hair: 0x2b1b12, c: 0x4a6fd0, p: 0x5b3a29, v: 0x4a6fd0,
+      hi: 'Ibu mau membandingkan ukuran komputer yang ada di sekolah.',
+      s: 'Urutan ukuran dari yang paling besar ke paling kecil adalah Komputer Meja, Laptop, Chromebook, lalu Tablet. Mana pernyataan yang benar?',
+      o: [['Komputer Meja lebih besar daripada Laptop', 1], ['Laptop lebih besar daripada Tablet', 1], ['Tablet adalah yang paling kecil dari empat jenis komputer', 1], ['Tablet lebih besar daripada Komputer Meja', 0], ['Chromebook lebih besar daripada Komputer Meja', 0]],
+      w: 'Urutan ukuran: Komputer Meja, Laptop, Chromebook, Tablet. Tablet paling kecil.' },
+    { n: 'Bu Dinda', r: 'Guru Agama', x: -56, z: -4, clue: 'Di Taman Sekolah', look: 'hijab', skin: 0xe0ac84, hair: 0x1c1c1c, c: 0xc2477a, p: 0x24344f, v: 0xc2477a,
+      hi: 'Kata guruku, sistem komputer punya tiga bagian penting.',
+      s: 'Sistem komputer punya 3 komponen utama. Mana pernyataan yang benar?',
+      o: [['Hardware adalah perangkat keras, yaitu bagian fisik yang bisa dilihat dan disentuh', 1], ['Software adalah perangkat lunak, yaitu program atau aplikasi pemberi perintah', 1], ['Brainware adalah pengguna, yaitu manusia yang mengoperasikan komputer', 1], ['Brainware adalah kotak CPU di dalam komputer', 0], ['Software adalah bagian fisik yang bisa disentuh', 0]],
+      w: 'Hardware = perangkat keras. Software = perangkat lunak (program). Brainware = pengguna (manusia).' },
+    { n: 'Bu Rita', r: 'Guru Olahraga', x: -32, z: 40, clue: 'Di Kebun Sekolah', look: 'long', skin: 0xf1c7a0, hair: 0x2b1b12, c: 0x1f8f6a, p: 0x1f3d34, v: 0xffffff,
+      hi: 'Komputer itu mirip tubuh manusia, lho!',
+      s: 'Komputer bisa disamakan dengan tubuh manusia. Pasangan mana yang benar?',
+      o: [['Mata dan tangan sama dengan input (keyboard dan mouse)', 1], ['Otak sama dengan prosesor (CPU) yang berpikir dan menghitung cepat', 1], ['Mulut dan tulisan sama dengan output (monitor dan speaker)', 1], ['Ingatan sama dengan penyimpanan (harddisk dan flashdisk)', 1], ['Otak sama dengan monitor', 0]],
+      w: 'Input seperti mata dan tangan, CPU seperti otak, output seperti mulut dan tulisan, penyimpanan seperti ingatan.' },
+    { n: 'Pa Anto', r: 'Guru TIK', x: 44, z: 14, clue: 'Di samping Aula', look: 'short', skin: 0x9a6440, hair: 0x1c1c1c, c: 0x10233f, p: 0x333d4f, hn: true,
+      hi: 'Aku mau memberi perintah ke komputer. Pakai alat yang mana, ya?',
+      s: 'Pilih SEMUA perangkat masukan (input device)!',
+      o: [['Keyboard', 1], ['Mouse', 1], ['Mikrofon', 1], ['Monitor', 0], ['Printer', 0]],
+      w: 'Keyboard, mouse, dan mikrofon memasukkan perintah ke komputer. Monitor dan printer adalah perangkat keluaran.' },
+    { n: 'Bu Nia', r: 'Kepala Sekolah', x: 17, z: -42, clue: 'Di samping Perpustakaan', look: 'hijab', skin: 0xe0ac84, hair: 0x1c1c1c, c: 0x0e7c86, p: 0x24344f, v: 0x0e7c86, hn: true,
+      hi: 'Aku mau tahu tugas setiap alat masukan.',
+      s: 'Mana pasangan perangkat masukan dan tugasnya yang benar?',
+      o: [['Keyboard: mengetik huruf, angka, dan simbol', 1], ['Mouse dan touchpad: menggerakkan penunjuk kursor di layar', 1], ['Mikrofon dan kamera: memasukkan suara dan merekam gambar atau video', 1], ['Printer: memasukkan suara ke komputer', 0], ['Speaker: memasukkan foto ke komputer', 0]],
+      w: 'Printer mencetak ke kertas, dan speaker mengeluarkan suara. Keduanya bukan perangkat masukan.' },
+    { n: 'Pa Danny', r: 'Yayasan Sekolah', x: 0, z: 14, clue: 'Di tepi Lapangan Upacara', look: 'short', skin: 0xc68a5e, hair: 0x1c1c1c, c: 0x333d4f, p: 0x1c1c2c, hn: true,
+      hi: 'Bapak ingin tahu bagian komputer yang bekerja seperti otak.',
+      s: 'Mana pernyataan yang benar tentang perangkat proses (otak komputer)?',
+      o: [['CPU disebut otak komputer', 1], ['CPU berpikir dan mengolah perintah dengan sangat cepat', 1], ['RAM menyimpan data sementara saat komputer hidup', 1], ['RAM dipakai untuk mencetak tulisan ke kertas', 0], ['CPU dipakai untuk mengeluarkan suara musik', 0]],
+      w: 'CPU adalah otak komputer. RAM adalah tempat menyimpan data sementara saat komputer hidup.' },
+    { n: 'Bu Penny', r: 'Ketua Yayasan', x: -52, z: -22, clue: 'Di samping Kelas 4', look: 'long', skin: 0xf1c7a0, hair: 0x6b3b1e, c: 0x7a2e4e, p: 0x24344f,
+      hi: 'Aku mau mencetak dan melihat hasil kerjaku di komputer.',
+      s: 'Mana pernyataan yang benar tentang perangkat keluaran (output device)?',
+      o: [['Monitor menampilkan teks, gambar, dan video', 1], ['Speaker dan headset mengeluarkan suara dan musik', 1], ['Printer mencetak tulisan dan gambar ke atas kertas', 1], ['Keyboard menampilkan gambar di layar', 0], ['Printer dipakai untuk memasukkan suara', 0]],
+      w: 'Output: monitor (gambar), speaker dan headset (suara), printer (cetakan di kertas).' },
+    { n: 'Bu Dewi', r: 'Penjaga Kantin', x: 26, z: -10, clue: 'Di jalan setapak timur Lapangan', look: 'hijab', skin: 0xe0ac84, hair: 0x2b1b12, c: 0xf08a24, p: 0x5b3a29, v: 0xb85a0f,
+      hi: 'Aku mau menyimpan tugas supaya tidak hilang. Disimpan di mana, ya?',
+      s: 'Pilih SEMUA perangkat penyimpanan (storage)!',
+      o: [['Flashdisk', 1], ['Harddisk atau SSD', 1], ['Penyimpanan awan (cloud) seperti Google Drive', 1], ['Printer', 0], ['Touchpad', 0]],
+      w: 'Penyimpanan: harddisk atau SSD, flashdisk, dan cloud. Printer dan touchpad bukan tempat menyimpan data.' },
+    { n: 'Mang Koto', r: 'Penjaga Sekolah', x: -42, z: 0, clue: 'Di dekat kolam Taman Sekolah', look: 'cap', skin: 0xc68a5e, hair: 0x1c1c1c, c: 0x24344f, p: 0x24344f, hots: true,
+      hi: 'Tugasku dibuat di Chromebook sekolah, tapi bisa kubuka lagi di rumah. Kok bisa, ya?',
+      s: '{n} mengerjakan tugas di Chromebook sekolah. Di rumah, tugas itu masih bisa dibuka dari komputer lain yang terhubung internet. Mengapa bisa begitu? Pilih SEMUA alasan yang masuk akal!',
+      o: [['Tugas disimpan di penyimpanan awan (cloud) di internet', 1], ['Karena disimpan di internet, tugas bisa dibuka lagi dari tempat lain', 1], ['Google Drive adalah contoh tempat menyimpan file di cloud', 1], ['Tugas tersimpan di dalam mouse yang dibawa pulang', 0], ['Chromebook membawa kotak CPU terpisah ke rumah Gita', 0]],
+      w: 'Chromebook menyimpan tugas di cloud, jadi tugasnya aman di internet dan bisa dibuka lagi dari tempat lain.' },
+    { n: 'Mang Juri', r: 'Pedagang Di Sekolah', x: -48, z: 50, clue: 'Di sudut barat Kebun Sekolah', look: 'short', skin: 0x7a4a2e, hair: 0x1c1c1c, c: 0xc98a2a, p: 0x5b3a29, hots: true,
+      hi: 'Aku bingung memilih komputer yang cocok untuk tiga keperluanku.',
+      s: '{n} punya tiga keperluan. Pilih SEMUA pasangan keperluan dan komputer yang paling masuk akal!',
+      o: [['Menggambar dengan menyentuh layar tanpa mouse: Tablet', 1], ['Mengerjakan tugas di lab sekolah dengan layar besar dan tetap di meja: Komputer Meja', 1], ['Dibawa dari rumah ke sekolah dan dipakai tanpa colokan: Laptop', 1], ['Menggambar dengan menyentuh layar tanpa mouse: Komputer Meja', 0], ['Dibawa ke mana-mana dengan mudah: Komputer Meja', 0]],
+      w: 'Pilih komputer sesuai kebutuhan: tablet untuk gambar sentuh, komputer meja untuk tempat tetap, laptop untuk dibawa dengan baterai.' },
+    { n: 'Fika', r: 'Murid Kelas 3B', x: 46, z: 28, clue: 'Di depan Aula', look: 'hijab', skin: 0xe0ac84, hair: 0x2b1b12, c: 0xffffff, p: 0xd8232a, v: 0xffffff, hots: true,
+      hi: 'Pak Guru memberi dua komputer untuk dibandingkan. Bantu aku, ya!',
+      s: 'Komputer A punya layar, kotak CPU, keyboard, dan mouse yang terpisah. Komputer B punya layar dan keyboard yang menyatu, serta baterai. Pernyataan mana yang masuk akal?',
+      o: [['Komputer A adalah Komputer Meja (Desktop)', 1], ['Komputer A sulit dibawa karena bagiannya terpisah dan perlu listrik langsung', 1], ['Komputer B lebih mudah dibawa karena bagiannya menyatu dan punya baterai', 1], ['Komputer A lebih mudah dibawa ke sekolah daripada Komputer B', 0], ['Komputer B pasti tidak bisa dipakai tanpa colokan listrik', 0]],
+      w: 'Komputer meja punya bagian terpisah dan memakai listrik langsung, jadi sulit dibawa. Laptop menyatu dan punya baterai, jadi mudah dibawa.' },
+    { n: 'Shanum', r: 'Murid Kelas 3A', x: -18, z: -14, clue: 'Di sisi barat laut Lapangan Upacara', look: 'long', skin: 0xf1c7a0, hair: 0x2b1b12, c: 0xffffff, p: 0xd8232a, v: 0x0e7c86,
+      hi: 'Halo! Ibu ingin mengecek apakah kamu paham hardware pada empat jenis komputer.',
+      s: 'Lihat tabel hardware pada 4 jenis komputer. Mana pernyataan yang benar?',
+      o: [['Desktop memakai CPU di dalam kotak khusus', 1], ['Laptop, Tablet, dan Chromebook punya CPU di dalam badan', 1], ['Tablet memakai layar sentuh sebagai perangkat masukan', 1], ['Chromebook menyimpan data di memori dan Cloud Drive', 1], ['Desktop memakai layar yang menyatu dengan badan', 0]],
+      w: 'Desktop punya CPU di kotak khusus dan monitor terpisah. Laptop, Tablet, dan Chromebook punya CPU di dalam badan dan layar menyatu.' }
+  ]
+};
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  var D = window.GAME_DATA, NPC = D.npcs, N = NPC.length;
+  var curName = '';
+  var T = function (s) { return s.replace(/\{n\}/g, curName); };
+  var QS = NPC.map(function (d) { return { s: d.s, o: d.o, w: d.w, hots: !!d.hots }; });
+  var GREET = ['Halo! Aku punya pertanyaan tentang komputer untukmu.', 'Hai! Bantu aku menjawab pertanyaan ini, ya.', 'Wah, kamu menemukanku! Ini pertanyaannya.', 'Ayo belajar komputer bersama! Coba jawab ini.', 'Hore, ada teman! Aku punya tebak-tebakan komputer.'];
+  function assignQuestions() {
+    var hq = [], nq = [], hn = [], nn = [];
+    QS.forEach(function (q, k) { (q.hots ? hq : nq).push(k); });
+    NPC.forEach(function (d, i) { (d.hn ? hn : nn).push(i); });
+    shuffle(hq); shuffle(nq);
+    function give(ni, qi) {
+      var d = NPC[ni], q = QS[qi]; d.s = q.s; d.o = q.o; d.w = q.w; d.hots = q.hots;
+      d.hi = GREET[Math.floor(Math.random() * GREET.length)];
+    }
+    hn.forEach(function (ni, k) { give(ni, hq[k]); });
+    nn.forEach(function (ni, k) { give(ni, nq[k]); });
+  }
+  assignQuestions();
+  var clamp = function (v, a, b) { return Math.max(a, Math.min(b, v)); };
+  var isTouch = ((('ontouchstart' in window) || navigator.maxTouchPoints > 0) && window.matchMedia && window.matchMedia('(pointer:coarse)').matches);
+  if (isTouch) document.body.classList.add('touch');
+
+  /* ---------- audio ---------- */
+  var AC = null;
+  function beep(f, d, type, delay) {
+    try {
+      AC = AC || new (window.AudioContext || window.webkitAudioContext)();
+      var t0 = AC.currentTime + (delay || 0), o = AC.createOscillator(), g = AC.createGain();
+      o.type = type || 'sine'; o.frequency.value = f; g.gain.setValueAtTime(.07, t0);
+      g.gain.exponentialRampToValueAtTime(.0001, t0 + d); o.connect(g); g.connect(AC.destination); o.start(t0); o.stop(t0 + d);
+    } catch (e) { }
+  }
+
+  /* ---------- state ---------- */
+  var state = 'intro', playerName = '', score = 0, done = 0, res = new Array(N).fill(null), att = new Array(N).fill(0), lastOk = false, cur = -1, qopts = [];
+  var W = { ready: false, fail: false, boxes: [], circles: [], npc: [] };
+  var renderer, scene, camera, clock, sky, clouds = [], flagMesh;
+  var yaw = 0, pitch = 0, locked = false, dragging = false, keys = {}, joy = { x: 0, y: 0, id: null, ox: 0, oy: 0 }, lookId = null, lookLast = null;
+  var pos = { x: 0, y: 1.6, z: 22, set: function (x, y, z) { this.x = x; this.y = y; this.z = z; } }, bobT = 0, moving = false, frameN = 0, started = false;
+
+  function show(id) { ['intro', 'baca', 'hasil'].forEach(function (s) { $(s).hidden = (s !== id); }); }
+  function setState(s) {
+    state = s;
+    document.body.classList.toggle('playing', s === 'play');
+    updatePause();
+  }
+  function updatePause() { $('pause').hidden = !(state === 'play' && !locked && !isTouch); }
+
+  /* ---------- intro -> reading ---------- */
+  $('nameForm').addEventListener('submit', function (e) { e.preventDefault(); playerName = $('nama').value.trim(); startRead(); });
+  var readEnd = 0, readTimer = null, skipArm = false, READ_MS = 180000;
+  function fmt(ms) { var s = Math.max(0, Math.ceil(ms / 1000)); return ('0' + Math.floor(s / 60)).slice(-2) + ':' + ('0' + (s % 60)).slice(-2); }
+  function startRead() {
+    show('baca'); setState('read'); $('baca').scrollTop = 0;
+    readEnd = Date.now() + READ_MS; skipArm = false;
+    $('btnSkip').textContent = '.'; $('btnSkip').hidden = false;
+    $('btnSiap').disabled = true; $('btnSiap').textContent = 'Tunggu waktu membaca…'; $('clock').classList.remove('done');
+    $('glErr').hidden = true;
+    clearInterval(readTimer); tickRead(); readTimer = setInterval(tickRead, 250);
+    setTimeout(ensureWorld, 400);
+  }
+  function tickRead() {
+    var left = readEnd - Date.now();
+    $('clock').textContent = fmt(left);
+    $('rProg').style.width = clamp((1 - left / READ_MS) * 100, 0, 100) + '%';
+    if (left <= 0) {
+      clearInterval(readTimer); $('clock').classList.add('done');
+      $('btnSiap').disabled = false; $('btnSiap').textContent = 'Aku siap, mulai misi!';
+      $('siapNote').textContent = 'Waktu membaca selesai. Kamu boleh membaca lagi sebelum mulai.';
+      $('btnSkip').hidden = true;
+    }
+  }
+  $('btnSkip').addEventListener('click', function () {
+    if (!skipArm) { skipArm = true; $('btnSkip').textContent = 'Klik sekali lagi untuk melewati'; return; }
+    readEnd = Date.now(); tickRead();
+  });
+  $('btnSiap').addEventListener('click', startPlay);
+
+  /* ---------- world ---------- */
+  function mulberry(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; var t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+  function rr(g, x, y, w, h, r) { g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath(); }
+  var lam = function (c) { return new THREE.MeshLambertMaterial({ color: c }); };
+  var PATHS = [[0, 0, 0, -44], [0, 0, 37, -34], [0, 0, -37, -34], [0, 0, 47, 14], [0, 0, 28, 45], [0, 0, 0, 64], [0, 0, -44, 6], [0, 0, -34, 46]];
+  var POND = { x: -48, z: 4, r: 4.5 };
+  var BUILD = [
+    { name: 'PERPUSTAKAAN', x: 0, z: -50, w: 26, d: 12, h: 7, c: 0xf3d27a, roof: 0xc0504d, f: [0, 1] },
+    { name: 'LAB KOMPUTER', x: 46, z: -34, w: 18, d: 14, h: 6, c: 0x9cc8f2, roof: 0x2a68dc, f: [-1, 0] },
+    { name: 'KELAS 4', x: -46, z: -34, w: 18, d: 14, h: 6, c: 0xa8e0c4, roof: 0x1f8f6a, f: [1, 0] },
+    { name: 'AULA', x: 54, z: 14, w: 14, d: 22, h: 8, c: 0xf4a98f, roof: 0x8b3a2f, f: [-1, 0] },
+    { name: 'KANTIN', x: 28, z: 50, w: 18, d: 10, h: 5, c: 0xf7b26a, roof: 0xb5532a, f: [0, -1] }
+  ];
+  var ZONES = [
+    { n: 'Lapangan Upacara', x: 0, z: 0, r: 17 }, { n: 'Perpustakaan', x: 0, z: -46, r: 18 }, { n: 'Lab Komputer', x: 44, z: -32, r: 17 },
+    { n: 'Kelas 4', x: -44, z: -32, r: 17 }, { n: 'Aula', x: 54, z: 14, r: 18 }, { n: 'Kantin', x: 28, z: 46, r: 16 },
+    { n: 'Gerbang Sekolah', x: 0, z: 62, r: 12 }, { n: 'Taman Sekolah', x: -48, z: 6, r: 18 }, { n: 'Kebun Sekolah', x: -36, z: 50, r: 15 }
+  ];
+  function segDist(x, z, s) {
+    var dx = s[2] - s[0], dz = s[3] - s[1], t = clamp(((x - s[0]) * dx + (z - s[1]) * dz) / (dx * dx + dz * dz), 0, 1);
+    return Math.hypot(x - (s[0] + dx * t), z - (s[1] + dz * t));
+  }
+
+  function drawGround() {
+    var S = 2048, k = S / 140, c = document.createElement('canvas'); c.width = c.height = S; var g = c.getContext('2d');
+    var P = function (x, z) { return [(x + 70) * k, (z + 70) * k]; };
+    var r = mulberry(7), i, p, q;
+    g.fillStyle = '#80c566'; g.fillRect(0, 0, S, S);
+    for (i = 0; i < 9000; i++) { g.fillStyle = r() < .5 ? 'rgba(255,255,255,.07)' : 'rgba(20,80,30,.09)'; g.fillRect(r() * S, r() * S, 3 + r() * 6, 3 + r() * 6); }
+    // taman
+    p = P(-50, 6); g.fillStyle = '#9ad87b'; g.beginPath(); g.arc(p[0], p[1], 16 * k, 0, 7); g.fill();
+    var cols = ['#ff6b81', '#ffd23f', '#ffffff', '#ff9f43', '#b57cff'];
+    for (i = 0; i < 380; i++) { var a = r() * 6.283, d = Math.sqrt(r()) * 15.5; g.fillStyle = cols[i % 5]; g.beginPath(); g.arc(p[0] + Math.cos(a) * d * k, p[1] + Math.sin(a) * d * k, k * .22, 0, 7); g.fill(); }
+    // kantin paving, gate road
+    p = P(17, 36); g.fillStyle = '#d8d0bf'; g.fillRect(p[0], p[1], 22 * k, 10 * k);
+    g.strokeStyle = 'rgba(0,0,0,.08)'; g.lineWidth = 2;
+    for (i = 0; i <= 22; i += 2) { g.beginPath(); g.moveTo(p[0] + i * k, p[1]); g.lineTo(p[0] + i * k, p[1] + 10 * k); g.stroke(); }
+    p = P(-5, 54); g.fillStyle = '#58626f'; g.fillRect(p[0], p[1], 10 * k, 16 * k);
+    g.strokeStyle = '#fff'; g.lineWidth = k * .25; g.setLineDash([k * 1.6, k * 1.4]); g.beginPath(); g.moveTo(P(0, 54)[0], P(0, 54)[1]); g.lineTo(P(0, 70)[0], P(0, 70)[1]); g.stroke(); g.setLineDash([]);
+    // paths
+    g.lineCap = 'round';
+    PATHS.forEach(function (s) { var a = P(s[0], s[1]), b = P(s[2], s[3]); g.strokeStyle = '#c9a86b'; g.lineWidth = 5.6 * k; g.beginPath(); g.moveTo(a[0], a[1]); g.lineTo(b[0], b[1]); g.stroke(); });
+    PATHS.forEach(function (s) { var a = P(s[0], s[1]), b = P(s[2], s[3]); g.strokeStyle = '#e6cc98'; g.lineWidth = 4.6 * k; g.beginPath(); g.moveTo(a[0], a[1]); g.lineTo(b[0], b[1]); g.stroke(); });
+    // plaza
+    p = P(0, 0); g.fillStyle = '#cfd6de'; g.beginPath(); g.arc(p[0], p[1], 14 * k, 0, 7); g.fill();
+    g.strokeStyle = '#ffffff'; g.lineWidth = k * .3; g.beginPath(); g.arc(p[0], p[1], 12.2 * k, 0, 7); g.stroke();
+    g.beginPath(); g.arc(p[0], p[1], 3 * k, 0, 7); g.stroke();
+    g.strokeStyle = 'rgba(255,255,255,.55)'; g.lineWidth = k * .18;
+    for (i = -10; i <= 10; i += 4) { g.beginPath(); g.moveTo(p[0] + i * k, p[1] - 9 * k); g.lineTo(p[0] + i * k, p[1] + 9 * k); g.stroke(); }
+    // pond
+    p = P(POND.x, POND.z); g.fillStyle = '#e1cfa0'; g.beginPath(); g.arc(p[0], p[1], (POND.r + .8) * k, 0, 7); g.fill();
+    g.fillStyle = '#58b8e8'; g.beginPath(); g.arc(p[0], p[1], POND.r * k, 0, 7); g.fill();
+    g.strokeStyle = 'rgba(255,255,255,.6)'; g.lineWidth = k * .15; g.beginPath(); g.arc(p[0] - k, p[1] - k * .6, 2.2 * k, 3.6, 5.2); g.stroke();
+    // kebun
+    [48, 51.5, 55].forEach(function (zz) { var a = P(-42, zz - 1.1); g.fillStyle = '#8a5a36'; g.fillRect(a[0], a[1], 16 * k, 2.2 * k); g.fillStyle = 'rgba(0,0,0,.14)'; g.fillRect(a[0], a[1] + 1.05 * k, 16 * k, .12 * k); });
+    return c;
+  }
+
+  function textTex(text, w, h, bg, fg) {
+    var c = document.createElement('canvas'); c.width = w; c.height = h; var g = c.getContext('2d');
+    g.fillStyle = bg; rr(g, 3, 3, w - 6, h - 6, h * .22); g.fill(); g.lineWidth = h * .06; g.strokeStyle = fg; g.stroke();
+    g.fillStyle = fg; g.font = '800 ' + Math.round(h * .5) + 'px "Baloo 2","Trebuchet MS",sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.fillText(text, w / 2, h / 2 + h * .04, w - 30);
+    var t = new THREE.CanvasTexture(c); t.anisotropy = 4; return t;
+  }
+  function markTex(kind) {
+    var c = document.createElement('canvas'); c.width = c.height = 128; var g = c.getContext('2d');
+    g.fillStyle = kind === 'q' ? '#ffc42e' : (kind === 'r' ? '#e0434a' : '#14a06e'); g.beginPath(); g.arc(64, 64, 56, 0, 7); g.fill();
+    g.lineWidth = 8; g.strokeStyle = '#10233f'; g.stroke();
+    if (kind === 'q' || kind === 'r') { g.fillStyle = kind === 'r' ? '#ffffff' : '#10233f'; rr(g, 57, 28, 14, 44, 6); g.fill(); g.beginPath(); g.arc(64, 90, 8, 0, 7); g.fill(); }
+    else { g.strokeStyle = '#fff'; g.lineWidth = 12; g.lineCap = 'round'; g.lineJoin = 'round'; g.beginPath(); g.moveTo(38, 66); g.lineTo(57, 85); g.lineTo(90, 44); g.stroke(); }
+    return new THREE.CanvasTexture(c);
+  }
+
+  function addBuilding(b) {
+    var he = b.f[0] !== 0 ? b.w / 2 : b.d / 2, tl = b.f[0] !== 0 ? b.d : b.w;
+    var walls = new THREE.Mesh(new THREE.BoxGeometry(b.w, b.h, b.d), lam(b.c)); walls.position.set(b.x, b.h / 2, b.z); scene.add(walls);
+    var trim = new THREE.Mesh(new THREE.BoxGeometry(b.w + .5, .6, b.d + .5), lam(0xb9b2a5)); trim.position.set(b.x, .3, b.z); scene.add(trim);
+    var rg = new THREE.ConeGeometry(1, 2.8, 4); rg.rotateY(Math.PI / 4);
+    var roof = new THREE.Mesh(rg, lam(b.roof)); roof.scale.set((b.w + 1.4) / 1.4142, 1, (b.d + 1.4) / 1.4142); roof.position.set(b.x, b.h + 1.4, b.z); scene.add(roof);
+    var winM = new THREE.MeshBasicMaterial({ color: 0xbfe7ff }), frameM = lam(0xffffff);
+    [[0, 1], [0, -1], [1, 0], [-1, 0]].forEach(function (dir) {
+      var h2 = dir[0] !== 0 ? b.w / 2 : b.d / 2, len = dir[0] !== 0 ? b.d : b.w, tx = Math.abs(dir[1]), tz = Math.abs(dir[0]);
+      var cnt = Math.floor((len - 3) / 4), isDoor = (dir[0] === b.f[0] && dir[1] === b.f[1]);
+      for (var k = 0; k < cnt; k++) {
+        var off = -((cnt - 1) / 2) * 4 + k * 4; if (isDoor && Math.abs(off) < 2.8) continue;
+        var wy = b.h * .45 + .3, cx = b.x + dir[0] * (h2 + .04) + tx * off, cz = b.z + dir[1] * (h2 + .04) + tz * off;
+        var fr = new THREE.Mesh(new THREE.BoxGeometry(1.9, 1.9, .1), frameM), gl = new THREE.Mesh(new THREE.BoxGeometry(1.6, 1.6, .14), winM);
+        fr.position.set(cx, wy, cz); gl.position.set(cx, wy, cz); var ry = Math.atan2(dir[0], dir[1]); fr.rotation.y = gl.rotation.y = ry; scene.add(fr); scene.add(gl);
+      }
+    });
+    var fx = b.f[0], fz = b.f[1], ry = Math.atan2(fx, fz);
+    var door = new THREE.Mesh(new THREE.BoxGeometry(2.2, 3.2, .2), lam(0x7a4a2e)); door.position.set(b.x + fx * (he + .06), 1.6, b.z + fz * (he + .06)); door.rotation.y = ry; scene.add(door);
+    var sg = new THREE.Mesh(new THREE.PlaneGeometry(8.4, 1.6), new THREE.MeshBasicMaterial({ map: textTex(b.name, 512, 100, '#ffffff', '#10233f') }));
+    sg.position.set(b.x + fx * (he + .12), b.h - 1.1, b.z + fz * (he + .12)); sg.rotation.y = ry; scene.add(sg);
+    W.boxes.push({ x0: b.x - b.w / 2, x1: b.x + b.w / 2, z0: b.z - b.d / 2, z1: b.z + b.d / 2 });
+    void tl;
+  }
+  function addBox(x, z, w, d, h, color, y0) {
+    var m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), lam(color)); m.position.set(x, (y0 || 0) + h / 2, z); scene.add(m); return m;
+  }
+
+  function buildWorld() {
+    if (!window.THREE) throw new Error('THREE tidak tersedia');
+    renderer = new THREE.WebGLRenderer({ canvas: $('gl'), antialias: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.setSize(window.innerWidth, window.innerHeight, false);
+    scene = new THREE.Scene(); scene.fog = new THREE.Fog(0xcfeaf7, 70, 230);
+    camera = new THREE.PerspectiveCamera(72, window.innerWidth / window.innerHeight, .1, 700); camera.rotation.order = 'YXZ';
+    clock = new THREE.Clock();
+    scene.add(new THREE.HemisphereLight(0xe3f4ff, 0x6fa35a, .95));
+    var sun = new THREE.DirectionalLight(0xfff2d2, .8); sun.position.set(60, 100, 40); scene.add(sun);
+
+    // sky
+    var sc = document.createElement('canvas'); sc.width = 8; sc.height = 256; var sg = sc.getContext('2d'), gr = sg.createLinearGradient(0, 0, 0, 256);
+    gr.addColorStop(0, '#4fb0ec'); gr.addColorStop(.5, '#b9e3f7'); gr.addColorStop(.62, '#dff3fb'); gr.addColorStop(1, '#dff3fb'); sg.fillStyle = gr; sg.fillRect(0, 0, 8, 256);
+    sky = new THREE.Mesh(new THREE.SphereGeometry(450, 24, 14), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(sc), side: THREE.BackSide, fog: false, depthWrite: false })); scene.add(sky);
+    // hills
+    var hr = mulberry(11);
+    for (var h = 0; h < 14; h++) {
+      var ang = h / 14 * 6.283 + hr() * .3, dist = 150 + hr() * 30, rad = 35 + hr() * 30;
+      var hill = new THREE.Mesh(new THREE.SphereGeometry(rad, 16, 8), lam(h % 2 ? 0x7dbb8a : 0x6aa87a)); hill.scale.y = .42; hill.position.set(Math.cos(ang) * dist, -4, Math.sin(ang) * dist); scene.add(hill);
+    }
+    // clouds
+    var cm = new THREE.MeshBasicMaterial({ color: 0xffffff, fog: false, transparent: true, opacity: .93 });
+    for (var cI = 0; cI < 9; cI++) {
+      var cg = new THREE.Group(), n = 3 + (cI % 3);
+      for (var q = 0; q < n; q++) { var sp = new THREE.Mesh(new THREE.SphereGeometry(5 + hr() * 3, 10, 8), cm); sp.position.set(q * 6 - n * 3, hr() * 2, hr() * 3); sp.scale.y = .6; cg.add(sp); }
+      var ca = hr() * 6.283, cd = 90 + hr() * 70; cg.position.set(Math.cos(ca) * cd, 60 + hr() * 20, Math.sin(ca) * cd); cg.userData.sp = .6 + hr() * .8; scene.add(cg); clouds.push(cg);
+    }
+    // ground
+    var gc = drawGround(); W.groundCanvas = gc;
+    var gt = new THREE.CanvasTexture(gc); gt.anisotropy = 8;
+    var ground = new THREE.Mesh(new THREE.PlaneGeometry(140, 140), new THREE.MeshLambertMaterial({ map: gt })); ground.rotation.x = -Math.PI / 2; scene.add(ground);
+    var outer = new THREE.Mesh(new THREE.PlaneGeometry(900, 900), lam(0x74b95e)); outer.rotation.x = -Math.PI / 2; outer.position.y = -.05; scene.add(outer);
+
+    BUILD.forEach(addBuilding);
+
+    // fence
+    var fc = document.createElement('canvas'); fc.width = 64; fc.height = 64; var fg = fc.getContext('2d'); fg.fillStyle = '#ffffff'; fg.fillRect(6, 0, 20, 64); fg.fillRect(38, 0, 20, 64); fg.fillStyle = '#c9d4e2'; fg.fillRect(0, 18, 64, 5); fg.fillRect(0, 44, 64, 5);
+    function fence(x, z, len, ry) {
+      var t = new THREE.CanvasTexture(fc); t.wrapS = THREE.RepeatWrapping; t.repeat.set(len / 2.4, 1);
+      var m = new THREE.Mesh(new THREE.PlaneGeometry(len, 1.4), new THREE.MeshLambertMaterial({ map: t, alphaTest: .5, side: THREE.DoubleSide })); m.position.set(x, .7, z); m.rotation.y = ry; scene.add(m);
+    }
+    fence(0, -68, 136, 0); fence(-68, 0, 136, Math.PI / 2); fence(68, 0, 136, Math.PI / 2); fence(-37, 68, 62, 0); fence(37, 68, 62, 0);
+
+    // gate + guard booth
+    addBox(-5.6, 64, 1.2, 1.2, 4.4, 0xe9e4d8); addBox(5.6, 64, 1.2, 1.2, 4.4, 0xe9e4d8);
+    W.circles.push({ x: -5.6, z: 64, r: .9 }, { x: 5.6, z: 64, r: .9 });
+    var banner = new THREE.Mesh(new THREE.PlaneGeometry(11, 1.9), new THREE.MeshBasicMaterial({ map: textTex('SD PELITA ILMU', 640, 110, '#ffc42e', '#10233f'), side: THREE.DoubleSide })); banner.position.set(0, 4.3, 64); scene.add(banner);
+    addBox(11, 62, 3.2, 3.2, 3, 0xf5f5f0); var bro = addBox(11, 62, 4, 4, .35, 0x2a68dc, 3); void bro;
+    W.boxes.push({ x0: 9.4, x1: 12.6, z0: 60.4, z1: 63.6 });
+    // flag pole
+    addBox(0, 0, .25, .25, 9, 0xdddddd); W.circles.push({ x: 0, z: 0, r: .6 });
+    var fl = new THREE.Group(), red = new THREE.Mesh(new THREE.PlaneGeometry(2.4, .8), new THREE.MeshBasicMaterial({ color: 0xd8232a, side: THREE.DoubleSide })), wht = new THREE.Mesh(new THREE.PlaneGeometry(2.4, .8), new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide }));
+    red.position.set(1.2, .4, 0); wht.position.set(1.2, -.4, 0); fl.add(red); fl.add(wht); fl.position.set(.12, 8.2, 0); scene.add(fl); flagMesh = fl;
+    // pond circle collider
+    W.circles.push({ x: POND.x, z: POND.z, r: POND.r + .4 });
+    // benches
+    [[-48, 16, 0], [-38, 8, Math.PI / 2], [-58, 8, Math.PI / 2], [14, 12, 0], [-14, 12, 0]].forEach(function (b) {
+      var gb = new THREE.Group(), seat = new THREE.Mesh(new THREE.BoxGeometry(2.6, .2, .8), lam(0x9c6b3f)), back = new THREE.Mesh(new THREE.BoxGeometry(2.6, .7, .12), lam(0x9c6b3f)), l1 = new THREE.Mesh(new THREE.BoxGeometry(.2, .5, .7), lam(0x444c58)), l2 = l1.clone();
+      seat.position.y = .55; back.position.set(0, .95, -.34); l1.position.set(-1.1, .25, 0); l2.position.set(1.1, .25, 0); gb.add(seat, back, l1, l2); gb.position.set(b[0], 0, b[1]); gb.rotation.y = b[2]; scene.add(gb);
+      var ex = b[2] ? .6 : 1.4, ez = b[2] ? 1.4 : .6; W.boxes.push({ x0: b[0] - ex, x1: b[0] + ex, z0: b[1] - ez, z1: b[1] + ez });
+    });
+    // garden plants
+    var plantG = new THREE.SphereGeometry(.5, 8, 6), plantI = new THREE.InstancedMesh(plantG, lam(0x3fb04f), 30), dm = new THREE.Object3D(), pi = 0;
+    [48, 51.5, 55].forEach(function (zz) { for (var xx = -41; xx <= -27.5; xx += 1.5) { dm.position.set(xx, .4, zz); dm.scale.set(1, 1.1, 1); dm.updateMatrix(); if (pi < 30) plantI.setMatrixAt(pi++, dm.matrix); } });
+    scene.add(plantI);
+
+    // trees
+    var tr = mulberry(42), tpos = [];
+    function free(x, z, m) {
+      var i;
+      for (i = 0; i < W.boxes.length; i++) { var b = W.boxes[i]; if (x > b.x0 - m && x < b.x1 + m && z > b.z0 - m && z < b.z1 + m) return false; }
+      for (i = 0; i < N; i++) if (Math.hypot(x - NPC[i].x, z - NPC[i].z) < 4) return false;
+      if (Math.hypot(x, z) < 18) return false;
+      for (i = 0; i < PATHS.length; i++) if (segDist(x, z, PATHS[i]) < 4.6) return false;
+      if (Math.hypot(x - POND.x, z - POND.z) < 8.5) return false;
+      if (x > -46 && x < -22 && z > 43 && z < 60) return false;
+      if (x > -9 && x < 9 && z > 52) return false;
+      if (x > 15 && x < 41 && z > 34 && z < 60) return false;
+      for (i = 0; i < tpos.length; i++) if (Math.hypot(x - tpos[i][0], z - tpos[i][1]) < 4) return false;
+      return true;
+    }
+    var tries = 0;
+    while (tpos.length < 62 && tries++ < 3000) { var tx = (tr() * 2 - 1) * 62, tz = (tr() * 2 - 1) * 62; if (free(tx, tz, 3.5)) tpos.push([tx, tz, .8 + tr() * .6]); }
+    tries = 0; var ring = 0;
+    while (ring < 50 && tries++ < 2000) {
+      var side = Math.floor(tr() * 4), a = (tr() * 2 - 1) * 64, e = (tr() < .5 ? 1 : -1) * (63.5 + tr() * 3), rx = side < 2 ? a : e, rz = side < 2 ? e : a;
+      if (rz > 58 && Math.abs(rx) < 9) continue; if (free(rx, rz, 2)) { tpos.push([rx, rz, 1 + tr() * .7]); ring++; }
+    }
+    var nT = tpos.length, trunkI = new THREE.InstancedMesh(new THREE.CylinderGeometry(.22, .3, 2.2, 7), lam(0x7a5233), nT),
+      fol1 = new THREE.InstancedMesh(new THREE.ConeGeometry(1.7, 3.4, 8), lam(0xffffff), nT),
+      fol2 = new THREE.InstancedMesh(new THREE.ConeGeometry(1.3, 2.8, 8), lam(0xffffff), nT),
+      shI = new THREE.InstancedMesh(new THREE.CircleGeometry(1.7, 12).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color: 0x1e4a22, transparent: true, opacity: .26, depthWrite: false }), nT);
+    var palette = [0x2f8f46, 0x3aa354, 0x45b05f, 0x2b8a5a], col = new THREE.Color();
+    tpos.forEach(function (t, i) {
+      var s = t[2]; dm.rotation.set(0, 0, 0);
+      dm.position.set(t[0], 1.1 * s, t[1]); dm.scale.set(s, s, s); dm.updateMatrix(); trunkI.setMatrixAt(i, dm.matrix);
+      dm.position.set(t[0], 3.4 * s, t[1]); dm.updateMatrix(); fol1.setMatrixAt(i, dm.matrix);
+      dm.position.set(t[0], 5 * s, t[1]); dm.updateMatrix(); fol2.setMatrixAt(i, dm.matrix);
+      dm.position.set(t[0], .04, t[1]); dm.scale.set(s, 1, s); dm.updateMatrix(); shI.setMatrixAt(i, dm.matrix);
+      col.setHex(palette[i % 4]); fol1.setColorAt(i, col); fol2.setColorAt(i, col);
+      W.circles.push({ x: t[0], z: t[1], r: .55 * s });
+    });
+    fol1.instanceColor.needsUpdate = true; fol2.instanceColor.needsUpdate = true;
+    scene.add(trunkI, fol1, fol2, shI);
+
+    // NPCs
+    var qTex = markTex('q'), cTex = markTex('c'), rTex = markTex('r'), shG = new THREE.CircleGeometry(.6, 14).rotateX(-Math.PI / 2), shM = new THREE.MeshBasicMaterial({ color: 0x1e3a20, transparent: true, opacity: .3, depthWrite: false });
+    NPC.forEach(function (d, i) {
+      var g = new THREE.Group(), body = new THREE.Group(), skin = lam(d.skin), shirt = lam(d.c), pants = lam(d.p || 0x24344f), hair = lam(d.hair);
+      var legL = new THREE.Mesh(new THREE.BoxGeometry(.24, .72, .26), pants), legR = legL.clone(); legL.position.set(-.14, .36, 0); legR.position.set(.14, .36, 0);
+      var torso = new THREE.Mesh(new THREE.CylinderGeometry(.34, .38, .85, 12), shirt); torso.position.y = 1.12;
+      var armG = new THREE.BoxGeometry(.17, .72, .19).translate(0, -.36, 0), armL = new THREE.Mesh(armG, shirt), armR = new THREE.Mesh(armG, shirt); armL.position.set(-.47, 1.46, 0); armR.position.set(.47, 1.46, 0);
+      var head = new THREE.Mesh(new THREE.SphereGeometry(.27, 14, 12), skin); head.position.y = 1.76;
+      var eg = new THREE.SphereGeometry(.034, 6, 6), ebm = new THREE.MeshBasicMaterial({ color: 0x10233f }), e1 = new THREE.Mesh(eg, ebm), e2 = new THREE.Mesh(eg, ebm); e1.position.set(-.09, 1.8, .245); e2.position.set(.09, 1.8, .245);
+      body.add(legL, legR, torso, armL, armR, head, e1, e2);
+      var cap = new THREE.Mesh(new THREE.SphereGeometry(.295, 14, 8, 0, 6.283, 0, 1.75), hair); cap.position.y = 1.77;
+      if (d.look === 'hijab') {
+        var vm = lam(d.v || 0xffffff), veil = new THREE.Mesh(new THREE.SphereGeometry(.34, 14, 12), vm); veil.position.set(0, 1.76, -.1); veil.scale.y = 1.06; body.add(veil);
+        var vt = new THREE.Mesh(new THREE.SphereGeometry(.31, 12, 8, 0, 6.283, 0, 1.2), vm); vt.position.set(0, 1.8, -.03); body.add(vt);
+      } else {
+        body.add(cap);
+        if (d.look === 'long') { var lh = new THREE.Mesh(new THREE.BoxGeometry(.52, .75, .14), hair); lh.position.set(0, 1.5, -.2); body.add(lh); }
+        if (d.look === 'old') { var bun = new THREE.Mesh(new THREE.SphereGeometry(.13, 8, 8), hair); bun.position.set(0, 2.0, -.16); body.add(bun); }
+        if (d.look === 'cap') { var ch = new THREE.Mesh(new THREE.CylinderGeometry(.3, .31, .13, 14), lam(0x24344f)); ch.position.y = 2.0; var vis = new THREE.Mesh(new THREE.BoxGeometry(.4, .04, .22), lam(0x24344f)); vis.position.set(0, 1.97, .3); body.add(ch, vis); }
+      }
+      g.add(body); g.position.set(d.x, 0, d.z); g.rotation.y = Math.atan2(-d.x, -d.z); scene.add(g);
+      var sh = new THREE.Mesh(shG, shM); sh.position.set(d.x, .045, d.z); scene.add(sh);
+      var mk = new THREE.Sprite(new THREE.SpriteMaterial({ map: qTex, fog: false, depthTest: true })); mk.scale.set(.95, .95, 1); mk.position.set(d.x, 2.7, d.z); scene.add(mk);
+      var circ = { x: d.x, z: d.z, r: .6 }; d.ox = d.x; d.oz = d.z; d.oclue = d.clue;
+      W.npc.push({ g: g, body: body, armL: armL, armR: armR, mk: mk, sh: sh, circle: circ, flee: null, home: { x: d.x, z: d.z }, wander: null, walking: false, ph: i * 1.7, qTex: qTex, cTex: cTex, rTex: rTex });
+      W.circles.push(circ);
+    });
+    window.addEventListener('resize', onResize);
+  }
+  function onResize() {
+    if (!renderer) return;
+    renderer.setSize(window.innerWidth, window.innerHeight, false); camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix();
+  }
+  function ensureWorld() {
+    if (W.ready || W.fail) return;
+    try { buildWorld(); W.ready = true; } catch (err) { if (window.console) console.error(err); W.fail = true; }
+  }
+
+  /* ---------- play ---------- */
+  function startPlay() {
+    ensureWorld();
+    if (W.fail) { $('glErr').hidden = false; return; }
+    show(''); $('hud').hidden = false; $('gl').classList.add('on'); $('btnSkip').hidden = true;
+    setState('play'); hudUpdate();
+    if (!started) { started = true; yaw = 0; pitch = 0; pos.set(0, 1.6, 22); loop(); }
+    onResize();
+    if (!isTouch) lockPointer();
+  }
+  function resetGame() {
+    assignQuestions();
+    score = 0; done = 0; res = new Array(N).fill(null); att = new Array(N).fill(0); cur = -1; lastOk = false;
+    W.npc.forEach(function (o, i) {
+      var d = NPC[i]; o.home = { x: d.ox, z: d.oz }; o.wander = null; o.walking = false; d.x = d.ox; d.z = d.oz; d.clue = d.oclue; o.flee = null; o.armL.rotation.x = 0; o.armR.rotation.x = 0;
+      o.circle.x = d.x; o.circle.z = d.z; o.g.position.set(d.x, 0, d.z); o.sh.position.set(d.x, .045, d.z); o.mk.position.x = d.x; o.mk.position.z = d.z;
+      o.mk.material.map = o.qTex; o.mk.material.needsUpdate = true;
+    });
+    $('toast').hidden = true;
+    pos.set(0, 1.6, 22); yaw = 0; pitch = 0; hudUpdate();
+  }
+  function hudUpdate() {
+    $('hN').textContent = done; $('hBar').style.width = (done / N * 100) + '%'; $('hPts').textContent = score;
+  }
+  function collide(p, rad, skip) {
+    var r = rad || .45, i; p.x = clamp(p.x, -66, 66); p.z = clamp(p.z, -66, 66);
+    for (i = 0; i < W.boxes.length; i++) {
+      var b = W.boxes[i];
+      if (p.x > b.x0 - r && p.x < b.x1 + r && p.z > b.z0 - r && p.z < b.z1 + r) {
+        var dl = p.x - (b.x0 - r), dr = (b.x1 + r) - p.x, dt = p.z - (b.z0 - r), db = (b.z1 + r) - p.z, m = Math.min(dl, dr, dt, db);
+        if (m === dl) p.x = b.x0 - r; else if (m === dr) p.x = b.x1 + r; else if (m === dt) p.z = b.z0 - r; else p.z = b.z1 + r;
+      }
+    }
+    for (i = 0; i < W.circles.length; i++) {
+      var c = W.circles[i], dx = p.x - c.x, dz = p.z - c.z, rr2 = r + c.r, d2 = dx * dx + dz * dz;
+      if (c !== skip && d2 < rr2 * rr2) { var d = Math.sqrt(d2) || .001; p.x = c.x + dx / d * rr2; p.z = c.z + dz / d * rr2; }
+    }
+  }
+  function nearest(maxD) {
+    var best = -1, bd = maxD;
+    for (var i = 0; i < N; i++) { if (W.npc[i].flee) continue; var d = Math.hypot(pos.x - NPC[i].x, pos.z - NPC[i].z); if (d < bd) { bd = d; best = i; } }
+    return best;
+  }
+  function loop() {
+    requestAnimationFrame(loop);
+    var dt = Math.min(clock.getDelta(), .05), t = clock.elapsedTime;
+    if (state === 'play') {
+      var f = (keys.KeyW || keys.ArrowUp ? 1 : 0) - (keys.KeyS || keys.ArrowDown ? 1 : 0) + joy.y;
+      var s = (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0) + joy.x;
+      var len = Math.hypot(f, s); if (len > 1) { f /= len; s /= len; }
+      var spd = (keys.ShiftLeft || keys.ShiftRight ? 10 : 6) * dt;
+      moving = len > .05;
+      pos.x += (-Math.sin(yaw) * f + Math.cos(yaw) * s) * spd; pos.z += (-Math.cos(yaw) * f - Math.sin(yaw) * s) * spd;
+      collide(pos);
+      if (moving) bobT += dt * (keys.ShiftLeft || keys.ShiftRight ? 13 : 9);
+    }
+    camera.position.set(pos.x, 1.6 + (moving && state === 'play' ? Math.sin(bobT) * .035 : 0), pos.z); camera.rotation.set(pitch, yaw, 0);
+    sky.position.copy(camera.position);
+    clouds.forEach(function (c) { c.position.x += c.userData.sp * dt; if (c.position.x > 190) c.position.x = -190; });
+    if (flagMesh) flagMesh.rotation.y = Math.sin(t * 2) * .25;
+    for (var i = 0; i < N; i++) {
+      var o = W.npc[i], d = NPC[i], dx, dz, dist;
+      if (o.flee) fleeStep(o, d, dt, t); else if (state === 'play') wanderStep(o, d, dt, t, i); else o.walking = false;
+      dx = pos.x - d.x; dz = pos.z - d.z; dist = Math.hypot(dx, dz);
+      o.body.position.y = o.flee ? Math.abs(Math.sin(t * 12)) * .12 : (o.walking ? Math.abs(Math.sin(t * 7 + o.ph)) * .05 : Math.sin(t * 2 + o.ph) * .015);
+      if (!o.flee && !o.walking && dist < 9) { var target = Math.atan2(dx, dz), diff = Math.atan2(Math.sin(target - o.g.rotation.y), Math.cos(target - o.g.rotation.y)); o.g.rotation.y += diff * Math.min(1, dt * 4); }
+      if (res[i] && dist < 14) { o.armR.rotation.z = 2.6 + Math.sin(t * 7 + o.ph) * .3; o.armL.rotation.z = -.1; }
+      else { o.armR.rotation.z = Math.sin(t * 1.5 + o.ph) * .05; o.armL.rotation.z = -Math.sin(t * 1.5 + o.ph) * .05; }
+      if (!o.flee) { o.armL.rotation.x = o.walking ? Math.sin(t * 6 + o.ph) * .6 : 0; o.armR.rotation.x = o.walking ? -Math.sin(t * 6 + o.ph) * .6 : 0; }
+      o.mk.visible = dist < 34; o.mk.position.y = 2.65 + Math.sin(t * 3 + o.ph) * .12;
+    }
+    frameN++;
+    if (frameN % 6 === 0) { drawMini(); promptUpdate(); }
+    if (frameN % 20 === 0) zoneUpdate();
+    renderer.render(scene, camera);
+  }
+  var toastT = null;
+  function showToast(msg) { var el = $('toast'); el.textContent = msg; el.hidden = false; clearTimeout(toastT); toastT = setTimeout(function () { el.hidden = true; }, 4500); }
+  function zoneAt(x, z) {
+    var best = 'halaman sekolah', bs = 1;
+    ZONES.forEach(function (zn) { var q = Math.hypot(x - zn.x, z - zn.z) / zn.r; if (q < bs) { bs = q; best = zn.n; } });
+    return best;
+  }
+  function spotFree(x, z) {
+    var i;
+    for (i = 0; i < W.boxes.length; i++) { var b = W.boxes[i]; if (x > b.x0 - 2.5 && x < b.x1 + 2.5 && z > b.z0 - 2.5 && z < b.z1 + 2.5) return false; }
+    for (i = 0; i < W.circles.length; i++) { var c = W.circles[i]; if (Math.hypot(x - c.x, z - c.z) < c.r + 1.8) return false; }
+    return true;
+  }
+  function startFlee(i) {
+    var d = NPC[i], o = W.npc[i], tx = 0, tz = 0, ok = false, k;
+    for (k = 0; k < 80 && !ok; k++) {
+      var a = Math.random() * 6.283, rd = 26 + Math.random() * 32; tx = d.x + Math.cos(a) * rd; tz = d.z + Math.sin(a) * rd;
+      ok = Math.abs(tx) < 60 && Math.abs(tz) < 60 && Math.hypot(tx - pos.x, tz - pos.z) > 28 && spotFree(tx, tz);
+    }
+    if (!ok) { tx = clamp(-pos.x * .8, -58, 58); tz = clamp(-pos.z * .8, -58, 58); }
+    o.flee = { tx: tx, tz: tz, t: 0 }; o.mk.material.map = o.rTex; o.mk.material.needsUpdate = true;
+    d.clue = 'Kabur ke arah ' + zoneAt(tx, tz);
+    showToast(d.n + ' kabur ke arah ' + zoneAt(tx, tz) + '! Cari dia lagi.');
+  }
+  function fleeStep(o, d, dt, t) {
+    var f = o.flee, dx = f.tx - d.x, dz = f.tz - d.z, dd = Math.hypot(dx, dz); f.t += dt;
+    if (dd < .8 || f.t > 10) { o.flee = null; o.home = { x: d.x, z: d.z }; o.wander = null; o.armL.rotation.x = 0; o.armR.rotation.x = 0; d.clue = 'Terlihat di ' + zoneAt(d.x, d.z); return; }
+    var st = 7.5 * dt; d.x += dx / dd * st; d.z += dz / dd * st; collide(d, .6, o.circle);
+    o.circle.x = d.x; o.circle.z = d.z; o.g.position.set(d.x, 0, d.z); o.sh.position.set(d.x, .045, d.z); o.mk.position.x = d.x; o.mk.position.z = d.z;
+    var tg = Math.atan2(dx, dz), df = Math.atan2(Math.sin(tg - o.g.rotation.y), Math.cos(tg - o.g.rotation.y)); o.g.rotation.y += df * Math.min(1, dt * 10);
+    o.armL.rotation.x = Math.sin(t * 14) * .9; o.armR.rotation.x = -Math.sin(t * 14) * .9; o.armL.rotation.z = 0; o.armR.rotation.z = 0;
+  }
+  function pickWander(o, d, w) {
+    var k, tx = d.x, tz = d.z, ok = false;
+    for (k = 0; k < 30 && !ok; k++) {
+      var a = Math.random() * 6.283, r = 2.5 + Math.random() * 6;
+      tx = o.home.x + Math.cos(a) * r; tz = o.home.z + Math.sin(a) * r;
+      ok = Math.abs(tx) < 60 && Math.abs(tz) < 60 && spotFree(tx, tz) && Math.hypot(tx - pos.x, tz - pos.z) > 3;
+    }
+    if (ok) { w.tx = tx; w.tz = tz; } else { w.tx = d.x; w.tz = d.z; }
+    w.wait = 1 + Math.random() * 3; w.t = 0; o.walking = false;
+  }
+  function wanderStep(o, d, dt, t, i) {
+    var dp = Math.hypot(pos.x - d.x, pos.z - d.z);
+    if (dp < 4.5 || (res[i] && dp < 14)) { o.walking = false; return; }
+    var w = o.wander;
+    if (!w) { w = o.wander = { tx: d.x, tz: d.z, wait: 0, t: 0 }; pickWander(o, d, w); w.wait = Math.random() * 1.5; }
+    if (w.wait > 0) { w.wait -= dt; o.walking = false; return; }
+    var dx = w.tx - d.x, dz = w.tz - d.z, dd = Math.hypot(dx, dz); w.t += dt;
+    if (dd < .5 || w.t > 9) { pickWander(o, d, w); return; }
+    var st = 1.5 * dt; d.x += dx / dd * st; d.z += dz / dd * st; collide(d, .6, o.circle);
+    o.circle.x = d.x; o.circle.z = d.z; o.g.position.set(d.x, 0, d.z); o.sh.position.set(d.x, .045, d.z); o.mk.position.x = d.x; o.mk.position.z = d.z;
+    var tg = Math.atan2(dx, dz), df = Math.atan2(Math.sin(tg - o.g.rotation.y), Math.cos(tg - o.g.rotation.y)); o.g.rotation.y += df * Math.min(1, dt * 8);
+    o.walking = true;
+  }
+  function zoneUpdate() {
+    var best = 'Halaman Sekolah', bs = 1;
+    ZONES.forEach(function (z) { var q = Math.hypot(pos.x - z.x, pos.z - z.z) / z.r; if (q < bs) { bs = q; best = z.n; } });
+    if ($('zone').textContent !== best) $('zone').textContent = best;
+  }
+  function promptUpdate() {
+    var el = $('prompt');
+    if (state !== 'play') { el.hidden = true; return; }
+    var i = nearest(3.8);
+    if (i < 0) { el.hidden = true; return; }
+    el.hidden = false; el.classList.toggle('quiet', !!res[i]); $('btnTalk').hidden = !!res[i];
+    $('pTxt').innerHTML = res[i] ? NPC[i].n + ' sudah kamu bantu.' : (isTouch ? 'Ada ' + NPC[i].n + ' di dekatmu' : 'Tekan <kbd>E</kbd> untuk bicara dengan <strong>' + NPC[i].n + '</strong>');
+  }
+  var mctx = $('mini').getContext('2d'), mdpr = Math.min(window.devicePixelRatio || 1, 2);
+  function drawMini() {
+    var cv = $('mini'), size = cv.clientWidth || 140; if (cv.width !== Math.round(size * mdpr)) { cv.width = cv.height = Math.round(size * mdpr); }
+    var S = cv.width, m = S / 140, g = mctx, X = function (x) { return (x + 70) * m; };
+    g.clearRect(0, 0, S, S); if (W.groundCanvas) g.drawImage(W.groundCanvas, 0, 0, S, S);
+    BUILD.forEach(function (b) { g.fillStyle = '#' + ('000000' + b.roof.toString(16)).slice(-6); g.fillRect(X(b.x - b.w / 2), X(b.z - b.d / 2), b.w * m, b.d * m); });
+    for (var i = 0; i < N; i++) {
+      var d = NPC[i], dist = Math.hypot(pos.x - d.x, pos.z - d.z);
+      if (res[i]) { g.fillStyle = '#14a06e'; } else if (dist < 24) { g.fillStyle = att[i] ? '#e0434a' : '#ffc42e'; } else continue;
+      g.beginPath(); g.arc(X(d.x), X(d.z), 3.4 * mdpr, 0, 7); g.fill(); g.lineWidth = 1.5 * mdpr; g.strokeStyle = '#10233f'; g.stroke();
+    }
+    var px = X(pos.x), pz = X(pos.z), fx = -Math.sin(yaw), fz = -Math.cos(yaw), L = 7 * mdpr;
+    g.fillStyle = '#e0434a'; g.strokeStyle = '#fff'; g.lineWidth = 1.5 * mdpr; g.beginPath();
+    g.moveTo(px + fx * L, pz + fz * L); g.lineTo(px - fx * L * .6 - fz * L * .6, pz - fz * L * .6 + fx * L * .6); g.lineTo(px - fx * L * .6 + fz * L * .6, pz - fz * L * .6 - fx * L * .6); g.closePath(); g.fill(); g.stroke();
+  }
+
+  /* ---------- input ---------- */
+  var cv = $('gl');
+  function lockPointer() { try { var p = cv.requestPointerLock && cv.requestPointerLock(); if (p && p.catch) p.catch(function () { }); } catch (e) { } }
+  cv.addEventListener('mousedown', function (e) { if (state !== 'play') return; dragging = true; lockPointer(); e.preventDefault(); });
+  window.addEventListener('mouseup', function () { dragging = false; });
+  window.addEventListener('mousemove', function (e) {
+    if (state !== 'play' || !(locked || dragging)) return;
+    yaw -= (e.movementX || 0) * .0023; pitch = clamp(pitch - (e.movementY || 0) * .0023, -1.3, 1.3);
+  });
+  document.addEventListener('pointerlockchange', function () { locked = (document.pointerLockElement === cv); updatePause(); });
+  window.addEventListener('blur', function () { keys = {}; dragging = false; });
+  window.addEventListener('keydown', function (e) {
+    if (state === 'dialog') {
+      if (e.code === 'Escape') { closeDialog(qLocked); return; }
+      var m = /^(Digit|Numpad)([1-5])$/.exec(e.code);
+      if (m && !$('dSubmit').hidden && !qLocked) { toggleOpt(+m[2] - 1); e.preventDefault(); }
+      if (e.code === 'Enter' && e.target.tagName !== 'BUTTON') { e.preventDefault(); (qLocked ? closeDialog : submitAnswer)(qLocked ? true : undefined); }
+      return;
+    }
+    if (state === 'list') { if (e.code === 'Escape' || e.code === 'Tab' || e.code === 'KeyH') { e.preventDefault(); closeList(); } return; }
+    if (state === 'confirm') { if (e.code === 'Escape') { e.preventDefault(); closeFinish(); } return; }
+    if (state !== 'play') return;
+    if (e.code === 'Tab' || e.code === 'KeyH') { e.preventDefault(); openList(); return; }
+    if (e.code === 'KeyE') { tryTalk(); return; }
+    keys[e.code] = true;
+    if (e.code.indexOf('Arrow') === 0 || e.code === 'Space') e.preventDefault();
+  });
+  window.addEventListener('keyup', function (e) { keys[e.code] = false; });
+  // touch
+  var tzL = $('tzL'), tzR = $('tzR'), jb = $('joyBase'), jk = $('joyKnob');
+  tzL.addEventListener('pointerdown', function (e) {
+    if (joy.id !== null) return; joy.id = e.pointerId; joy.ox = e.clientX; joy.oy = e.clientY; jb.style.left = e.clientX + 'px'; jb.style.top = e.clientY + 'px'; jb.hidden = false; jk.style.transform = ''; try { tzL.setPointerCapture(e.pointerId); } catch (x) { }
+  });
+  tzL.addEventListener('pointermove', function (e) {
+    if (e.pointerId !== joy.id) return; var dx = e.clientX - joy.ox, dy = e.clientY - joy.oy, l = Math.hypot(dx, dy), mx = 50; if (l > mx) { dx = dx / l * mx; dy = dy / l * mx; }
+    joy.x = dx / mx; joy.y = -dy / mx; jk.style.transform = 'translate(' + dx + 'px,' + dy + 'px)';
+  });
+  function joyEnd(e) { if (e.pointerId !== joy.id) return; joy.id = null; joy.x = joy.y = 0; jb.hidden = true; }
+  tzL.addEventListener('pointerup', joyEnd); tzL.addEventListener('pointercancel', joyEnd);
+  tzR.addEventListener('pointerdown', function (e) { if (lookId !== null) return; lookId = e.pointerId; lookLast = [e.clientX, e.clientY]; try { tzR.setPointerCapture(e.pointerId); } catch (x) { } });
+  tzR.addEventListener('pointermove', function (e) {
+    if (e.pointerId !== lookId) return; yaw -= (e.clientX - lookLast[0]) * .0055; pitch = clamp(pitch - (e.clientY - lookLast[1]) * .0055, -1.3, 1.3); lookLast = [e.clientX, e.clientY];
+  });
+  function lookEnd(e) { if (e.pointerId === lookId) lookId = null; }
+  tzR.addEventListener('pointerup', lookEnd); tzR.addEventListener('pointercancel', lookEnd);
+
+  /* ---------- dialog ---------- */
+  var qLocked = false;
+  function releaseLock() { try { if (document.exitPointerLock) document.exitPointerLock(); } catch (e) { } keys = {}; joy.x = joy.y = 0; dragging = false; }
+  function tryTalk() {
+    if (state !== 'play') return; var i = nearest(3.8); if (i < 0 || res[i]) return; openDialog(i);
+  }
+  $('btnTalk').addEventListener('click', tryTalk);
+  function shuffle(a) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function openDialog(i) {
+    cur = i; qLocked = false; releaseLock(); setState('dialog'); beep(660, .1, 'triangle'); beep(880, .12, 'triangle', .09);
+    var d = NPC[i]; $('dAv').textContent = d.n.replace(/^(Bu|Pak|Pa|Nenek|Kak|Mang)\s/, '').charAt(0); $('dAv').style.background = '#' + ('000000' + (d.c === 0xffffff ? 0xd8232a : d.c).toString(16)).slice(-6);
+    curName = d.n; $('dName').textContent = d.n; $('dRole').textContent = d.r; $('dQ').textContent = T(d.s);
+    $('dHi').textContent = att[i] ? 'Kamu menemukanku lagi! Coba jawab sekali lagi, ya. Pilih semua jawaban yang benar.' : d.hi;
+    document.querySelector('.qtag').textContent = 'Pilih SEMUA jawaban yang benar' + (d.hots ? ' · Soal HOTS' : '') + (att[i] ? ' · Percobaan ke-' + (att[i] + 1) : '');
+    qopts = shuffle(d.o.map(function (o) { return { t: T(o[0]), ok: !!o[1] }; }));
+    var box = $('dOpts'); box.innerHTML = '';
+    qopts.forEach(function (o, k) {
+      var lab = document.createElement('label'); lab.className = 'opt'; lab.innerHTML = '<input type="checkbox" id="opt' + k + '"><span class="box"></span><span class="ot"></span><span class="tag"></span>';
+      lab.querySelector('.ot').textContent = o.t; o.el = lab; o.inp = lab.querySelector('input');
+      o.inp.addEventListener('change', function () { lab.classList.toggle('sel', o.inp.checked); });
+      box.appendChild(lab);
+    });
+    $('dRes').hidden = true; $('dHint').hidden = false; $('dSubmit').textContent = 'Periksa Jawaban'; $('dLater').hidden = false;
+    $('dialog').hidden = false; $('dialog').scrollTop = 0; $('dcard').focus();
+  }
+  function toggleOpt(k) { var o = qopts[k]; if (!o) return; o.inp.checked = !o.inp.checked; o.el.classList.toggle('sel', o.inp.checked); }
+  function submitAnswer() {
+    if (qLocked) { closeDialog(true); return; }
+    var hits = 0, wrong = 0, total = 0;
+    qopts.forEach(function (o) { if (o.ok) total++; if (o.inp.checked && o.ok) hits++; if (o.inp.checked && !o.ok) wrong++; });
+    var perfect = (hits === total && wrong === 0);
+    qLocked = true; lastOk = perfect;
+    qopts.forEach(function (o) {
+      o.inp.disabled = true; o.el.classList.add('lock');
+      if (perfect) { o.el.classList.remove('sel'); o.el.classList.add('ok'); o.el.querySelector('.tag').textContent = 'Benar'; }
+    });
+    var box = $('dRes'); box.hidden = false;
+    if (perfect) {
+      var pts = Math.max(20, 100 - 20 * att[cur]);
+      res[cur] = { pts: pts, tries: att[cur] + 1 }; done++; score += pts;
+      box.className = 'res good';
+      box.innerHTML = '<b>Sempurna! +' + pts + ' poin</b><span>' + T(NPC[cur].w) + '</span>';
+      var nm = W.npc[cur]; nm.mk.material.map = nm.cTex; nm.mk.material.needsUpdate = true;
+      $('dSubmit').textContent = done === N ? 'Lihat Hasil' : 'Lanjut Mencari';
+      beep(784, .12, 'triangle'); beep(988, .12, 'triangle', .11); beep(1318, .2, 'triangle', .22);
+    } else {
+      att[cur]++;
+      box.className = 'res nope';
+      box.innerHTML = '<b>Belum tepat, ' + NPC[cur].n + ' kabur!</b><span>Kamu memilih ' + hits + ' jawaban yang tepat dan ' + wrong + ' yang kurang tepat. Jumlah semua jawaban yang benar: ' + total + '.</span><span>' + T(NPC[cur].w) + '</span><span>Cari dia lagi, lalu jawab sampai benar semua.</span>';
+      $('dSubmit').textContent = 'Cari Dia Lagi';
+      beep(220, .25, 'sawtooth');
+    }
+    $('dHint').hidden = true; $('dLater').hidden = true; hudUpdate();
+    if (box.scrollIntoView) box.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }
+  function closeDialog(answered) {
+    $('dialog').hidden = true;
+    if (answered === true && qLocked && lastOk && done === N) { showResults(); return; }
+    setState('play'); if (!isTouch) lockPointer();
+    if (answered === true && qLocked && !lastOk) startFlee(cur);
+  }
+  $('dSubmit').addEventListener('click', function () { submitAnswer(); });
+  $('dLater').addEventListener('click', function () { closeDialog(false); });
+  $('dClose').addEventListener('click', function () { closeDialog(qLocked); });
+
+  /* ---------- list ---------- */
+  function openList() {
+    releaseLock(); setState('list');
+    $('lList').innerHTML = NPC.map(function (d, i) {
+      var r = res[i]; return '<li class="' + (r ? 'done' : '') + '"><span class="dot">' + (r ? '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6.5l2.6 2.6L10 3.4"/></svg>' : '') + '</span><span class="who"><b>' + d.n + '</b><span>' + d.r + ' · ' + (r ? 'sudah benar' : d.clue) + (att[i] && !r ? ' · salah ' + att[i] + 'x' : '') + '</span></span>' + (r ? '<span class="p">' + r.pts + '</span>' : '') + '</li>';
+    }).join('');
+    $('daftar').hidden = false; $('lcard').focus();
+  }
+  function closeList() { $('daftar').hidden = true; setState('play'); if (!isTouch) lockPointer(); }
+  $('btnList').addEventListener('click', function () { if (state === 'play') openList(); });
+  $('lClose').addEventListener('click', closeList);
+
+  /* ---------- selesaikan ujian ---------- */
+  function openFinish() {
+    if (state !== 'play') return;
+    releaseLock(); setState('confirm');
+    $('kMsg').textContent = 'Baru ' + done + ' dari ' + N + ' soal yang dijawab benar. Soal yang belum dijawab dihitung 0 poin. Yakin ingin menyelesaikan ujian dan melihat nilaimu?';
+    $('konfirm').hidden = false; $('kcard').focus();
+  }
+  function closeFinish() { $('konfirm').hidden = true; setState('play'); if (!isTouch) lockPointer(); }
+  $('btnFinish').addEventListener('click', openFinish);
+  $('kNo').addEventListener('click', closeFinish);
+  $('kYes').addEventListener('click', function () { $('konfirm').hidden = true; showResults(); });
+
+  /* ---------- results ---------- */
+  function showResults() {
+    releaseLock(); setState('end'); $('hud').hidden = true; $('prompt').hidden = true; $('toast').hidden = true;
+    var first = res.filter(function (r) { return r && r.tries === 1; }).length, wrongs = att.reduce(function (x, y) { return x + y; }, 0), avg = Math.round(score / N);
+    $('rName').textContent = (playerName ? playerName + ' · ' : '') + (done === N ? 'Semua soal terjawab benar' : done + ' dari ' + N + ' soal terjawab benar');
+    $('rTitle').textContent = avg >= 85 ? 'Juara Komputer!' : (avg >= 65 ? 'Hebat, kamu pantang menyerah!' : 'Kamu berhasil sampai akhir!');
+    $('rMsg').textContent = avg >= 85 ? 'Hampir semua soal benar di percobaan pertama. Kamu paham betul tentang komputer dan perangkat kerasnya.' : 'Semua temanmu sudah kamu bantu dengan jawaban benar. Nilai makin tinggi kalau lebih sedikit salah, jadi coba main lagi!';
+    if (done < N) { $('rTitle').textContent = 'Ujian selesai!'; $('rMsg').textContent = 'Kamu menjawab benar ' + done + ' dari ' + N + ' soal. Soal yang belum dijawab dihitung 0 poin. Main lagi untuk menyelesaikan semuanya!'; }
+    $('rScore').textContent = avg; $('rPerfect').textContent = first + ' / ' + N; $('rPts').textContent = wrongs;
+    $('rList').innerHTML = NPC.map(function (d, i) {
+      var r = res[i];
+      if (!r) return '<li class="bad"><span class="dot"></span><span class="who"><b>' + d.n + '</b><span>Belum dijawab benar</span></span><span class="p">0</span></li>';
+      var cls = r.tries === 1 ? 'done' : (r.tries <= 3 ? 'part' : 'bad');
+      return '<li class="' + cls + '"><span class="dot"></span><span class="who"><b>' + d.n + '</b><span>Benar di percobaan ke-' + r.tries + '</span></span><span class="p">' + r.pts + '</span></li>';
+    }).join('');
+    show('hasil'); $('hasil').scrollTop = 0;
+    beep(523, .15, 'triangle'); beep(659, .15, 'triangle', .14); beep(784, .15, 'triangle', .28); beep(1047, .3, 'triangle', .42);
+  }
+  $('btnAgain').addEventListener('click', function () { resetGame(); show(''); $('hud').hidden = false; setState('play'); hudUpdate(); });
+  $('btnReread').addEventListener('click', function () { resetGame(); $('hud').hidden = true; startRead(); });
+})();
+</script>
+
+</body>
+</html>
