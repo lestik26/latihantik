@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mengenal Aplikasi Pengolah Kata - TIK Kelas II</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:#1e1b4b;font-family:'Baloo 2','Comic Sans MS','Trebuchet MS',system-ui,sans-serif;color:#1e3a8a;-webkit-user-select:none;user-select:none}
+#stage{position:absolute;left:50%;top:50%;width:1280px;height:720px;transform-origin:center center;background:linear-gradient(160deg,#dbeafe 0%,#fef9c3 55%,#fde7f3 100%);overflow:hidden}
+.bg{position:absolute;inset:0;pointer-events:none}
+.bg span{position:absolute;left:0;opacity:.45;animation:drift linear infinite;will-change:transform}
+@keyframes drift{from{transform:translateX(-200px)}to{transform:translateX(1450px)}}
+
+/* Slides */
+.slide{position:absolute;inset:0;padding:40px 70px 100px;display:none;flex-direction:column;align-items:center;z-index:2}
+.slide.active{display:flex;animation:slideIn .55s ease both}
+@keyframes slideIn{from{opacity:0;transform:translateX(60px)}to{opacity:1;transform:none}}
+.center{justify-content:center;text-align:center}
+h1{font-size:60px;line-height:1.05;font-weight:800;color:#1e3a8a;text-align:center;text-shadow:0 4px 0 rgba(255,255,255,.8)}
+h2{font-size:34px;font-weight:800}
+p{font-size:30px;line-height:1.3;font-weight:500}
+.badge{display:inline-block;padding:6px 22px;border-radius:999px;font-size:22px;font-weight:800;color:#fff;margin-bottom:10px;box-shadow:0 5px 0 rgba(0,0,0,.15)}
+.b-purple{background:#8b5cf6}.b-orange{background:#f97316}.b-green{background:#16a34a}.b-blue{background:#2563eb}.b-pink{background:#ec4899}
+.card{background:#fff;border-radius:28px;box-shadow:0 10px 0 rgba(30,58,138,.12),0 18px 40px rgba(30,58,138,.15);padding:24px 30px}
+.row{display:flex;gap:30px;align-items:center;justify-content:center}
+.col{display:flex;flex-direction:column;gap:18px}
+
+/* Animations */
+.pop{animation:pop .7s cubic-bezier(.2,1.6,.4,1) both;animation-delay:calc(var(--d,0)*.18s)}
+@keyframes pop{from{opacity:0;transform:scale(.4) translateY(30px)}to{opacity:1;transform:none}}
+.float{animation:floaty 3s ease-in-out infinite;animation-delay:calc(var(--d,0)*.4s)}
+@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-16px)}}
+.bounce{animation:bounce 1.2s ease-in-out infinite;animation-delay:calc(var(--d,0)*.25s)}
+@keyframes bounce{0%,100%{transform:translateY(0) scale(1)}40%{transform:translateY(-26px) scale(1.06,.96)}60%{transform:translateY(0) scale(.96,1.05)}}
+.wiggle{animation:wiggle 1.6s ease-in-out infinite}
+@keyframes wiggle{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(6deg)}}
+.pulse{animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.18)}}
+.shake{animation:shake .45s}
+@keyframes shake{20%,60%{transform:translateX(-12px)}40%,80%{transform:translateX(12px)}}
+
+/* Cover */
+.cover-title{font-size:78px;margin:10px 0 6px}
+.chips{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:22px}
+.chip{background:#fff;border:3px solid #93c5fd;border-radius:999px;padding:4px 20px;font-size:24px;font-weight:700}
+.cover-icons{display:flex;gap:40px;margin-top:20px}
+.cover-icons .ic{width:110px;height:110px}
+.footer-note{position:absolute;bottom:92px;font-size:22px;font-weight:700;color:#475569}
+
+/* Pemantik */
+.bubble{position:relative;background:#fff;border-radius:34px;padding:26px 34px;font-size:34px;font-weight:700;max-width:760px;box-shadow:0 10px 0 rgba(30,58,138,.12)}
+.bubble.l::after{content:"";position:absolute;left:-18px;bottom:30px;border:18px solid transparent;border-right-color:#fff;border-left:0}
+.bubble.r::after{content:"";position:absolute;right:-18px;bottom:30px;border:18px solid transparent;border-left-color:#fff;border-right:0}
+.big-emoji{font-size:120px;line-height:1}
+
+/* Mindfulness */
+.steps{display:flex;flex-direction:column;gap:14px;width:560px}
+.step{display:flex;align-items:center;gap:16px;background:#fff;border-radius:22px;padding:12px 20px;font-size:28px;font-weight:700;box-shadow:0 6px 0 rgba(139,92,246,.2)}
+.step .e{font-size:40px}
+.breath-wrap{position:relative;width:380px;height:380px;display:flex;align-items:center;justify-content:center}
+.breath{position:absolute;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#f3e8ff,#a78bfa);box-shadow:0 0 70px #c4b5fd;animation:breathe 8s ease-in-out infinite}
+.ring{position:absolute;width:300px;height:300px;border-radius:50%;border:5px solid #c4b5fd;animation:ring 8s ease-in-out infinite}
+@keyframes breathe{0%,100%{transform:scale(.62)}50%{transform:scale(1.1)}}
+@keyframes ring{0%,100%{transform:scale(.7);opacity:.2}50%{transform:scale(1.25);opacity:.9}}
+.blabel{position:absolute;font-size:34px;font-weight:800;color:#4c1d95;text-align:center}
+.bt1{animation:fadeA 8s infinite}.bt2{animation:fadeB 8s infinite}
+@keyframes fadeA{0%,44%{opacity:1}50%,94%{opacity:0}100%{opacity:1}}
+@keyframes fadeB{0%,44%{opacity:0}50%,94%{opacity:1}100%{opacity:0}}
+.btn{border:0;border-radius:999px;padding:10px 28px;font:inherit;font-size:26px;font-weight:800;color:#fff;background:#8b5cf6;box-shadow:0 6px 0 #6d28d9;cursor:pointer;transition:transform .1s}
+.btn:active{transform:translateY(5px);box-shadow:0 1px 0 #6d28d9}
+.btn.o{background:#f97316;box-shadow:0 6px 0 #c2410c}.btn.o:active{box-shadow:0 1px 0 #c2410c}
+.btn.g{background:#16a34a;box-shadow:0 6px 0 #15803d}.btn.g:active{box-shadow:0 1px 0 #15803d}
+
+/* Perjalanan huruf */
+.scene{position:relative;width:720px;height:410px;margin-top:8px}
+.monitor{position:absolute;left:80px;top:0;width:560px;height:190px;background:#1f2937;border-radius:22px;padding:14px;box-shadow:0 10px 0 #111827}
+.screen{width:100%;height:100%;background:#fff;border-radius:10px;padding:14px 22px;font-size:60px;font-weight:800;color:#1d4ed8;letter-spacing:4px;display:flex;align-items:center;overflow:hidden;white-space:nowrap}
+.caret{display:inline-block;width:5px;height:64px;background:#f97316;margin-left:4px;animation:blink .8s step-end infinite}
+@keyframes blink{50%{opacity:0}}
+.stand{position:absolute;left:310px;top:190px;width:100px;height:24px;background:#374151;border-radius:0 0 12px 12px}
+.kb{position:absolute;left:30px;right:30px;top:226px;background:#e0e7ff;border-radius:22px;padding:12px 10px 8px;box-shadow:0 8px 0 #a5b4fc;display:flex;flex-direction:column;align-items:center}
+.krow{display:flex}
+.key{width:54px;height:48px;margin:3px;background:#fff;border-radius:10px;box-shadow:0 5px 0 #94a3b8;font-size:26px;font-weight:800;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .08s}
+.key.press{transform:translateY(5px);box-shadow:0 0 0 #94a3b8;background:#fde68a}
+.fly{position:absolute;z-index:30;font-size:54px;font-weight:800;color:#ec4899;pointer-events:none;text-shadow:0 0 12px #fff}
+
+/* Definisi */
+.def-box{max-width:700px}
+.def-box b{color:#ea580c}
+.vs{display:flex;align-items:center;gap:26px}
+.pane{background:#fff;border-radius:28px;padding:20px 26px;text-align:center;box-shadow:0 10px 0 rgba(30,58,138,.12)}
+.pane .big{font-size:96px;line-height:1.1}
+.pane small{display:block;font-size:24px;font-weight:700;color:#475569}
+.arrow{font-size:80px;color:#f97316}
+
+/* Aplikasi */
+.apps{display:flex;gap:34px;margin-top:20px}
+.app{width:340px;text-align:center;padding:22px 20px 24px;transition:transform .2s}
+.app:hover{transform:translateY(-10px) rotate(-1.5deg)}
+.app .ic{width:150px;height:150px;margin:0 auto 6px}
+.app h2{font-size:34px}
+.app p{font-size:23px;color:#475569}
+.ic svg{width:100%;height:100%;display:block}
+
+/* Kuis */
+.quiz{display:flex;gap:50px;align-items:center;margin-top:10px}
+.qcard{position:relative;width:300px;height:300px;display:flex;align-items:center;justify-content:center}
+.qcard .ic{width:210px;height:210px}
+.qmark{position:absolute;top:-14px;right:-14px;width:76px;height:76px;border-radius:50%;background:#f97316;color:#fff;font-size:52px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.choices{display:flex;flex-direction:column;gap:16px;width:420px}
+.choice{border:0;border-radius:22px;background:#fff;font:inherit;font-size:34px;font-weight:800;color:#1e3a8a;padding:12px 20px;box-shadow:0 8px 0 #fdba74;cursor:pointer;transition:transform .1s;text-align:left}
+.choice:hover{background:#fff7ed}
+.choice:active{transform:translateY(6px);box-shadow:0 2px 0 #fdba74}
+.choice.ok{background:#bbf7d0;box-shadow:0 8px 0 #16a34a}
+.choice.bad{background:#fecaca;box-shadow:0 8px 0 #dc2626;animation:shake .45s}
+.stars{position:absolute;top:30px;right:70px;display:flex;gap:6px;background:#fff;border-radius:999px;padding:4px 16px;font-size:40px;box-shadow:0 6px 0 rgba(30,58,138,.12)}
+.star{filter:grayscale(1);opacity:.35}
+.star.on{filter:none;opacity:1;animation:starPop .8s cubic-bezier(.2,1.8,.4,1)}
+@keyframes starPop{from{transform:scale(0) rotate(-180deg)}to{transform:none}}
+.qmsg{font-size:32px;font-weight:800;min-height:46px;margin-top:10px;color:#ea580c}
+.finish{text-align:center;display:none;flex-direction:column;align-items:center;gap:14px}
+.finish .trophy{font-size:150px}
+
+/* Kuis: progres untuk 27 anak */
+.qhead{display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap}
+.kidbadge{background:#fff;border-radius:999px;padding:6px 24px;font-size:24px;font-weight:800;color:#1e3a8a;box-shadow:0 6px 0 rgba(30,58,138,.12)}
+.qbar{width:620px;max-width:100%;height:16px;border-radius:999px;background:#fff;box-shadow:inset 0 3px 6px rgba(30,58,138,.18);overflow:hidden;margin:10px 0 2px}
+.qbar-fill{height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,#22c55e,#16a34a);transition:width .45s ease}
+@keyframes spinIn{0%{transform:rotate(-180deg) scale(.3);opacity:0}60%{transform:rotate(12deg) scale(1.12);opacity:1}100%{transform:none;opacity:1}}
+.spinIn{animation:spinIn .65s cubic-bezier(.2,1.4,.4,1) both}
+
+/* Fungsi */
+.uses{display:flex;gap:30px;margin-top:20px}
+.use{width:350px;text-align:center}
+.use .em{font-size:96px;line-height:1.1}
+.use h2{font-size:30px;margin:4px 0 12px}
+.paper{background:#fffbeb;border:3px dashed #fcd34d;border-radius:14px;padding:14px 10px;height:62px;display:flex;align-items:center;justify-content:center}
+.type{font-family:'Courier New',monospace;font-weight:700;font-size:20px;display:inline-block;overflow:hidden;white-space:nowrap;border-right:3px solid #1e3a8a;width:0;animation:typing 3s steps(var(--n,20)) .8s forwards,blink .7s step-end infinite}
+@keyframes typing{to{width:calc(var(--n,20)*1ch)}}
+
+/* Diskusi */
+.compare{display:flex;gap:26px;align-items:stretch;margin-top:14px}
+.cmp{width:470px;padding:22px 30px}
+.cmp h2{text-align:center;margin-bottom:10px;font-size:38px}
+.cmp ul{list-style:none;display:flex;flex-direction:column;gap:10px}
+.cmp li{font-size:26px;font-weight:700;display:flex;gap:12px;align-items:center}
+.vsbadge{align-self:center;background:#f97316;color:#fff;font-size:40px;font-weight:800;width:90px;height:90px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 0 #c2410c}
+
+/* Kesimpulan */
+.final{padding:28px 50px;text-align:center}
+.final .eq{font-size:56px;font-weight:800}
+.final .eq b{color:#ea580c}
+.pills{display:flex;gap:18px;margin-top:20px}
+.pill{background:#dcfce7;border:3px solid #86efac;border-radius:999px;padding:8px 24px;font-size:28px;font-weight:800}
+
+/* Controls */
+.controls{position:absolute;bottom:20px;left:0;right:0;display:flex;align-items:center;justify-content:center;gap:18px;z-index:50}
+.nav{border:0;width:64px;height:64px;border-radius:50%;background:#1e3a8a;color:#fff;font-size:30px;font-weight:800;cursor:pointer;box-shadow:0 6px 0 #172554;font-family:inherit}
+.nav:active{transform:translateY(5px);box-shadow:0 1px 0 #172554}
+.counter{font-size:26px;font-weight:800;background:#fff;border-radius:999px;padding:4px 22px;min-width:110px;text-align:center}
+.fs{position:absolute;right:26px;bottom:0}
+.progress{position:absolute;left:0;top:0;height:10px;background:linear-gradient(90deg,#f97316,#ec4899,#8b5cf6);width:0;z-index:60;transition:width .4s;border-radius:0 6px 6px 0}
+
+.conf{position:absolute;top:-30px;width:14px;height:22px;z-index:80;pointer-events:none;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(780px) rotate(720deg)}}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="progress" id="progress"></div>
+  <div class="bg" id="bg"></div>
+
+  <!-- 1. COVER -->
+  <section class="slide center active">
+    <div class="big-emoji pop float" style="--d:0">💻</div>
+    <div class="badge b-blue pop" style="--d:1;margin-top:8px">Teknologi Informasi dan Komunikasi • Kelas II</div>
+    <h1 class="cover-title pop" style="--d:2">Mengenal Aplikasi<br>Pengolah Kata ✨</h1>
+    <div class="cover-icons">
+      <div class="ic bounce" style="--d:0" data-icon="word"></div>
+      <div class="ic bounce" style="--d:1" data-icon="docs"></div>
+      <div class="ic bounce" style="--d:2" data-icon="notepad"></div>
+    </div>
+    <div class="chips">
+      <span class="chip pop" style="--d:3">Aplikasi</span><span class="chip pop" style="--d:4">Pengolah Kata</span>
+      <span class="chip pop" style="--d:5">Komputer</span><span class="chip pop" style="--d:6">Mengetik</span>
+      <span class="chip pop" style="--d:7">Dokumen</span>
+    </div>
+    <div class="footer-note">SDIT Hidayatut Taufiq • Nova Haryanto, A.Md.</div>
+  </section>
+
+  <!-- 2. PEMANTIK -->
+  <section class="slide center">
+    <div class="badge b-pink pop">🤔 Ayo Berpikir</div>
+    <div class="col" style="gap:26px;margin-top:6px">
+      <div class="row" style="justify-content:flex-start">
+        <div class="big-emoji bounce" style="--d:0">👩‍🏫</div>
+        <div class="bubble l pop" style="--d:1">Pernahkah kalian melihat orang tua atau guru mengetik cerita di komputer?</div>
+      </div>
+      <div class="row" style="justify-content:flex-end">
+        <div class="bubble r pop" style="--d:3">Program apa ya yang mereka gunakan di layar komputer tersebut?</div>
+        <div class="big-emoji bounce" style="--d:2">🧑‍💻</div>
+      </div>
+    </div>
+    <div class="pop pulse" style="--d:5;font-size:40px;font-weight:800;margin-top:24px;color:#ea580c">✋ Ayo angkat tangan dan jawab!</div>
+  </section>
+
+  <!-- 3. MINDFULNESS -->
+  <section class="slide">
+    <div class="badge b-purple pop">🧘 Mindfulness Learning</div>
+    <h1 class="pop" style="--d:1;font-size:52px">Siap Belajar dengan Tenang</h1>
+    <div class="row" style="gap:50px;margin-top:6px">
+      <div class="steps">
+        <div class="step pop" style="--d:2"><span class="e">🪑</span>Duduk tegap</div>
+        <div class="step pop" style="--d:3"><span class="e">🌬️</span>Tarik napas dalam-dalam</div>
+        <div class="step pop" style="--d:4"><span class="e">😌</span>Rilekskan bahu</div>
+        <div class="step pop" style="--d:5"><span class="e">👀</span>Pandang layar IFP</div>
+        <div class="step pop" style="--d:6"><span class="e">👂</span>Dengarkan bunyi “klik”</div>
+      </div>
+      <div class="col" style="align-items:center">
+        <div class="breath-wrap">
+          <div class="ring"></div><div class="breath"></div>
+          <div class="blabel bt1">Tarik napas…<br>😮</div>
+          <div class="blabel bt2">Hembuskan…<br>😌</div>
+        </div>
+        <button class="btn" id="clickBtn">🔊 Bunyi KLIK!</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. PERJALANAN HURUF -->
+  <section class="slide" id="slideType">
+    <div class="badge b-orange pop">🎉 Joyful Learning</div>
+    <h1 class="pop" style="--d:1;font-size:48px">Perjalanan Sebuah Huruf ⌨️➡️🖥️</h1>
+    <div class="row" style="margin-top:8px;gap:16px">
+      <button class="btn o" id="playType">▶ Putar Animasi</button>
+      <button class="btn g" id="clearType">🧹 Hapus</button>
+      <span style="font-size:24px;font-weight:700;color:#475569">atau ketuk tombol keyboard di layar!</span>
+    </div>
+    <div class="scene" id="scene">
+      <div class="monitor"><div class="screen"><span id="typed"></span><span class="caret" id="caret"></span></div></div>
+      <div class="stand"></div>
+      <div class="kb" id="kb"></div>
+    </div>
+  </section>
+
+  <!-- 5. APA ITU -->
+  <section class="slide center">
+    <div class="badge b-orange pop">🎉 Joyful Learning</div>
+    <h1 class="pop" style="--d:1;font-size:54px">Apa itu Aplikasi Pengolah Kata?</h1>
+    <div class="vs" style="margin-top:22px">
+      <div class="pane pop" style="--d:2">
+        <div class="big wiggle">✏️📄</div><small>Kertas, pensil,<br>penghapus</small>
+      </div>
+      <div class="arrow pulse pop" style="--d:3">➡️</div>
+      <div class="pane pop" style="--d:4">
+        <div class="big float">💻📝</div><small>Komputer +<br>aplikasi pengolah kata</small>
+      </div>
+    </div>
+    <div class="card def-box pop" style="--d:5;margin-top:26px">
+      <p>Aplikasi <b>pengolah kata</b> adalah program di komputer untuk menulis <b>surat</b>, <b>cerita</b>, dan <b>tugas sekolah</b> dengan rapi.</p>
+    </div>
+  </section>
+
+  <!-- 6. TIGA APLIKASI -->
+  <section class="slide">
+    <div class="badge b-orange pop">🎉 Joyful Learning</div>
+    <h1 class="pop" style="--d:1;font-size:52px">Kenalan dengan 3 Aplikasi!</h1>
+    <div class="apps">
+      <div class="card app pop" style="--d:2"><div class="ic float" style="--d:0" data-icon="word"></div><h2>Microsoft Word</h2><p>Banyak pilihan huruf dan gambar</p></div>
+      <div class="card app pop" style="--d:3"><div class="ic float" style="--d:1" data-icon="docs"></div><h2>Google Docs</h2><p>Menulis lewat internet</p></div>
+      <div class="card app pop" style="--d:4"><div class="ic float" style="--d:2" data-icon="notepad"></div><h2>Notepad</h2><p>Catatan sederhana, hanya tulisan</p></div>
+    </div>
+    <div class="pop pulse" style="--d:6;font-size:32px;font-weight:800;margin-top:26px;color:#ea580c">👀 Perhatikan bentuk ikonnya ya!</div>
+  </section>
+
+  <!-- 7. KUIS -->
+  <section class="slide" id="slideQuiz">
+    <div class="qhead pop">
+      <div class="badge b-orange" style="margin-bottom:0">🎉 Joyful Learning</div>
+      <div class="kidbadge" id="kidBadge">🧒 Anak 1 / 27</div>
+    </div>
+    <h1 class="pop" style="--d:1;font-size:46px">Kuis Tebak Gambar Ikon!</h1>
+    <div class="qbar"><div class="qbar-fill" id="qbarFill"></div></div>
+
+    <div class="quiz" id="quizBox">
+      <div class="card qcard pop" style="--d:2"><div class="ic" id="quizIcon"></div><div class="qmark pulse">?</div></div>
+      <div class="col">
+        <div class="choices" id="choices"></div>
+        <div class="qmsg" id="qmsg">Siapa cepat, boleh maju menunjuk layar! 👆</div>
+        <button class="btn g" id="nextKid" style="display:none;align-self:flex-start">👉 Anak berikutnya</button>
+      </div>
+    </div>
+
+    <div class="finish" id="finish">
+      <div class="trophy bounce">🏆</div>
+      <h1 style="font-size:50px">Hebat! Semua anak sudah menjawab! 🎉</h1>
+      <div style="font-size:52px">⭐ ⭐ ⭐</div>
+      <button class="btn o" id="replay">🔄 Main Lagi</button>
+    </div>
+  </section>
+
+
+  <!-- 8. FUNGSI -->
+  <section class="slide">
+    <div class="badge b-green pop">💡 Meaningful Learning</div>
+    <h1 class="pop" style="--d:1;font-size:50px">Untuk Apa Pengolah Kata?</h1>
+    <div class="uses">
+      <div class="card use pop" style="--d:2"><div class="em bounce" style="--d:0">🎂</div><h2>Undangan Ulang Tahun</h2><div class="paper"><span class="type">Ayo datang ke pestaku!</span></div></div>
+      <div class="card use pop" style="--d:3"><div class="em bounce" style="--d:1">🏝️</div><h2>Cerita Liburan</h2><div class="paper"><span class="type">Aku pergi ke pantai.</span></div></div>
+      <div class="card use pop" style="--d:4"><div class="em bounce" style="--d:2">📚</div><h2>Tugas Sekolah</h2><div class="paper"><span class="type">Hewan kesukaanku kucing</span></div></div>
+    </div>
+    <div class="pop" style="--d:6;font-size:30px;font-weight:700;margin-top:26px;text-align:center">Semua bisa ditulis rapi di komputer! ✨</div>
+  </section>
+
+  <!-- 9. DISKUSI -->
+  <section class="slide">
+    <div class="badge b-green pop">💡 Meaningful Learning</div>
+    <h1 class="pop" style="--d:1;font-size:48px">Ayo Berdiskusi: Buku Tulis atau Komputer?</h1>
+    <div class="compare">
+      <div class="card cmp pop" style="--d:2">
+        <h2>📓 Buku Tulis</h2>
+        <ul>
+          <li><span>✏️</span>Menulis dengan pensil</li>
+          <li><span>🧽</span>Salah? Dihapus pakai penghapus</li>
+          <li><span>😅</span>Kertas bisa kotor dan sobek</li>
+          <li><span>🖍️</span>Tulisan tangan bisa berbeda-beda</li>
+        </ul>
+      </div>
+      <div class="vsbadge pulse">VS</div>
+      <div class="card cmp pop" style="--d:3">
+        <h2>💻 Komputer</h2>
+        <ul>
+          <li><span>⌨️</span>Mengetik dengan keyboard</li>
+          <li><span>🔙</span>Salah? Tekan tombol hapus</li>
+          <li><span>✨</span>Tulisan selalu rapi</li>
+          <li><span>🎨</span>Bisa diberi warna dan gambar</li>
+        </ul>
+      </div>
+    </div>
+    <div class="pop pulse" style="--d:5;font-size:32px;font-weight:800;margin-top:22px;color:#ea580c">🗣️ Menurutmu, mana yang lebih seru? Kenapa?</div>
+  </section>
+
+  <!-- 10. KESIMPULAN -->
+  <section class="slide center" data-confetti="1">
+    <div class="badge b-green pop">💡 Meaningful Learning</div>
+    <h1 class="pop" style="--d:1;font-size:52px">Kesimpulan</h1>
+    <div class="card final pop" style="--d:2;margin-top:18px">
+      <div class="eq">Aplikasi Pengolah Kata<br>= <b>Buku Digital</b> 📖💻</div>
+    </div>
+    <div class="pills">
+      <div class="pill pop" style="--d:4">✍️ Menulis rapi</div>
+      <div class="pill pop" style="--d:5">🧹 Mudah dihapus</div>
+      <div class="pill pop" style="--d:6">🎨 Bisa dihias</div>
+    </div>
+    <div class="row" style="margin-top:26px;gap:26px">
+      <div class="ic bounce" style="--d:0;width:100px;height:100px" data-icon="word"></div>
+      <div class="ic bounce" style="--d:1;width:100px;height:100px" data-icon="docs"></div>
+      <div class="ic bounce" style="--d:2;width:100px;height:100px" data-icon="notepad"></div>
+    </div>
+  </section>
+
+  <!-- 11. REFLEKSI -->
+  <section class="slide center" data-confetti="1">
+    <div class="badge b-pink pop">🌟 Refleksi</div>
+    <div class="card pop" style="--d:1;max-width:900px;margin-top:6px">
+      <p style="font-size:36px;font-weight:700">Bagian mana yang paling kalian sukai?</p>
+      <div class="row" style="margin-top:14px;gap:50px;font-size:34px;font-weight:800">
+        <span class="bounce" style="--d:0">🖼️ Melihat ikon<br>aplikasi</span>
+        <span class="bounce" style="--d:1">🎯 Kuis tebak<br>gambar</span>
+      </div>
+    </div>
+    <div class="card pop" style="--d:3;max-width:900px;margin-top:22px;background:#fef9c3">
+      <p style="font-size:30px;font-weight:700">🏠 Tugas di rumah: amati anggota keluarga yang mengetik di komputer/laptop, lalu ceritakan besok!</p>
+    </div>
+    <div class="pop float" style="--d:5;font-size:56px;font-weight:800;margin-top:20px">Terima kasih! 👋</div>
+  </section>
+
+  <div class="controls">
+    <button class="nav" id="prev" aria-label="Sebelumnya">◀</button>
+    <div class="counter" id="counter">1 / 11</div>
+    <button class="nav" id="next" aria-label="Berikutnya">▶</button>
+    <button class="nav fs" id="fs" aria-label="Layar penuh" style="width:56px;height:56px;font-size:26px">⛶</button>
+  </div>
+</div>
+
+<script>
+/* ---------- Ikon (ilustrasi buatan sendiri) ---------- */
+const ICONS = {
+  word:'<svg viewBox="0 0 100 100"><rect x="6" y="6" width="88" height="88" rx="18" fill="#1d4ed8"/><rect x="6" y="6" width="88" height="88" rx="18" fill="none" stroke="#60a5fa" stroke-width="3"/><text x="50" y="69" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="62" fill="#fff" text-anchor="middle">W</text></svg>',
+  docs:'<svg viewBox="0 0 100 100"><path d="M24 6h36l22 22v62a4 4 0 0 1-4 4H24a4 4 0 0 1-4-4V10a4 4 0 0 1 4-4z" fill="#3b82f6"/><path d="M60 6l22 22H64a4 4 0 0 1-4-4z" fill="#bfdbfe"/><rect x="32" y="46" width="38" height="6" rx="3" fill="#fff"/><rect x="32" y="60" width="38" height="6" rx="3" fill="#fff"/><rect x="32" y="74" width="26" height="6" rx="3" fill="#fff"/></svg>',
+  notepad:'<svg viewBox="0 0 100 100"><rect x="16" y="16" width="68" height="76" rx="9" fill="#7dd3fc"/><rect x="16" y="16" width="68" height="16" rx="9" fill="#0ea5e9"/><g fill="#fff" stroke="#075985" stroke-width="2"><rect x="26" y="7" width="8" height="18" rx="4"/><rect x="40" y="7" width="8" height="18" rx="4"/><rect x="54" y="7" width="8" height="18" rx="4"/><rect x="68" y="7" width="8" height="18" rx="4"/></g><rect x="26" y="46" width="48" height="5" rx="2.5" fill="#075985"/><rect x="26" y="60" width="48" height="5" rx="2.5" fill="#075985"/><rect x="26" y="74" width="30" height="5" rx="2.5" fill="#075985"/></svg>'
+};
+function fillIcons(){document.querySelectorAll('[data-icon]').forEach(el=>{el.innerHTML=ICONS[el.dataset.icon]||''});}
+fillIcons();
+
+/* ---------- Stage scaling ---------- */
+const stage=document.getElementById('stage');
+let scale=1;
+function fit(){scale=Math.min(innerWidth/1280,innerHeight/720);stage.style.transform='translate(-50%,-50%) scale('+scale+')';}
+addEventListener('resize',fit);fit();
+
+/* ---------- Dekorasi latar ---------- */
+(function(){
+  const bg=document.getElementById('bg');
+  const items=['☁️','☁️','☁️','🅰️','🔤','⭐','✨','☁️'];
+  items.forEach((t,i)=>{
+    const s=document.createElement('span');
+    s.textContent=t;
+    s.style.top=(30+Math.random()*600)+'px';
+    s.style.fontSize=(34+Math.random()*50)+'px';
+    s.style.animationDuration=(50+Math.random()*50)+'s';
+    s.style.animationDelay=(-Math.random()*80)+'s';
+    bg.appendChild(s);
+  });
+})();
+
+/* ---------- Efek ---------- */
+function confetti(){
+  const colors=['#f97316','#ec4899','#8b5cf6','#22c55e','#3b82f6','#facc15'];
+  for(let i=0;i<46;i++){
+    const c=document.createElement('div');
+    c.className='conf';
+    c.style.left=(Math.random()*1260)+'px';
+    c.style.background=colors[i%colors.length];
+    c.style.animationDuration=(2+Math.random()*2)+'s';
+    c.style.animationDelay=(Math.random()*.6)+'s';
+    c.style.borderRadius=Math.random()>.5?'50%':'3px';
+    stage.appendChild(c);
+    setTimeout(()=>c.remove(),4800);
+  }
+}
+let audioCtx;
+function clickSound(){
+  try{
+    audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();
+    const c=audioCtx,o=c.createOscillator(),g=c.createGain();
+    o.type='square';o.frequency.value=900;
+    g.gain.setValueAtTime(.18,c.currentTime);
+    g.gain.exponentialRampToValueAtTime(.001,c.currentTime+.08);
+    o.connect(g);g.connect(c.destination);o.start();o.stop(c.currentTime+.09);
+  }catch(e){}
+}
+document.getElementById('clickBtn').addEventListener('click',clickSound);
+
+/* ---------- Typing animation: panjang teks ---------- */
+document.querySelectorAll('.type').forEach(t=>t.style.setProperty('--n',t.textContent.length));
+
+/* ---------- Perjalanan huruf ---------- */
+const kb=document.getElementById('kb'),scene=document.getElementById('scene'),typed=document.getElementById('typed'),caret=document.getElementById('caret');
+const keyEls={};
+['QWERTYUIOP','ASDFGHJKL','ZXCVBNM'].forEach(r=>{
+  const row=document.createElement('div');row.className='krow';
+  r.split('').forEach(ch=>{
+    const k=document.createElement('div');k.className='key';k.textContent=ch;
+    k.addEventListener('click',()=>typeLetter(ch));
+    keyEls[ch]=k;row.appendChild(k);
+  });
+  kb.appendChild(row);
+});
+function typeLetter(ch){
+  ch=ch.toUpperCase();
+  const key=keyEls[ch];if(!key||typed.textContent.length>=10)return;
+  clickSound();
+  key.classList.add('press');setTimeout(()=>key.classList.remove('press'),160);
+  const sc=scene.getBoundingClientRect(),kr=key.getBoundingClientRect(),cr=caret.getBoundingClientRect();
+  const x0=(kr.left-sc.left+kr.width/2)/scale,y0=(kr.top-sc.top+kr.height/2)/scale;
+  const x1=(cr.left-sc.left)/scale,y1=(cr.top-sc.top+cr.height/2)/scale;
+  const f=document.createElement('div');f.className='fly';f.textContent=ch;
+  f.style.left=x0+'px';f.style.top=y0+'px';
+  scene.appendChild(f);
+  const dx=x1-x0,dy=y1-y0;
+  const anim=f.animate([
+    {transform:'translate(-50%,-50%) scale(1)',opacity:1},
+    {transform:'translate(calc(-50% + '+(dx*.45)+'px),calc(-50% + '+(dy*.5-70)+'px)) scale(1.5) rotate(-12deg)',opacity:1,offset:.5},
+    {transform:'translate(calc(-50% + '+dx+'px),calc(-50% + '+dy+'px)) scale(1) rotate(0)',opacity:1}
+  ],{duration:900,easing:'ease-in-out'});
+  anim.onfinish=()=>{f.remove();typed.textContent+=ch;};
+}
+let autoTimer;
+document.getElementById('playType').addEventListener('click',()=>{
+  clearTimeout(autoTimer);typed.textContent='';
+  const w='HALO';let i=0;
+  (function next(){if(i<w.length){typeLetter(w[i++]);autoTimer=setTimeout(next,1100);}})();
+});
+document.getElementById('clearType').addEventListener('click',()=>{clearTimeout(autoTimer);typed.textContent='';});
+
+/* ---------- Kuis: looping acak untuk 27 anak ---------- */
+const TOTAL_ANAK = 27; // ganti kalau jumlah siswa berbeda
+const QS=[
+  {icon:'word',   ans:'Microsoft Word'},
+  {icon:'docs',   ans:'Google Docs'},
+  {icon:'notepad',ans:'Notepad'}
+];
+const NAMES=['Microsoft Word','Google Docs','Notepad'];
+
+let kid=1, locked=false, currentQ=null, bag=[];
+const quizIcon  = document.getElementById('quizIcon'),
+      choicesEl = document.getElementById('choices'),
+      qmsg      = document.getElementById('qmsg'),
+      kidBadge  = document.getElementById('kidBadge'),
+      qbarFill  = document.getElementById('qbarFill'),
+      nextKidBtn= document.getElementById('nextKid'),
+      quizBox   = document.getElementById('quizBox'),
+      finishEl  = document.getElementById('finish');
+
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+/* "Kantong acak": tiap ikon muncul sama banyak (adil) & tidak berurutan sama */
+function ambilSoal(){
+  if(bag.length===0) bag=shuffle(QS);
+  return bag.pop();
+}
+
+function updateKidBar(){
+  kidBadge.textContent='🧒 Anak '+kid+' / '+TOTAL_ANAK;
+  qbarFill.style.width=(((kid-1)/TOTAL_ANAK)*100)+'%';
+}
+
+function renderQ(){
+  locked=false;
+  nextKidBtn.style.display='none';
+  updateKidBar();
+  currentQ=ambilSoal();
+  quizIcon.innerHTML=ICONS[currentQ.icon];
+  quizIcon.classList.remove('spinIn'); void quizIcon.offsetWidth; quizIcon.classList.add('spinIn');
+  qmsg.style.color='#ea580c';
+  qmsg.textContent='Anak ke-'+kid+', siapa cepat boleh maju menunjuk layar! 👆';
+  choicesEl.innerHTML='';
+  shuffle(NAMES).forEach(n=>{
+    const b=document.createElement('button');
+    b.className='choice';
+    b.textContent=n;
+    b.addEventListener('click',()=>answer(b,n));
+    choicesEl.appendChild(b);
+  });
+}
+
+function answer(btn,n){
+  if(locked) return;
+  if(n===currentQ.ans){
+    locked=true;
+    btn.classList.add('ok');
+    qmsg.style.color='#16a34a';
+    qmsg.textContent='Benar! Hebat! 🎉';
+    clickSound();
+    confetti();
+    qbarFill.style.width=((kid/TOTAL_ANAK)*100)+'%';
+    nextKidBtn.style.display='inline-block';
+  }else{
+    btn.classList.add('bad');
+    qmsg.style.color='#dc2626';
+    qmsg.textContent='Hampir! Coba lagi ya 💪';
+    setTimeout(()=>btn.classList.remove('bad'),500);
+  }
+}
+
+nextKidBtn.addEventListener('click',()=>{
+  if(kid>=TOTAL_ANAK){
+    quizBox.style.display='none';
+    finishEl.style.display='flex';
+    kidBadge.textContent='🎉 Semua '+TOTAL_ANAK+' anak sudah menjawab!';
+    qbarFill.style.width='100%';
+    confetti();
+    return;
+  }
+  kid++;
+  renderQ();
+});
+
+document.getElementById('replay').addEventListener('click',()=>{
+  kid=1; bag=[];
+  quizBox.style.display='flex';
+  finishEl.style.display='none';
+  renderQ();
+});
+
+renderQ();
+
+/* ---------- Navigasi ---------- */
+const slides=[...document.querySelectorAll('.slide')];
+let cur=0;
+const counter=document.getElementById('counter'),progress=document.getElementById('progress');
+function show(i){
+  i=Math.max(0,Math.min(slides.length-1,i));
+  slides.forEach((s,k)=>s.classList.toggle('active',k===i));
+  cur=i;
+  counter.textContent=(i+1)+' / '+slides.length;
+  progress.style.width=((i+1)/slides.length*100)+'%';
+  try{history.replaceState(null,'','#'+(i+1));}catch(e){}
+  if(slides[i].dataset.confetti)setTimeout(confetti,500);
+}
+const next=()=>show(cur+1),prev=()=>show(cur-1);
+document.getElementById('next').addEventListener('click',next);
+document.getElementById('prev').addEventListener('click',prev);
+document.getElementById('fs').addEventListener('click',()=>{
+  if(document.fullscreenElement)document.exitFullscreen();
+  else document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen();
+});
+addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' '){e.preventDefault();next();}
+  else if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();prev();}
+  else if(e.key==='Home')show(0);
+  else if(e.key==='End')show(slides.length-1);
+  else if(/^[a-zA-Z]$/.test(e.key)&&slides[cur].id==='slideType')typeLetter(e.key);
+});
+let tx=null;
+addEventListener('touchstart',e=>{tx=e.touches[0].clientX;},{passive:true});
+addEventListener('touchend',e=>{
+  if(tx===null)return;
+  const dx=e.changedTouches[0].clientX-tx;tx=null;
+  if(Math.abs(dx)>80){dx<0?next():prev();}
+},{passive:true});
+const h=parseInt(location.hash.slice(1));
+show(h>0?h-1:0);
+</script>
+</body>
+</html>
