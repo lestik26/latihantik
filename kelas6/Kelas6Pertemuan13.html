@@ -3,13 +3,18 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Indentasi — Jarak Paragraf dari Tepi Halaman · TIK Kelas II</title>
+<title>Logika IF &amp; Kondisi Ganda — Video Pembelajaran TIK Kelas VI</title>
 <style>
   *{margin:0;padding:0;box-sizing:border-box;}
   :root{
-    --ink:#0f172a; --ink2:#334155; --ink3:#64748b; --ink4:#94a3b8;
-    --card:rgba(255,255,255,.86); --card-hi:rgba(255,255,255,.98);
-    --line:rgba(15,23,42,.08); --line2:rgba(15,23,42,.14);
+    --ink:#0f172a;
+    --ink2:#334155;
+    --ink3:#64748b;
+    --ink4:#94a3b8;
+    --card:rgba(255,255,255,.86);
+    --card-hi:rgba(255,255,255,.98);
+    --line:rgba(15,23,42,.08);
+    --line2:rgba(15,23,42,.14);
     --sky:#0284c7; --sky-bg:#dbeafe; --sky-line:#93c5fd;
     --violet:#7c3aed; --violet-bg:#ede9fe; --violet-line:#c4b5fd;
     --mint:#059669; --mint-bg:#d1fae5; --mint-line:#6ee7b7;
@@ -25,29 +30,35 @@
       radial-gradient(ellipse at 85% 10%, #fbcfe8 0%, transparent 55%),
       radial-gradient(ellipse at 50% 95%, #fef3c7 0%, transparent 55%),
       linear-gradient(135deg, #e0e7ff 0%, #ede9fe 50%, #fce7f3 100%);
-    color:var(--ink); overflow:hidden; -webkit-font-smoothing:antialiased;
+    color:var(--ink);
+    overflow:hidden;
+    -webkit-font-smoothing:antialiased;
   }
 
   /* ===== DECORATIONS ===== */
   .decorations{position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden;}
-  .deco{position:absolute; opacity:.24; animation:floatSlow 9s ease-in-out infinite;}
-  .deco.s1{top:8%;left:4%;font-size:48px;animation-delay:0s;}
-  .deco.s2{top:15%;right:7%;font-size:42px;animation-delay:1.6s;}
-  .deco.s3{top:70%;left:6%;font-size:46px;animation-delay:3s;}
-  .deco.s4{top:78%;right:5%;font-size:50px;animation-delay:.8s;}
-  .deco.s5{top:45%;left:2%;font-size:34px;animation-delay:2.2s;}
-  .deco.s6{top:50%;right:2%;font-size:36px;animation-delay:3.6s;}
-  .deco.s7{top:30%;left:18%;font-size:28px;animation-delay:1.2s;}
-  .deco.s8{top:60%;right:18%;font-size:30px;animation-delay:2.8s;}
+  .deco{position:absolute; opacity:.22; animation:floatSlow 9s ease-in-out infinite; filter:saturate(.9);}
+  .deco.s1{top:8%;left:4%;font-size:52px;animation-delay:0s;}
+  .deco.s2{top:15%;right:7%;font-size:44px;animation-delay:1.6s;}
+  .deco.s3{top:70%;left:6%;font-size:48px;animation-delay:3s;}
+  .deco.s4{top:78%;right:5%;font-size:54px;animation-delay:.8s;}
+  .deco.s5{top:45%;left:2%;font-size:36px;animation-delay:2.2s;}
+  .deco.s6{top:50%;right:2%;font-size:38px;animation-delay:3.6s;}
+  .deco.s7{top:30%;left:18%;font-size:30px;animation-delay:1.2s;}
+  .deco.s8{top:60%;right:18%;font-size:32px;animation-delay:2.8s;}
   @keyframes floatSlow{
     0%,100%{transform:translateY(0) rotate(-5deg);}
-    50%{transform:translateY(-20px) rotate(8deg);}
+    50%{transform:translateY(-22px) rotate(8deg);}
   }
 
   /* ===== CUTE ROBOT ===== */
   .robot-teacher{
-    position:fixed; bottom:80px; left:22px; width:100px; z-index:60;
-    cursor:grab; touch-action:none; user-select:none;
+    position:fixed; bottom:90px; left:22px;
+    width:110px;
+    z-index:60;
+    cursor:grab;
+    touch-action:none;
+    user-select:none;
     filter:drop-shadow(0 10px 22px rgba(124,58,237,.28));
     animation:robotFloat 3.6s ease-in-out infinite;
     transition:filter .2s;
@@ -56,11 +67,12 @@
   .robot-teacher.dragging{animation:none;}
   @keyframes robotFloat{
     0%,100%{transform:translateY(0) rotate(-2deg);}
-    50%{transform:translateY(-9px) rotate(2deg);}
+    50%{transform:translateY(-10px) rotate(2deg);}
   }
-  .robot-antenna{width:4px; height:22px; margin:0 auto; background:linear-gradient(to top,#7dd3fc,#f9a8d4); border-radius:2px;}
+
+  .robot-antenna{width:4px; height:24px; margin:0 auto; background:linear-gradient(to top,#7dd3fc,#f9a8d4); border-radius:2px;}
   .robot-antenna-ball{
-    width:18px; height:18px; margin:-9px auto 0; border-radius:50%;
+    width:20px; height:20px; margin:-10px auto 0; border-radius:50%;
     background:radial-gradient(circle at 30% 30%, #fef9c3, #fbbf24);
     box-shadow:0 0 14px #fbbf24, 0 0 26px rgba(251,191,36,.6);
     animation:antennaGlow 2.2s infinite;
@@ -69,136 +81,183 @@
     0%,100%{box-shadow:0 0 14px #fbbf24, 0 0 26px rgba(251,191,36,.6);}
     50%{box-shadow:0 0 22px #f472b6, 0 0 40px rgba(244,114,182,.7);}
   }
+
   .robot-head{
-    position:relative; width:100px; height:88px; margin-top:2px;
+    position:relative;
+    width:110px; height:96px;
+    margin-top:2px;
     background:linear-gradient(160deg, #f0f9ff, #bae6fd);
-    border-radius:48px; border:3px solid #7dd3fc;
+    border-radius:52px;
+    border:3px solid #7dd3fc;
     box-shadow:inset 0 -10px 18px rgba(14,165,233,.18), inset 0 4px 8px rgba(255,255,255,.8);
   }
-  .robot-ear{position:absolute; top:50%; transform:translateY(-50%); width:9px; height:20px; background:linear-gradient(#bae6fd,#7dd3fc); border:2px solid #38bdf8; border-radius:5px;}
-  .robot-ear.left{left:-8px;}
-  .robot-ear.right{right:-8px;}
+  .robot-ear{position:absolute; top:50%; transform:translateY(-50%); width:10px; height:22px; background:linear-gradient(#bae6fd,#7dd3fc); border:2px solid #38bdf8; border-radius:5px;}
+  .robot-ear.left{left:-9px;}
+  .robot-ear.right{right:-9px;}
+
   .robot-eye{
-    position:absolute; top:22px; width:20px; height:20px;
-    background:#0f172a; border-radius:50%;
+    position:absolute; top:24px;
+    width:22px; height:22px;
+    background:#0f172a;
+    border-radius:50%;
     animation:eyeBlink 4s ease-in-out infinite;
     box-shadow:inset -2px -2px 4px rgba(255,255,255,.15);
   }
-  .robot-eye::before{content:''; position:absolute; top:3px; left:3px; width:6px; height:6px; background:#fff; border-radius:50%;}
-  .robot-eye::after{content:''; position:absolute; bottom:3px; right:3px; width:3px; height:3px; background:rgba(255,255,255,.6); border-radius:50%;}
-  .robot-eye.left{left:18px;}
-  .robot-eye.right{right:18px;}
+  .robot-eye::before{content:''; position:absolute; top:4px; left:4px; width:7px; height:7px; background:#fff; border-radius:50%;}
+  .robot-eye::after{content:''; position:absolute; bottom:4px; right:4px; width:4px; height:4px; background:rgba(255,255,255,.6); border-radius:50%;}
+  .robot-eye.left{left:20px;}
+  .robot-eye.right{right:20px;}
   @keyframes eyeBlink{
     0%,42%,58%,100%{transform:scaleY(1);}
     50%{transform:scaleY(.08);}
   }
-  .robot-blush{position:absolute; top:48px; width:14px; height:8px; background:radial-gradient(ellipse, #fb7185, transparent 72%); border-radius:50%; opacity:.85;}
-  .robot-blush.left{left:9px;}
-  .robot-blush.right{right:9px;}
+
+  .robot-blush{
+    position:absolute; top:52px;
+    width:16px; height:9px;
+    background:radial-gradient(ellipse, #fb7185, transparent 72%);
+    border-radius:50%;
+    opacity:.85;
+  }
+  .robot-blush.left{left:10px;}
+  .robot-blush.right{right:10px;}
+
   .robot-mouth{
-    position:absolute; bottom:14px; left:50%; transform:translateX(-50%);
-    width:20px; height:7px; background:#0f172a; border-radius:0 0 20px 20px;
-    transition:height .1s ease, border-radius .1s; overflow:hidden;
+    position:absolute; bottom:16px; left:50%;
+    transform:translateX(-50%);
+    width:22px; height:8px;
+    background:#0f172a;
+    border-radius:0 0 22px 22px;
+    transition:height .1s ease, border-radius .1s;
+    overflow:hidden;
   }
   .robot-mouth::before{content:''; position:absolute; top:0; left:0; right:0; height:2px; background:#be185d;}
   .robot-teacher.speaking .robot-mouth{
     animation:mouthTalk .3s ease-in-out infinite;
+    background:#0f172a;
   }
   @keyframes mouthTalk{
-    0%,100%{height:7px; border-radius:0 0 20px 20px;}
-    50%{height:16px; border-radius:9px;}
+    0%,100%{height:8px; border-radius:0 0 22px 22px;}
+    50%{height:18px; border-radius:10px;}
   }
+
   .robot-body{
-    width:68px; height:40px; margin:-6px auto 0;
+    width:76px; height:44px;
+    margin:-6px auto 0;
     background:linear-gradient(160deg, #fbcfe8, #f9a8d4);
-    border-radius:0 0 24px 24px; border:3px solid #f472b6; border-top:none;
-    display:flex; align-items:center; justify-content:center; position:relative;
+    border-radius:0 0 26px 26px;
+    border:3px solid #f472b6;
+    border-top:none;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
   }
-  .robot-heart{font-size:16px; animation:heartBeat 1.6s ease-in-out infinite;}
+  .robot-heart{font-size:18px; animation:heartBeat 1.6s ease-in-out infinite;}
   @keyframes heartBeat{0%,100%{transform:scale(1);} 30%{transform:scale(1.2);} 60%{transform:scale(1.05);}}
 
   .robot-hint{
-    position:absolute; top:-8px; left:50%; transform:translate(-50%, -100%);
-    background:#fff; color:var(--ink2); padding:6px 12px; border-radius:14px;
-    font-size:11px; font-weight:700; white-space:nowrap;
+    position:absolute;
+    top:-8px; left:50%;
+    transform:translate(-50%, -100%);
+    background:#fff; color:var(--ink2);
+    padding:6px 12px; border-radius:14px;
+    font-size:11px; font-weight:700;
+    white-space:nowrap;
     box-shadow:0 4px 14px rgba(0,0,0,.15);
     border:2px solid var(--violet-line);
-    animation:hintBounce 2s ease-in-out infinite; pointer-events:none;
+    animation:hintBounce 2s ease-in-out infinite;
+    pointer-events:none;
   }
   .robot-hint::after{
-    content:''; position:absolute; bottom:-8px; left:50%; transform:translateX(-50%);
-    width:0; height:0; border-left:7px solid transparent; border-right:7px solid transparent; border-top:8px solid #fff;
+    content:''; position:absolute; bottom:-8px; left:50%;
+    transform:translateX(-50%);
+    width:0; height:0;
+    border-left:7px solid transparent;
+    border-right:7px solid transparent;
+    border-top:8px solid #fff;
   }
-  @keyframes hintBounce{0%,100%{transform:translate(-50%,-100%) translateY(0);} 50%{transform:translate(-50%,-100%) translateY(-6px);}}
+  @keyframes hintBounce{0%,100%{transform:translate(-50%, -100%) translateY(0);} 50%{transform:translate(-50%, -100%) translateY(-6px);}}
   .robot-teacher.dragged .robot-hint{display:none;}
+
   @media (max-width:1100px){
-    .robot-teacher{width:80px; bottom:70px;}
-    .robot-head{width:80px; height:70px;}
-    .robot-eye{width:16px; height:16px; top:18px;}
-    .robot-eye.left{left:14px;}
-    .robot-eye.right{right:14px;}
-    .robot-blush{top:40px; width:11px;}
-    .robot-blush.left{left:7px;}
-    .robot-blush.right{right:7px;}
-    .robot-mouth{bottom:10px; width:16px;}
-    .robot-body{width:54px; height:32px;}
-    .robot-ear{width:7px; height:16px;}
-    .robot-ear.left{left:-6px;}
-    .robot-ear.right{right:-6px;}
+    .robot-teacher{width:88px; bottom:80px;}
+    .robot-head{width:88px; height:78px;}
+    .robot-eye{width:18px; height:18px; top:20px;}
+    .robot-eye.left{left:15px;}
+    .robot-eye.right{right:15px;}
+    .robot-blush{top:44px; width:13px;}
+    .robot-blush.left{left:8px;}
+    .robot-blush.right{right:8px;}
+    .robot-mouth{bottom:12px; width:18px;}
+    .robot-body{width:60px; height:36px;}
+    .robot-ear{width:8px; height:18px;}
+    .robot-ear.left{left:-7px;}
+    .robot-ear.right{right:-7px;}
   }
   @media (max-width:800px){.robot-teacher{display:none;}}
 
   /* ===== APP SHELL ===== */
   .app{position:relative; z-index:1; height:100vh; height:100dvh; display:flex; flex-direction:column;}
 
-  .topbar{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px clamp(10px,2vw,28px) 6px;}
+  /* Topbar */
+  .topbar{display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px clamp(12px,2.4vw,32px) 8px;}
   .brand{display:flex; align-items:center; gap:10px;}
   .logo{
-    width:38px; height:38px; border-radius:12px;
+    width:40px; height:40px; border-radius:13px;
     display:grid; place-items:center;
-    font-weight:900; font-size:13px; color:#fff;
+    font-weight:900; font-size:14px; color:#fff;
     background:linear-gradient(135deg,#38bdf8,#a78bfa,#f472b6);
     box-shadow:0 6px 18px rgba(124,58,237,.35);
     animation:logoWiggle 4s ease-in-out infinite;
   }
   @keyframes logoWiggle{0%,100%{transform:rotate(-4deg);} 50%{transform:rotate(4deg);}}
-  .brand-title{font-size:13px; font-weight:800; color:var(--ink);}
-  .brand-sub{font-size:10.5px; color:var(--ink3); letter-spacing:.3px;}
-  .topbar-right{display:flex; align-items:center; gap:6px;}
+  .brand-title{font-size:13.5px; font-weight:800; color:var(--ink);}
+  .brand-sub{font-size:11px; color:var(--ink3); letter-spacing:.3px;}
+  .topbar-right{display:flex; align-items:center; gap:8px;}
   .chip{
-    font-size:11.5px; font-weight:700;
-    padding:6px 11px; border-radius:999px;
+    font-size:12px; font-weight:700;
+    padding:7px 13px; border-radius:999px;
     background:var(--card); border:1.5px solid var(--line2);
     color:var(--ink2); font-variant-numeric:tabular-nums; letter-spacing:.3px;
-    cursor:pointer; font-family:inherit; transition:all .2s;
+    cursor:pointer; font-family:inherit;
+    transition:all .2s;
   }
   .chip:hover{background:var(--card-hi);}
-  .chip.time{min-width:70px; text-align:center; cursor:default; background:var(--sky-bg); border-color:var(--sky-line); color:var(--sky);}
+  .chip.time{
+    min-width:74px; text-align:center; cursor:default;
+    background:var(--sky-bg); border-color:var(--sky-line); color:var(--sky);
+  }
   .chip.voice{background:var(--mint-bg); border-color:var(--mint-line); color:var(--mint);}
   .chip.voice.off{background:var(--rose-bg); border-color:var(--rose-line); color:var(--rose);}
   .chip.voice:disabled{opacity:.55; cursor:not-allowed;}
-  .chip.fullscreen-btn{background:var(--amber-bg); border-color:var(--amber-line); color:var(--amber); padding:6px 10px; font-size:14px; line-height:1;}
+  .chip.fullscreen-btn{
+    background:var(--amber-bg); border-color:var(--amber-line); color:var(--amber);
+    padding:7px 11px; font-size:15px; line-height:1;
+  }
 
-  .progress-rail{height:4px; margin:0 clamp(10px,2vw,28px); background:rgba(255,255,255,.5); border-radius:999px; overflow:hidden;}
+  .progress-rail{height:5px; margin:0 clamp(12px,2.4vw,32px); background:rgba(255,255,255,.5); border-radius:999px; overflow:hidden;}
   .progress-fill{
     height:100%; width:0;
     background:linear-gradient(90deg,#38bdf8,#a78bfa,#f472b6);
-    border-radius:999px; transition:width .18s linear;
+    border-radius:999px;
+    transition:width .18s linear;
   }
 
-  .stage{position:relative; flex:1; overflow:hidden; min-height:0;}
+  /* Stage */
+  .stage{position:relative; flex:1; overflow:hidden;}
   .slide{
     position:absolute; inset:0;
     display:flex; align-items:center; justify-content:center;
-    padding:clamp(10px,2vw,32px) clamp(12px,2.5vw,44px);
+    padding:clamp(12px,2.2vw,36px) clamp(16px,3vw,48px);
     opacity:0; visibility:hidden; transform:translateY(16px) scale(.985);
     transition:opacity .55s ease, transform .6s cubic-bezier(.2,.8,.2,1), visibility .6s;
-    overflow-y:auto;
   }
   .slide.active{opacity:1; visibility:visible; transform:none;}
   .slide-inner{width:100%; max-width:1140px;}
   .slide-inner.center{text-align:center; display:flex; flex-direction:column; align-items:center;}
 
+  /* Entry animations */
   .anim{opacity:0; transform:translateY(22px);}
   .slide.active .anim{animation:riseIn .72s var(--d,0s) cubic-bezier(.22,.9,.25,1) both;}
   @keyframes riseIn{from{opacity:0; transform:translateY(22px);} to{opacity:1; transform:none;}}
@@ -215,15 +274,16 @@
   .slide.active .anim.bounce{animation-name:bounceIn; animation-timing-function:cubic-bezier(.68,-0.55,.27,1.55);}
   @keyframes bounceIn{from{opacity:0; transform:translateY(30px);} to{opacity:1; transform:none;}}
 
+  /* Typography */
   .kicker{
     position:relative; overflow:hidden; display:inline-block;
-    font-size:clamp(9.5px,.85vw,12px); font-weight:800;
+    font-size:clamp(10px,.9vw,12.5px); font-weight:800;
     letter-spacing:.22em; text-transform:uppercase;
     color:var(--violet);
-    padding:6px 14px; border-radius:999px;
+    padding:7px 16px; border-radius:999px;
     background:var(--violet-bg);
     border:1.5px solid var(--violet-line);
-    margin-bottom:12px;
+    margin-bottom:14px;
   }
   .kicker::after{
     content:''; position:absolute; inset:0;
@@ -234,11 +294,11 @@
   }
   @keyframes kickerShimmer{0%{background-position:200% 0;} 100%{background-position:-200% 0;}}
 
-  h1{font-size:clamp(26px,4vw,54px); line-height:1.06; font-weight:900; letter-spacing:-.025em; margin-bottom:12px; color:var(--ink);}
-  h2{font-size:clamp(18px,2.5vw,34px); line-height:1.16; font-weight:900; letter-spacing:-.015em; margin-bottom:14px; color:var(--ink);}
-  h3{font-size:clamp(12px,1.1vw,15.5px); font-weight:800; margin-bottom:4px; color:var(--ink);}
-  p{font-size:clamp(12px,1vw,15px); line-height:1.55; color:var(--ink2);}
-  .lead{font-size:clamp(12.5px,1.3vw,17.5px); color:var(--ink2); line-height:1.5; max-width:900px;}
+  h1{font-size:clamp(28px,4.2vw,58px); line-height:1.06; font-weight:900; letter-spacing:-.025em; margin-bottom:14px; color:var(--ink);}
+  h2{font-size:clamp(20px,2.7vw,38px); line-height:1.16; font-weight:900; letter-spacing:-.015em; margin-bottom:16px; color:var(--ink);}
+  h3{font-size:clamp(13px,1.15vw,16px); font-weight:800; margin-bottom:5px; color:var(--ink);}
+  p{font-size:clamp(12.5px,1.05vw,15.5px); line-height:1.55; color:var(--ink2);}
+  .lead{font-size:clamp(13px,1.35vw,18px); color:var(--ink2); line-height:1.5; max-width:900px;}
   .lead b{color:var(--ink); font-weight:800;}
   .grad{background:linear-gradient(135deg,#0ea5e9,#8b5cf6 55%,#ec4899); background-size:200% auto; -webkit-background-clip:text; background-clip:text; color:transparent; animation:gradShift 4s ease-in-out infinite;}
   @keyframes gradShift{0%,100%{background-position:0% center;} 50%{background-position:100% center;}}
@@ -247,19 +307,22 @@
   b.ok,.ok{color:var(--mint); font-weight:800;}
   b.no,.no{color:var(--rose); font-weight:800;}
 
-  .pillrow{display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin-top:14px;}
-  .pill{font-size:clamp(10px,.88vw,12.5px); font-weight:700; padding:7px 14px; border-radius:999px; background:#fff; border:1.5px solid var(--line2); color:var(--ink2);}
+  /* Cards */
+  .pillrow{display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin-top:16px;}
+  .pill{font-size:clamp(10.5px,.9vw,12.5px); font-weight:700; padding:7px 15px; border-radius:999px; background:#fff; border:1.5px solid var(--line2); color:var(--ink2);}
   .pill:nth-child(1){border-color:var(--sky-line); color:var(--sky); background:var(--sky-bg);}
   .pill:nth-child(2){border-color:var(--violet-line); color:var(--violet); background:var(--violet-bg);}
   .pill:nth-child(3){border-color:var(--pink-line); color:var(--pink); background:var(--pink-bg);}
-  .foot-note{margin-top:16px; font-size:clamp(10px,.82vw,11.5px); color:var(--ink3); letter-spacing:.05em;}
+  .foot-note{margin-top:18px; font-size:clamp(10.5px,.85vw,12px); color:var(--ink3); letter-spacing:.05em;}
 
-  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
-  .grid3{display:grid; grid-template-columns:repeat(3,1fr); gap:10px;}
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+  .grid3{display:grid; grid-template-columns:repeat(3,1fr); gap:12px;}
 
   .card{
-    background:var(--card-hi); border:2px solid var(--line2);
-    border-radius:14px; padding:clamp(10px,1.2vw,16px);
+    background:var(--card-hi);
+    border:2px solid var(--line2);
+    border-radius:16px;
+    padding:clamp(12px,1.4vw,18px);
     box-shadow:0 6px 20px rgba(15,23,42,.06);
     transition:all .25s;
   }
@@ -268,169 +331,94 @@
   .card:nth-child(4n+3){border-color:var(--amber-line); background:linear-gradient(135deg,#fff,var(--amber-bg));}
   .card:nth-child(4n+4){border-color:var(--pink-line); background:linear-gradient(135deg,#fff,var(--pink-bg));}
   .card:hover{transform:translateY(-3px); box-shadow:0 10px 26px rgba(15,23,42,.1);}
-  .card .ico{font-size:clamp(16px,1.4vw,20px); margin-bottom:4px; display:inline-block; animation:floatRotate 3.6s ease-in-out infinite;}
-  .card .emo{font-size:clamp(20px,1.8vw,28px); margin-bottom:4px; display:inline-block; animation:floatRotate 3.6s ease-in-out infinite;}
-  @keyframes floatRotate{0%,100%{transform:translateY(0) rotate(-3deg);} 50%{transform:translateY(-6px) rotate(4deg);}}
-  .card h3{margin-bottom:3px;}
-  .card p{font-size:clamp(11px,.9vw,13px); color:var(--ink2);}
-  .card .res{margin-top:5px; font-weight:800; font-size:clamp(11px,.9vw,13px);}
+  .card .ico{font-size:clamp(18px,1.6vw,22px); margin-bottom:6px; display:inline-block; animation:floatRotate 3.6s ease-in-out infinite;}
+  .card .emo{font-size:clamp(22px,2vw,30px); margin-bottom:6px; display:inline-block; animation:floatRotate 3.6s ease-in-out infinite;}
+  @keyframes floatRotate{0%,100%{transform:translateY(0) rotate(-3deg);} 50%{transform:translateY(-7px) rotate(4deg);}}
+  .card h3{margin-bottom:4px;}
+  .card p{font-size:clamp(11.5px,.92vw,13.5px); color:var(--ink2);}
+  .card .res{margin-top:6px; font-weight:800; font-size:clamp(11.5px,.92vw,13.5px);}
 
   .ex-card{
-    display:flex; align-items:center; gap:10px;
+    display:flex; align-items:center; gap:12px;
     background:var(--card-hi); border:2px solid var(--sky-line);
-    border-radius:12px; padding:10px 16px;
-    font-size:clamp(11.5px,.95vw,14px); color:var(--ink);
+    border-radius:14px; padding:12px 18px;
+    font-size:clamp(12px,1vw,14.5px); color:var(--ink);
     box-shadow:0 4px 14px rgba(15,23,42,.05);
   }
   .ex-card:nth-child(2n){border-color:var(--pink-line);}
   .ex-card b{color:var(--sky);}
   .ex-card:nth-child(2n) b{color:var(--pink);}
-  .ex-card .emo{font-size:clamp(16px,1.4vw,20px); animation:floatRotate 3.6s ease-in-out infinite;}
+  .ex-card .emo{font-size:clamp(18px,1.6vw,22px); animation:floatRotate 3.6s ease-in-out infinite;}
 
   .formula{
-    display:flex; align-items:center; justify-content:center; gap:clamp(8px,1.2vw,18px);
-    flex-wrap:wrap; padding:clamp(12px,1.6vw,24px); margin:14px 0; border-radius:16px;
+    display:flex; align-items:center; justify-content:center; gap:clamp(10px,1.4vw,20px);
+    flex-wrap:wrap; padding:clamp(16px,1.8vw,26px); margin:16px 0; border-radius:18px;
     background:linear-gradient(135deg,var(--sky-bg),var(--violet-bg));
     border:2px dashed var(--violet-line);
     font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
-    font-size:clamp(13px,1.4vw,20px); font-weight:800; color:var(--ink);
+    font-size:clamp(14px,1.5vw,22px); font-weight:800; color:var(--ink);
   }
   .formula .kw,.formula .op{animation:kwGlow 2.4s ease-in-out infinite;}
   @keyframes kwGlow{0%,100%{filter:drop-shadow(0 0 0 currentColor);} 50%{filter:drop-shadow(0 0 8px currentColor);}}
 
   .codebox{
     font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
-    font-size:clamp(11.5px,1.25vw,17.5px); font-weight:700; line-height:1.6;
-    padding:clamp(10px,1.4vw,18px) clamp(12px,1.6vw,24px);
-    border-radius:12px;
+    font-size:clamp(12.5px,1.35vw,19px); font-weight:700; line-height:1.6;
+    padding:clamp(12px,1.5vw,20px) clamp(14px,1.8vw,26px);
+    border-radius:14px;
     background:linear-gradient(135deg,#f8fafc,#f1f5f9);
     border:2px solid var(--line2);
-    margin:10px 0; color:var(--ink);
+    margin:12px 0; color:var(--ink);
   }
-  .codebox.small{font-size:clamp(10.5px,1vw,14px);}
+  .codebox.small{font-size:clamp(11.5px,1.1vw,15px);}
   .kw{color:var(--amber); font-weight:900;}
   .op{color:var(--mint); font-weight:900;}
   .var{color:var(--sky); font-weight:800;}
   .act{color:var(--violet); font-weight:800;}
   .str{color:var(--pink); font-weight:800;}
 
-  /* ===== VISUAL DEMO PARAGRAF ===== */
-  .para-demo{
-    display:grid; grid-template-columns:1fr 1fr; gap:14px;
-    margin-top:12px;
-  }
-  .para-box{
-    background:#fff; border:2px solid var(--line2); border-radius:14px;
-    padding:14px 16px; position:relative;
-    box-shadow:0 4px 14px rgba(15,23,42,.05);
-  }
-  .para-box.bad{border-color:var(--rose-line); background:linear-gradient(135deg,#fff,var(--rose-bg));}
-  .para-box.good{border-color:var(--mint-line); background:linear-gradient(135deg,#fff,var(--mint-bg));}
-  .para-box .lbl{
-    position:absolute; top:-11px; left:14px;
-    padding:3px 12px; border-radius:999px;
-    font-size:10px; font-weight:900; letter-spacing:.06em;
-    color:#fff;
-  }
-  .para-box.bad .lbl{background:var(--rose);}
-  .para-box.good .lbl{background:var(--mint);}
-  .para-box .txt{
-    font-family:Georgia,'Times New Roman',serif;
-    font-size:clamp(11px,.95vw,13.5px);
-    line-height:1.65;
-    color:#1e293b;
-    text-align:justify;
-    hyphens:auto;
-  }
-  .para-box .txt .indent{
-    display:inline-block; width:2em;
-  }
-  .para-box .ruler-visual{
-    margin-bottom:8px; padding:4px 0;
-    border-bottom:2px dashed var(--line2);
-    display:flex; align-items:center; gap:6px; position:relative;
-    font-size:10px; color:var(--ink4);
-  }
-  .ruler-visual .marker{
-    width:0; height:0;
-    border-left:6px solid transparent;
-    border-right:6px solid transparent;
-    border-top:10px solid var(--sky);
-    position:relative;
-  }
-  .ruler-visual .marker.down{
-    border-top:none;
-    border-bottom:10px solid var(--violet);
-  }
+  /* Truth table */
+  .truth-table{background:var(--card-hi); border:2px solid var(--sky-line); border-radius:16px; overflow:hidden; box-shadow:0 6px 20px rgba(15,23,42,.05);}
+  .truth-table table{width:100%; border-collapse:collapse;}
+  .truth-table th,.truth-table td{padding:clamp(6px,.8vw,11px) 10px; text-align:center; font-size:clamp(10.5px,.9vw,13.5px); border-bottom:1px solid rgba(15,23,42,.06);}
+  .truth-table th{color:var(--ink3); font-weight:800; font-size:.8em; letter-spacing:.1em; text-transform:uppercase; background:rgba(15,23,42,.04);}
+  .truth-table tr:last-child td{border-bottom:none;}
+  .truth-table tbody tr{opacity:0;}
+  .slide.active .truth-table tbody tr{animation:rowIn .55s cubic-bezier(.22,.9,.25,1) both;}
+  .slide.active .truth-table tbody tr:nth-child(1){animation-delay:.55s;}
+  .slide.active .truth-table tbody tr:nth-child(2){animation-delay:.75s;}
+  .slide.active .truth-table tbody tr:nth-child(3){animation-delay:.95s;}
+  .slide.active .truth-table tbody tr:nth-child(4){animation-delay:1.15s;}
+  @keyframes rowIn{from{opacity:0; transform:translateX(-14px);} to{opacity:1; transform:none;}}
+  .b{color:var(--mint); font-weight:900;}
+  .s{color:var(--rose); font-weight:900;}
 
-  /* ===== RULER BIG DEMO ===== */
-  .ruler-big{
-    background:#fff; border:2px solid var(--line2); border-radius:14px;
-    padding:8px 16px 14px; margin:12px 0;
-    box-shadow:0 4px 14px rgba(15,23,42,.06);
-    position:relative;
-  }
-  .ruler-ticks{
-    display:flex; align-items:flex-end; height:24px;
-    border-bottom:2px solid var(--ink3);
-    position:relative;
-  }
-  .ruler-ticks span{
-    flex:1; height:10px;
-    border-left:1px solid var(--ink4);
-    position:relative;
-    font-size:8px; color:var(--ink4);
-    display:flex; align-items:flex-start; padding-top:14px;
-  }
-  .ruler-ticks span:nth-child(5n+1){height:18px; border-left:2px solid var(--ink3);}
-  .ruler-marker-top{
-    position:absolute; top:-12px; left:12%;
-    width:0; height:0;
-    border-left:8px solid transparent;
-    border-right:8px solid transparent;
-    border-top:14px solid var(--sky);
-    filter:drop-shadow(0 2px 4px rgba(2,132,199,.4));
-  }
-  .ruler-marker-bottom{
-    position:absolute; bottom:-14px; left:12%;
-    width:0; height:0;
-    border-left:8px solid transparent;
-    border-right:8px solid transparent;
-    border-bottom:14px solid var(--violet);
-    filter:drop-shadow(0 2px 4px rgba(124,58,237,.4));
-  }
-  .ruler-label{
-    position:absolute; top:-40px; left:0; right:0; text-align:center;
-    font-size:10px; color:var(--ink3); font-weight:700;
-  }
-
-  .steps{display:flex; flex-direction:column; gap:6px; margin-top:6px;}
-  .step{display:flex; gap:10px; align-items:flex-start; background:var(--card-hi); border:2px solid var(--amber-line); border-radius:12px; padding:9px 13px;}
+  .steps{display:flex; flex-direction:column; gap:8px; margin-top:6px;}
+  .step{display:flex; gap:12px; align-items:flex-start; background:var(--card-hi); border:2px solid var(--amber-line); border-radius:14px; padding:10px 14px;}
   .step .n{
-    flex:none; width:26px; height:26px; border-radius:8px;
+    flex:none; width:28px; height:28px; border-radius:9px;
     display:grid; place-items:center;
-    font-size:12px; font-weight:900; color:#fff;
+    font-size:13px; font-weight:900; color:#fff;
     background:linear-gradient(140deg,#f59e0b,#ec4899);
     animation:nBounce 2.4s ease-in-out infinite;
   }
   .step:nth-child(2) .n{animation-delay:.4s;}
   .step:nth-child(3) .n{animation-delay:.8s;}
-  .step:nth-child(4) .n{animation-delay:1.2s;}
-  @keyframes nBounce{0%,100%{transform:scale(1);} 50%{transform:scale(1.1);}}
-  .step b{font-size:clamp(11.5px,.95vw,14px); color:var(--ink);}
-  .step p{font-size:clamp(10px,.85vw,12px); margin-top:2px;}
+  @keyframes nBounce{0%,100%{transform:scale(1);} 50%{transform:scale(1.12);}}
+  .step b{font-size:clamp(12px,1vw,14.5px); color:var(--ink);}
+  .step p{font-size:clamp(10.5px,.88vw,12.5px); margin-top:2px;}
 
-  .result-list{display:flex; flex-direction:column; gap:6px; margin-top:6px;}
+  .result-list{display:flex; flex-direction:column; gap:8px; margin-top:6px;}
   .row{
-    display:grid; grid-template-columns:1.3fr 1fr 1.2fr auto; gap:8px; align-items:center;
-    padding:8px 12px; border-radius:12px;
+    display:grid; grid-template-columns:1fr 1fr 1.2fr auto; gap:8px; align-items:center;
+    padding:10px 14px; border-radius:13px;
     background:var(--card-hi); border:2px solid var(--line2);
-    font-size:clamp(10.5px,.9vw,12.5px);
+    font-size:clamp(11px,.92vw,13px);
     box-shadow:0 3px 10px rgba(15,23,42,.05);
   }
   .row .name{font-weight:800; color:var(--ink);}
   .row .val{color:var(--ink2);}
-  .badge{padding:4px 10px; border-radius:999px; font-size:clamp(9px,.75vw,10.5px); font-weight:900; letter-spacing:.06em; white-space:nowrap;}
+  .badge{padding:5px 12px; border-radius:999px; font-size:clamp(9.5px,.78vw,11px); font-weight:900; letter-spacing:.06em; white-space:nowrap;}
   .slide.active .row .badge{animation:badgePop .6s cubic-bezier(.34,1.56,.64,1) both; animation-delay:1.1s;}
   .slide.active .row:nth-child(2) .badge{animation-delay:1.35s;}
   .slide.active .row:nth-child(3) .badge{animation-delay:1.6s;}
@@ -438,104 +426,114 @@
   .badge.ok{background:var(--mint-bg); color:var(--mint); border:1.5px solid var(--mint-line);}
   .badge.no{background:var(--rose-bg); color:var(--rose); border:1.5px solid var(--rose-line);}
 
-  .note{margin-top:12px; padding:10px 14px; border-radius:12px; background:var(--amber-bg); border-left:4px solid var(--amber); font-size:clamp(11px,.9vw,13px); color:#78350f; line-height:1.5;}
+  .note{margin-top:14px; padding:12px 16px; border-radius:14px; background:var(--amber-bg); border-left:4px solid var(--amber); font-size:clamp(11.5px,.95vw,14px); color:#78350f; line-height:1.5;}
   .note b{color:#92400e;}
 
-  .summary{list-style:none; display:flex; flex-direction:column; gap:7px;}
+  .quiz-text{display:flex; flex-direction:column; gap:10px;}
+  .q{background:var(--card-hi); border:2px solid var(--line2); border-radius:14px; padding:12px 16px;}
+  .q:nth-child(1){border-color:var(--sky-line); background:linear-gradient(135deg,#fff,var(--sky-bg));}
+  .q:nth-child(2){border-color:var(--violet-line); background:linear-gradient(135deg,#fff,var(--violet-bg));}
+  .q:nth-child(3){border-color:var(--pink-line); background:linear-gradient(135deg,#fff,var(--pink-bg));}
+  .q p{color:var(--ink); font-size:clamp(11.5px,.95vw,13.5px);}
+  .q p b{color:var(--sky);}
+  .q:nth-child(2) p b{color:var(--violet);}
+  .q:nth-child(3) p b{color:var(--pink);}
+  .q .answer{margin-top:6px; padding-top:6px; border-top:1.5px dashed rgba(15,23,42,.12); font-size:clamp(10.5px,.88vw,12.5px); color:var(--ink2);}
+
+  .summary{list-style:none; display:flex; flex-direction:column; gap:8px;}
   .summary li{
-    position:relative; padding:9px 14px 9px 40px;
+    position:relative; padding:11px 16px 11px 44px;
     background:var(--card-hi); border:2px solid var(--line2);
-    border-radius:12px;
-    font-size:clamp(11px,.95vw,13.5px); color:var(--ink2);
+    border-radius:13px;
+    font-size:clamp(11.5px,1vw,14px); color:var(--ink2);
   }
   .summary li:nth-child(odd){border-color:var(--sky-line);}
   .summary li:nth-child(even){border-color:var(--pink-line);}
   .summary li::before{
-    content:''; position:absolute; left:14px; top:50%;
-    width:13px; height:13px; margin-top:-6.5px; border-radius:50%;
+    content:''; position:absolute; left:16px; top:50%;
+    width:14px; height:14px; margin-top:-7px; border-radius:50%;
     background:linear-gradient(140deg,#38bdf8,#a78bfa);
     animation:bulletPulse 2.4s ease-in-out infinite;
   }
   @keyframes bulletPulse{0%,100%{transform:scale(1);} 50%{transform:scale(1.25);}}
   .summary b{color:var(--violet);}
-  .thanks{margin-top:16px; font-size:clamp(12px,1.1vw,16px); font-weight:900; color:var(--violet);}
+  .thanks{margin-top:20px; font-size:clamp(13px,1.2vw,17px); font-weight:900; color:var(--violet);}
 
-  /* ===== Narration bar ===== */
+  /* Narration bar */
   .narration-bar{
-    margin:0 clamp(10px,2vw,28px); padding:6px 10px;
+    margin:0 clamp(12px,2.4vw,32px); padding:8px 12px;
     display:flex; align-items:center; gap:8px;
     background:rgba(255,255,255,.75);
     border:1.5px solid var(--line2);
-    border-radius:10px; min-height:32px;
-    font-size:clamp(10px,.85vw,11.5px);
+    border-radius:12px; min-height:36px;
+    font-size:clamp(10.5px,.88vw,12px);
     backdrop-filter:blur(6px);
   }
   .nlabel{flex:none; font-weight:800; color:var(--violet); letter-spacing:.08em; text-transform:uppercase; font-size:.9em;}
-  .nlabel::before{content:'●'; margin-right:5px; color:var(--mint); animation:blink 1.6s ease-in-out infinite;}
+  .nlabel::before{content:'●'; margin-right:6px; color:var(--mint); animation:blink 1.6s ease-in-out infinite;}
   @keyframes blink{50%{opacity:.3;}}
   #caption{min-width:0; flex:1; color:var(--ink2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
 
-  /* ===== Controls ===== */
-  .controls{padding:6px clamp(10px,2vw,28px) 10px;}
-  .slide-rail{height:3px; background:rgba(255,255,255,.55); border-radius:999px; overflow:hidden; margin-bottom:8px;}
+  /* Controls */
+  .controls{padding:8px clamp(12px,2.4vw,32px) 12px;}
+  .slide-rail{height:3px; background:rgba(255,255,255,.55); border-radius:999px; overflow:hidden; margin-bottom:10px;}
   #slideProgress{height:100%; width:0; background:linear-gradient(90deg,#38bdf8,#a78bfa); border-radius:999px; transition:width .18s linear;}
-  .ctrl-row{display:flex; align-items:center; justify-content:space-between; gap:10px;}
+  .ctrl-row{display:flex; align-items:center; justify-content:space-between; gap:12px;}
   .ctrl-left{display:flex; align-items:center; gap:8px; min-width:0;}
-  .dot{width:7px; height:7px; border-radius:50%; background:var(--mint); box-shadow:0 0 8px var(--mint); animation:blink 1.8s ease-in-out infinite; flex:none;}
-  #slideTitle{font-size:11px; color:var(--ink3); font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
-  .ctrl-center{display:flex; align-items:center; gap:5px;}
+  .dot{width:8px; height:8px; border-radius:50%; background:var(--mint); box-shadow:0 0 8px var(--mint); animation:blink 1.8s ease-in-out infinite; flex:none;}
+  #slideTitle{font-size:11.5px; color:var(--ink3); font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .ctrl-center{display:flex; align-items:center; gap:6px;}
   .ctrl-center button{
-    display:grid; place-items:center; width:36px; height:36px; border-radius:11px;
+    display:grid; place-items:center; width:38px; height:38px; border-radius:12px;
     background:var(--card-hi); border:1.5px solid var(--line2);
-    color:var(--ink); cursor:pointer; transition:all .2s;
+    color:var(--ink); cursor:pointer;
+    transition:all .2s;
   }
   .ctrl-center button:hover{background:#fff; border-color:var(--violet-line);}
   .ctrl-center button:active{transform:scale(.94);}
   .ctrl-center button.primary{
-    width:44px; height:44px; border-radius:13px;
+    width:46px; height:46px; border-radius:14px;
     background:linear-gradient(135deg,#38bdf8,#a78bfa); border:none; color:#fff;
     box-shadow:0 6px 18px rgba(124,58,237,.35);
   }
   .ctrl-center button.primary:hover{filter:brightness(1.08);}
-  .ctrl-center svg{width:15px; height:15px; fill:currentColor;}
-  .ctrl-center button.primary svg{width:17px; height:17px;}
+  .ctrl-center svg{width:16px; height:16px; fill:currentColor;}
+  .ctrl-center button.primary svg{width:18px; height:18px;}
   .ctrl-right{display:flex; align-items:center; gap:8px;}
-  .hint{font-size:10px; color:var(--ink4);}
+  .hint{font-size:10.5px; color:var(--ink4);}
   .hide{display:none !important;}
 
   /* ============ QUIZ SLIDE ============ */
-  .quiz-slide{
-    padding:clamp(8px,1.4vw,20px) clamp(10px,2vw,32px);
-    overflow-y:auto;
-  }
   .quiz-slide .slide-inner{
     max-width:1400px;
     text-align:center;
     display:flex; flex-direction:column;
-    gap:8px;
+    max-height:100%;
+    gap:6px;
   }
-  .quiz-slide h2{margin-bottom:4px; font-size:clamp(16px,2vw,28px);}
-  .quiz-slide .kicker{margin-bottom:4px; font-size:clamp(9px,.78vw,10.5px); padding:5px 12px;}
+  .quiz-slide h2{margin-bottom:4px; font-size:clamp(18px,2.2vw,30px);}
+  .quiz-slide .kicker{margin-bottom:4px; font-size:clamp(9.5px,.8vw,11px); padding:5px 13px;}
 
   .quiz-timer-big{
-    display:inline-flex; align-items:center; gap:14px;
-    margin:2px auto 6px;
-    padding:6px 22px 8px;
+    display:inline-flex; align-items:center; gap:16px;
+    margin:4px auto 8px;
+    padding:8px 26px 10px;
     background:linear-gradient(135deg,#fff,var(--sky-bg));
     border:3px solid var(--sky);
-    border-radius:20px;
+    border-radius:22px;
     box-shadow:0 6px 24px rgba(2,132,199,.22);
+    position:relative;
   }
-  .quiz-timer-icon{font-size:clamp(24px,2.6vw,38px); animation:timerPulse 2s ease-in-out infinite;}
+  .quiz-timer-icon{font-size:clamp(28px,3vw,44px); animation:timerPulse 2s ease-in-out infinite;}
   @keyframes timerPulse{0%,100%{transform:scale(1);} 50%{transform:scale(1.15);}}
   .quiz-timer-info{display:flex; flex-direction:column; align-items:flex-start;}
-  .quiz-timer-label{font-size:clamp(8.5px,.72vw,10px); font-weight:900; letter-spacing:.24em; color:var(--sky); text-transform:uppercase;}
+  .quiz-timer-label{font-size:clamp(9px,.78vw,11px); font-weight:900; letter-spacing:.24em; color:var(--sky); text-transform:uppercase;}
   .quiz-timer-display{
     font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
-    font-size:clamp(40px,5.6vw,72px);
+    font-size:clamp(46px,6.4vw,86px);
     font-weight:900; line-height:1;
     color:var(--ink);
-    font-variant-numeric:tabular-nums; letter-spacing:-0.02em;
+    font-variant-numeric:tabular-nums; letter-spacing:-0.025em;
     transition:color .3s;
   }
   .quiz-timer-display.urgent{color:var(--rose); animation:urgentFlash .8s ease-in-out infinite;}
@@ -543,43 +541,43 @@
   .quiz-timer-display.timesup{color:var(--rose); animation:timesupShake .55s ease-in-out;}
   @keyframes timesupShake{0%,100%{transform:translateX(0);} 20%{transform:translateX(-10px);} 40%{transform:translateX(10px);} 60%{transform:translateX(-6px);} 80%{transform:translateX(6px);}}
 
-  /* GRID — no flex constraints so 5 options always visible */
   .quiz-grid{
     display:grid;
-    grid-template-columns:repeat(3,minmax(0,1fr));
+    grid-template-columns:repeat(3,1fr);
     gap:10px;
     text-align:left;
-    align-items:start;
+    flex:1;
+    min-height:0;
   }
   @media (max-width:1100px){.quiz-grid{grid-template-columns:1fr;}}
 
-  /* CARD — remove overflow hidden & min-height so options E always shown */
   .quiz-card{
     background:var(--card-hi);
     border:2.5px solid var(--line2);
-    border-radius:14px;
-    padding:9px 11px;
-    display:flex; flex-direction:column; gap:5px;
+    border-radius:16px;
+    padding:10px 12px;
+    display:flex; flex-direction:column; gap:7px;
     box-shadow:0 6px 20px rgba(15,23,42,.08);
-    /* Kunci perbaikan: tidak ada overflow:hidden, tidak ada min-height:0 */
+    min-height:0;
+    overflow:hidden;
   }
   .quiz-card:nth-child(1){border-color:var(--sky); background:linear-gradient(160deg,#fff,var(--sky-bg));}
   .quiz-card:nth-child(2){border-color:var(--violet); background:linear-gradient(160deg,#fff,var(--violet-bg));}
   .quiz-card:nth-child(3){border-color:var(--pink); background:linear-gradient(160deg,#fff,var(--pink-bg));}
 
-  .quiz-card-head{display:flex; align-items:center; gap:7px;}
+  .quiz-card-head{display:flex; align-items:center; gap:8px;}
   .quiz-num{
-    width:26px; height:26px; border-radius:8px;
+    width:28px; height:28px; border-radius:9px;
     background:linear-gradient(140deg,#38bdf8,#a78bfa); color:#fff;
-    display:grid; place-items:center; font-weight:900; font-size:13px;
+    display:grid; place-items:center; font-weight:900; font-size:14px;
     box-shadow:0 3px 10px rgba(124,58,237,.3);
   }
   .quiz-card:nth-child(2) .quiz-num{background:linear-gradient(140deg,#a78bfa,#ec4899);}
   .quiz-card:nth-child(3) .quiz-num{background:linear-gradient(140deg,#f472b6,#f59e0b);}
-  .quiz-tag{font-size:9.5px; font-weight:900; letter-spacing:.14em; text-transform:uppercase; color:var(--ink3);}
+  .quiz-tag{font-size:10px; font-weight:900; letter-spacing:.14em; text-transform:uppercase; color:var(--ink3);}
 
   .quiz-q{
-    font-size:clamp(10.5px,.85vw,12px);
+    font-size:clamp(11px,.9vw,12.5px);
     color:var(--ink); line-height:1.45;
     font-weight:600;
   }
@@ -588,39 +586,49 @@
   .quiz-card:nth-child(3) .quiz-q b{color:var(--pink);}
 
   .quiz-hint-inline{
-    font-size:9.5px; font-style:italic;
+    font-size:10px; font-style:italic;
     color:var(--ink3); font-weight:600;
-    padding:3px 7px; border-radius:6px;
+    padding:4px 8px; border-radius:6px;
     background:rgba(15,23,42,.04);
     display:inline-block;
-    align-self:flex-start;
   }
 
-  .quiz-options{display:flex; flex-direction:column; gap:4px;}
+  .quiz-options{display:flex; flex-direction:column; gap:5px;}
   .quiz-opt{
-    padding:5px 8px 5px 26px;
+    padding:7px 10px 7px 32px;
     background:#fff;
     border:1.5px solid rgba(15,23,42,.15);
-    border-radius:8px;
-    font-size:clamp(9.5px,.78vw,11.5px);
+    border-radius:9px;
+    font-size:clamp(10.5px,.85vw,12px);
     color:var(--ink2);
-    cursor:pointer; transition:all .15s;
-    user-select:none; position:relative;
-    line-height:1.35; font-weight:600;
+    cursor:pointer;
+    transition:all .15s;
+    user-select:none;
+    position:relative;
+    line-height:1.35;
+    font-weight:600;
   }
   .quiz-opt::before{
-    content:''; position:absolute; left:7px; top:50%;
-    width:12px; height:12px; margin-top:-6px;
+    content:'';
+    position:absolute;
+    left:9px; top:50%;
+    width:14px; height:14px;
+    margin-top:-7px;
     border:2px solid rgba(15,23,42,.28);
-    border-radius:3px; background:#fff; transition:all .15s;
+    border-radius:4px;
+    background:#fff;
+    transition:all .15s;
   }
   .quiz-opt:hover{border-color:var(--sky); background:var(--sky-bg);}
   .quiz-opt.selected{border-color:var(--sky); background:var(--sky-bg); color:var(--sky); font-weight:800;}
-  .quiz-opt.selected::before{background:var(--sky); border-color:var(--sky); box-shadow:inset 0 0 0 2.5px #fff;}
+  .quiz-opt.selected::before{background:var(--sky); border-color:var(--sky); box-shadow:inset 0 0 0 3px #fff;}
   .quiz-opt.selected::after{
-    content:'✓'; position:absolute; left:9px; top:50%;
+    content:'✓';
+    position:absolute;
+    left:11px; top:50%;
     transform:translateY(-50%);
-    color:#fff; font-size:10px; font-weight:900; z-index:1; line-height:1;
+    color:#fff; font-size:11px; font-weight:900;
+    z-index:1; line-height:1;
   }
   .quiz-card:nth-child(2) .quiz-opt.selected{border-color:var(--violet); background:var(--violet-bg); color:var(--violet);}
   .quiz-card:nth-child(2) .quiz-opt.selected::before{background:var(--violet); border-color:var(--violet);}
@@ -630,22 +638,24 @@
   .quiz-opt.correct{
     background:var(--mint-bg) !important;
     border-color:var(--mint) !important;
-    color:#065f46 !important; font-weight:800 !important;
-    box-shadow:0 0 0 2.5px rgba(5,150,105,.18);
+    color:#065f46 !important;
+    font-weight:800 !important;
+    box-shadow:0 0 0 3px rgba(5,150,105,.18);
   }
   .quiz-opt.correct::before{background:var(--mint) !important; border-color:var(--mint) !important;}
   .quiz-opt.wrong{
     background:var(--rose-bg) !important;
     border-color:var(--rose) !important;
-    color:var(--rose) !important; font-weight:800 !important;
+    color:var(--rose) !important;
+    font-weight:800 !important;
   }
   .quiz-opt.wrong::before{background:var(--rose) !important; border-color:var(--rose) !important;}
 
   .quiz-score{
     display:none;
-    padding:3px 9px; border-radius:999px;
-    font-size:10px; font-weight:800;
-    text-align:center; align-self:flex-start;
+    padding:4px 10px; border-radius:999px;
+    font-size:10.5px; font-weight:800;
+    text-align:center;
   }
   .quiz-score.show{display:inline-block; animation:badgePop .5s cubic-bezier(.34,1.56,.64,1);}
   .quiz-score.perfect{background:var(--mint-bg); color:var(--mint); border:1.5px solid var(--mint-line);}
@@ -653,18 +663,18 @@
   .quiz-score.none{background:var(--rose-bg); color:var(--rose); border:1.5px solid var(--rose-line);}
 
   .quiz-timesup{
-    margin-top:8px; padding:9px 20px;
+    margin-top:8px; padding:10px 22px;
     background:linear-gradient(135deg,#fff,var(--amber-bg));
     border:3px solid var(--amber);
     border-radius:16px;
-    display:none; align-items:center; justify-content:center; gap:12px;
+    display:none; align-items:center; justify-content:center; gap:14px;
   }
   .quiz-timesup.show{display:flex; animation:timesupIn .6s cubic-bezier(.34,1.56,.64,1);}
   @keyframes timesupIn{from{opacity:0; transform:scale(.8);} to{opacity:1; transform:scale(1);}}
-  .quiz-timesup-icon{font-size:clamp(22px,2.2vw,30px); animation:timerPulse 1s ease-in-out infinite;}
-  .quiz-timesup-text{font-size:clamp(11px,1vw,15px); font-weight:900; color:#92400e;}
+  .quiz-timesup-icon{font-size:clamp(26px,2.4vw,34px); animation:timerPulse 1s ease-in-out infinite;}
+  .quiz-timesup-text{font-size:clamp(12px,1.1vw,16px); font-weight:900; color:#92400e;}
 
-  /* ===== START OVERLAY ===== */
+  /* ============ START OVERLAY ============ */
   .start-overlay{
     position:fixed; inset:0; z-index:100;
     display:flex; align-items:center; justify-content:center;
@@ -695,17 +705,16 @@
 
   @media (max-width:900px){
     .grid2,.grid3{grid-template-columns:1fr;}
-    .para-demo{grid-template-columns:1fr;}
     .row{grid-template-columns:1fr 1fr; row-gap:5px;}
     .row .badge{grid-column:span 2; justify-self:start;}
     .brand-sub{display:none;}
     .hint{display:none;}
   }
   @media (max-width:640px){
-    .topbar{padding-top:6px;}
+    .topbar{padding-top:8px;}
     .brand-title{font-size:11px;}
-    .logo{width:30px; height:30px; border-radius:9px; font-size:10px;}
-    .chip{padding:5px 9px; font-size:10px;}
+    .logo{width:32px; height:32px; border-radius:10px; font-size:11px;}
+    .chip{padding:6px 10px; font-size:10.5px;}
     .narration-bar{align-items:flex-start;}
     #caption{white-space:normal; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;}
   }
@@ -728,16 +737,16 @@
 
   <header class="topbar">
     <div class="brand">
-      <div class="logo">TIK</div>
+      <div class="logo">IF</div>
       <div>
-        <div class="brand-title">Indentasi · Paragraf Rapi</div>
-        <div class="brand-sub">TIK · Kelas II · Fase A</div>
+        <div class="brand-title">Logika IF &amp; Kondisi Ganda</div>
+        <div class="brand-sub">TIK · Kelas VI · Fase C</div>
       </div>
     </div>
     <div class="topbar-right">
       <button class="chip voice" id="btnVoice" type="button" title="Nyalakan/matikan narasi suara">🔊 Narasi</button>
-      <button class="chip fullscreen-btn" id="btnFullscreen" type="button" title="Layar penuh (F)">⛶</button>
-      <div class="chip" id="counter">1 / 12</div>
+      <button class="chip fullscreen-btn" id="btnFullscreen" type="button" title="Layar penuh">⛶</button>
+      <div class="chip" id="counter">1 / 14</div>
       <div class="chip time" id="timeLeft">00:00</div>
     </div>
   </header>
@@ -749,11 +758,11 @@
     <!-- 1 -->
     <section class="slide" data-duration="90" data-title="Pembuka">
       <div class="slide-inner center">
-        <div class="kicker anim">Teknologi Informasi dan Komunikasi · Kelas II</div>
-        <h1 class="anim zoom">Paragraf <span class="grad">Rapi</span> dengan Indentasi</h1>
-        <p class="lead anim">Belajar membuat jarak paragraf dari tepi halaman supaya tulisan kita jadi rapi dan enak dibaca.</p>
+        <div class="kicker anim">Teknologi Informasi dan Komunikasi · Kelas VI</div>
+        <h1 class="anim zoom">Logika <span class="grad">IF</span> &amp; Kondisi Ganda</h1>
+        <p class="lead anim">Penggabungan logika IF dengan kondisi lain untuk memecahkan masalah sehari-hari secara terstruktur.</p>
         <div class="pillrow">
-          <span class="pill anim bounce">Fase A</span>
+          <span class="pill anim bounce">Fase C</span>
           <span class="pill anim bounce">Semester 1</span>
           <span class="pill anim bounce">2 JP · 40 Menit</span>
         </div>
@@ -762,196 +771,233 @@
     </section>
 
     <!-- 2 -->
-    <section class="slide" data-duration="120" data-title="Apa itu Indentasi?">
+    <section class="slide" data-duration="120" data-title="Tujuan Pembelajaran">
       <div class="slide-inner">
-        <div class="kicker anim">Pengertian</div>
-        <h2 class="anim">Apa itu <span class="grad">Indentasi</span>?</h2>
-        <p class="lead anim">Indentasi adalah <b>jarak paragraf dari tepi halaman</b>. Kalau kita memberi indentasi, paragraf akan terlihat <b>menjorok ke dalam</b>. Biasanya dipakai di baris pertama setiap paragraf.</p>
-        <div class="formula anim zoom">
-          <span class="var">Tepi halaman</span> <span class="kw">→</span> <span class="act">menjorok ke dalam</span> <span class="kw">→</span> <span class="str">paragraf rapi</span>
-        </div>
+        <div class="kicker anim">Tujuan Pembelajaran</div>
+        <h2 class="anim">Apa yang akan kita capai hari ini?</h2>
         <div class="grid2">
-          <div class="ex-card anim from-left"><span class="emo">📖</span><span>Di buku cerita, baris pertama biasanya <b>menjorok</b>.</span></div>
-          <div class="ex-card anim from-right"><span class="emo">✉️</span><span>Di surat, paragraf dibuat <b>rapi</b> dengan indentasi.</span></div>
+          <div class="card anim from-left"><div class="ico">📖</div><h3>Memahami</h3><p>Membaca dan memahami rangkuman materi logika IF dengan kondisi lain.</p></div>
+          <div class="card anim from-right"><div class="ico">✍️</div><h3>Menuliskan</h3><p>Menulis ulang pengertian logika IF secara rapi dan terstruktur di buku catatan.</p></div>
+          <div class="card anim from-left"><div class="ico">🔎</div><h3>Mengidentifikasi</h3><p>Menemukan contoh masalah sehari-hari yang memakai kondisi ganda.</p></div>
+          <div class="card anim from-right"><div class="ico">🎨</div><h3>Membuat Peta Konsep</h3><p>Menuangkan materi menjadi ringkasan visual yang kreatif dan menarik.</p></div>
         </div>
       </div>
     </section>
 
     <!-- 3 -->
-    <section class="slide" data-duration="150" data-title="Contoh Rapi vs Berantakan">
+    <section class="slide" data-duration="180" data-title="Apa itu Logika IF?">
       <div class="slide-inner">
-        <div class="kicker anim">Perhatikan</div>
-        <h2 class="anim">Mana yang Lebih <span class="grad">Rapi</span>?</h2>
-        <div class="para-demo">
-          <div class="para-box bad anim from-left">
-            <div class="lbl">TANPA INDENTASI</div>
-            <div class="txt">
-              Pada suatu hari, aku pergi ke kebun binatang. Aku melihat banyak hewan lucu. Ada gajah, jerapah, dan monyet.
-            </div>
-          </div>
-          <div class="para-box good anim from-right">
-            <div class="lbl">DENGAN INDENTASI</div>
-            <div class="ruler-visual">
-              <div class="marker"></div>
-              <div class="marker down" style="margin-left:2em;"></div>
-            </div>
-            <div class="txt">
-              <span class="indent"></span>Pada suatu hari, aku pergi ke kebun binatang. Aku melihat banyak hewan lucu. Ada gajah, jerapah, dan monyet.
-            </div>
-          </div>
+        <div class="kicker anim">Pengertian</div>
+        <h2 class="anim">Apa itu Logika <span class="grad">IF</span>?</h2>
+        <p class="lead anim">Logika IF (bersyarat/kondisional) adalah cara komputer <b>mengambil keputusan</b> berdasarkan syarat tertentu. Jika syarat terpenuhi, aksi dijalankan.</p>
+        <div class="formula anim zoom">
+          <span class="kw">JIKA</span><span class="var">syarat</span><span class="kw">MAKA</span><span class="act">aksi</span>
         </div>
-        <div class="note anim">Yang <b>kanan</b> lebih enak dibaca karena baris pertamanya <b>menjorok ke dalam</b>, kan? Itulah gunanya indentasi!</div>
+        <div class="grid2">
+          <div class="ex-card anim from-left"><span class="emo">🌧️</span><span><b>JIKA</b> hujan <b>MAKA</b> bawa payung</span></div>
+          <div class="ex-card anim from-right"><span class="emo">⏰</span><span><b>JIKA</b> bangun terlambat <b>MAKA</b> naik angkot</span></div>
+        </div>
       </div>
     </section>
 
     <!-- 4 -->
-    <section class="slide" data-duration="150" data-title="Mengenal Mistar">
+    <section class="slide" data-duration="180" data-title="IF Sederhana">
       <div class="slide-inner">
-        <div class="kicker anim">Alat Bantu</div>
-        <h2 class="anim">Mengenal <span class="grad">Mistar (Ruler)</span></h2>
-        <p class="lead anim">Di komputer, kita bisa mengatur indentasi pakai <b>mistar</b> di atas halaman. Ada <b>segitiga kecil</b> yang bisa kita geser!</p>
-        <div class="ruler-big anim zoom">
-          <div class="ruler-label">◀ Geser segitiga ini untuk mengatur paragraf ▶</div>
-          <div class="ruler-ticks">
-            <span>0</span><span></span><span></span><span></span><span>1</span>
-            <span></span><span></span><span></span><span></span><span>2</span>
-            <span></span><span></span><span></span><span></span><span>3</span>
-            <span></span><span></span><span></span><span></span><span>4</span>
-            <span></span><span></span><span></span><span></span><span>5</span>
-          </div>
-          <div class="ruler-marker-top"></div>
-          <div class="ruler-marker-bottom"></div>
+        <div class="kicker anim">Langkah 1</div>
+        <h2 class="anim">IF Sederhana — Satu Syarat</h2>
+        <div class="codebox anim zoom">
+          <span class="kw">JIKA</span> nilai ≥ 75 <span class="kw">MAKA</span> <span class="str">"LULUS"</span>
         </div>
         <div class="grid2">
-          <div class="ex-card anim from-left"><span class="emo">🔺</span><span>Segitiga atas = <b>First Line Indent</b></span></div>
-          <div class="ex-card anim from-right"><span class="emo">🔻</span><span>Segitiga bawah = <b>Hanging Indent</b></span></div>
+          <div class="card anim from-left"><h3>✅ Nilai 80</h3><p>80 ≥ 75 → <b class="ok">BENAR</b></p><p class="res ok">Hasil: LULUS</p></div>
+          <div class="card anim from-right"><h3>❌ Nilai 65</h3><p>65 ≥ 75 → <b class="no">SALAH</b></p><p class="res no">Hasil: TIDAK LULUS</p></div>
         </div>
+        <div class="note anim"><b>Masalahnya:</b> IF sederhana hanya memeriksa <b>satu</b> syarat. Bagaimana kalau sekolah juga melihat <b>kehadiran</b>?</div>
       </div>
     </section>
 
     <!-- 5 -->
-    <section class="slide" data-duration="150" data-title="First Line Indent">
+    <section class="slide" data-duration="210" data-title="Operator AND">
       <div class="slide-inner">
-        <div class="kicker anim">Jenis 1</div>
-        <h2 class="anim"><span class="grad-sky">First Line Indent</span></h2>
-        <p class="lead anim">Baris <b>pertama</b> yang menjorok ke dalam. Baris kedua dan seterusnya tetap rata dari tepi kiri. Cocok untuk cerita dan buku.</p>
-        <div class="para-box good anim zoom" style="margin-top:12px;">
-          <div class="lbl">FIRST LINE INDENT</div>
-          <div class="ruler-visual">
-            <div class="marker"></div>
-            <div class="marker down" style="margin-left:0;"></div>
+        <div class="kicker anim">Langkah 2</div>
+        <h2 class="anim">Operator <span class="grad-sky">AND</span> — Semua Harus Benar</h2>
+        <p class="lead anim">Hasil <b>BENAR</b> hanya jika <b>seluruh</b> kondisi benar. Satu saja salah, hasilnya salah.</p>
+        <div class="grid2" style="margin-top:14px;">
+          <div class="truth-table anim from-left">
+            <table>
+              <thead><tr><th>Kondisi 1</th><th>Kondisi 2</th><th>Hasil AND</th></tr></thead>
+              <tbody>
+                <tr><td class="b">Benar</td><td class="b">Benar</td><td class="b">BENAR</td></tr>
+                <tr><td class="b">Benar</td><td class="s">Salah</td><td class="s">SALAH</td></tr>
+                <tr><td class="s">Salah</td><td class="b">Benar</td><td class="s">SALAH</td></tr>
+                <tr><td class="s">Salah</td><td class="s">Salah</td><td class="s">SALAH</td></tr>
+              </tbody>
+            </table>
           </div>
-          <div class="txt">
-            <span class="indent"></span>Ini baris pertama yang menjorok ke dalam. Baris kedua tetap rata dari tepi kiri. Baris ketiga juga rata. Begitu seterusnya sampai paragraf selesai.
+          <div class="card anim from-right">
+            <h3>Contoh Penerapan</h3>
+            <div class="codebox small" style="margin:8px 0;">
+              <span class="kw">JIKA</span> nilai ≥ 75 <span class="op">AND</span> kehadiran ≥ 90%<br>
+              <span class="kw">MAKA</span> <span class="str">"LULUS"</span>
+            </div>
+            <p>Nilai 85 (benar) AND kehadiran 95% (benar) → <b class="ok">LULUS</b></p>
+            <p style="margin-top:6px;">Nilai 85 (benar) AND kehadiran 80% (salah) → <b class="no">TIDAK LULUS</b></p>
           </div>
         </div>
-        <div class="note anim">Baris pertama masuk, baris lain rata. Itulah <b>First Line Indent</b>.</div>
       </div>
     </section>
 
     <!-- 6 -->
-    <section class="slide" data-duration="150" data-title="Hanging Indent">
+    <section class="slide" data-duration="210" data-title="Operator OR">
       <div class="slide-inner">
-        <div class="kicker anim">Jenis 2</div>
-        <h2 class="anim"><span class="grad-mint">Hanging Indent</span></h2>
-        <p class="lead anim">Kebalikannya! Baris <b>pertama rata</b>, tetapi baris <b>kedua dan seterusnya</b> yang menjorok ke dalam. Cocok untuk daftar atau rujukan.</p>
-        <div class="para-box good anim zoom" style="margin-top:12px; border-color:var(--mint-line); background:linear-gradient(135deg,#fff,var(--mint-bg));">
-          <div class="lbl" style="background:var(--mint);">HANGING INDENT</div>
-          <div class="ruler-visual">
-            <div class="marker" style="margin-left:2em;"></div>
-            <div class="marker down" style="margin-left:0;"></div>
+        <div class="kicker anim">Langkah 2</div>
+        <h2 class="anim">Operator <span class="grad-mint">OR</span> — Cukup Satu Benar</h2>
+        <p class="lead anim">Hasil <b>BENAR</b> jika <b>minimal satu</b> kondisi benar. Baru salah kalau semuanya salah.</p>
+        <div class="grid2" style="margin-top:14px;">
+          <div class="truth-table anim from-left">
+            <table>
+              <thead><tr><th>Kondisi 1</th><th>Kondisi 2</th><th>Hasil OR</th></tr></thead>
+              <tbody>
+                <tr><td class="b">Benar</td><td class="b">Benar</td><td class="b">BENAR</td></tr>
+                <tr><td class="b">Benar</td><td class="s">Salah</td><td class="b">BENAR</td></tr>
+                <tr><td class="s">Salah</td><td class="b">Benar</td><td class="b">BENAR</td></tr>
+                <tr><td class="s">Salah</td><td class="s">Salah</td><td class="s">SALAH</td></tr>
+              </tbody>
+            </table>
           </div>
-          <div class="txt">
-            Baris pertama rata dari tepi kiri, tetapi baris kedua dan seterusnya menjorok ke dalam. Seperti daftar atau catatan rujukan.
+          <div class="card anim from-right">
+            <h3>Contoh Penerapan</h3>
+            <div class="codebox small" style="margin:8px 0;">
+              <span class="kw">JIKA</span> nilai ≥ 75 <span class="op">OR</span> juara lomba<br>
+              <span class="kw">MAKA</span> <span class="str">"LULUS"</span>
+            </div>
+            <p>Nilai 70 (salah) OR juara lomba (benar) → <b class="ok">LULUS</b></p>
+            <p style="margin-top:6px;">Nilai 70 (salah) OR tidak juara (salah) → <b class="no">TIDAK LULUS</b></p>
           </div>
         </div>
-        <div class="note anim">Baris pertama rata, baris lain masuk. Itulah <b>Hanging Indent</b>.</div>
       </div>
     </section>
 
     <!-- 7 -->
-    <section class="slide" data-duration="150" data-title="Left & Right Indent">
+    <section class="slide" data-duration="240" data-title="Gabungan IF + AND + OR">
       <div class="slide-inner">
-        <div class="kicker anim">Jenis 3 &amp; 4</div>
-        <h2 class="anim"><span class="grad">Left Indent</span> &amp; <span class="grad">Right Indent</span></h2>
-        <p class="lead anim">Kalau <b>Left Indent</b>, <b>seluruh paragraf</b> digeser dari tepi kiri. Kalau <b>Right Indent</b>, <b>seluruh paragraf</b> digeser dari tepi kanan.</p>
-        <div class="para-demo">
-          <div class="para-box good anim from-left">
-            <div class="lbl" style="background:var(--sky);">LEFT INDENT</div>
-            <div class="txt" style="padding-left:1.6em;">
-              Seluruh paragraf ini digeser ke kanan dari tepi kiri halaman. Semua baris masuk bersama-sama.
-            </div>
-          </div>
-          <div class="para-box good anim from-right" style="border-color:var(--violet-line); background:linear-gradient(135deg,#fff,var(--violet-bg));">
-            <div class="lbl" style="background:var(--violet);">RIGHT INDENT</div>
-            <div class="txt" style="padding-right:1.6em; text-align:right;">
-              Seluruh paragraf ini digeser ke kiri dari tepi kanan halaman. Semua baris berakhir lebih ke dalam.
-            </div>
-          </div>
+        <div class="kicker anim">Langkah 3</div>
+        <h2 class="anim">Menggabungkan <span class="grad">IF</span> + <span class="grad-sky">AND</span> + <span class="grad-mint">OR</span></h2>
+        <div class="codebox anim zoom">
+          <span class="kw">JIKA</span> (nilai ≥ 75 <span class="op">AND</span> kehadiran ≥ 90%) <span class="op">OR</span> juara lomba<br>
+          <span class="kw">MAKA</span> <span class="str">"LULUS"</span>
         </div>
-        <div class="note anim">Jadi ada <b>4 jenis indentasi</b>: First Line, Hanging, Left, dan Right.</div>
+        <div class="steps" style="margin-top:12px;">
+          <div class="step anim from-left"><span class="n">1</span><div><b>Kerjakan bagian dalam kurung lebih dahulu</b><p>nilai ≥ 75 AND kehadiran ≥ 90%</p></div></div>
+          <div class="step anim from-left"><span class="n">2</span><div><b>Gabungkan hasilnya dengan OR</b><p>hasil kurung OR juara lomba</p></div></div>
+          <div class="step anim from-left"><span class="n">3</span><div><b>Ambil keputusan akhir</b><p>Jika hasil akhir BENAR → LULUS, jika SALAH → TIDAK LULUS</p></div></div>
+        </div>
       </div>
     </section>
 
     <!-- 8 -->
-    <section class="slide" data-duration="180" data-title="Langkah Mengatur">
+    <section class="slide" data-duration="240" data-title="Contoh: Kelulusan">
       <div class="slide-inner">
-        <div class="kicker anim">Praktik</div>
-        <h2 class="anim">Cara Mengatur <span class="grad">Indentasi</span></h2>
-        <div class="steps">
-          <div class="step anim from-left"><span class="n">1</span><div><b>Pilih paragraf yang mau diatur</b><p>Klik di paragraf atau blok semua teks yang ingin diubah.</p></div></div>
-          <div class="step anim from-left"><span class="n">2</span><div><b>Lihat mistar (ruler) di atas</b><p>Kalau mistar belum muncul, aktifkan lewat menu View / Tampilan.</p></div></div>
-          <div class="step anim from-left"><span class="n">3</span><div><b>Geser segitiga kecil di mistar</b><p>Geser segitiga atas untuk baris pertama, atau segitiga bawah untuk baris lainnya.</p></div></div>
-          <div class="step anim from-left"><span class="n">4</span><div><b>Selesai! Paragraf jadi rapi</b><p>Perhatikan paragraf sudah menjorok sesuai keinginan kita.</p></div></div>
+        <div class="kicker anim">Contoh 1</div>
+        <h2 class="anim">Menentukan Kelulusan</h2>
+        <div class="codebox small anim zoom">
+          <span class="kw">JIKA</span> nilai ≥ 75 <span class="op">AND</span> kehadiran ≥ 90% <span class="kw">MAKA</span> <span class="str">"LULUS"</span>
         </div>
+        <div class="result-list" style="margin-top:12px;">
+          <div class="row anim from-right"><span class="name">Ani</span><span class="val">Nilai 85 <i class="ok">✔</i></span><span class="val">Kehadiran 95% <i class="ok">✔</i></span><span class="badge ok">LULUS</span></div>
+          <div class="row anim from-right"><span class="name">Budi</span><span class="val">Nilai 90 <i class="ok">✔</i></span><span class="val">Kehadiran 80% <i class="no">✘</i></span><span class="badge no">TIDAK LULUS</span></div>
+          <div class="row anim from-right"><span class="name">Citra</span><span class="val">Nilai 70 <i class="no">✘</i></span><span class="val">Kehadiran 95% <i class="ok">✔</i></span><span class="badge no">TIDAK LULUS</span></div>
+        </div>
+        <div class="note anim">Karena memakai <b>AND</b>, <b>kedua</b> syarat harus terpenuhi agar hasilnya LULUS.</div>
       </div>
     </section>
 
     <!-- 9 -->
-    <section class="slide" data-duration="150" data-title="Manfaat">
+    <section class="slide" data-duration="210" data-title="Contoh: Diskon Belanja">
       <div class="slide-inner">
-        <div class="kicker anim">Manfaat</div>
-        <h2 class="anim">Kenapa Indentasi <span class="grad">Penting</span>?</h2>
-        <div class="grid2">
-          <div class="card anim from-left"><span class="emo">📚</span><h3>Lebih Rapi</h3><p>Dokumen kita terlihat rapi dan profesional.</p></div>
-          <div class="card anim from-right"><span class="emo">👀</span><h3>Enak Dibaca</h3><p>Mata kita lebih mudah membaca karena ada pemisah antarparagraf.</p></div>
-          <div class="card anim from-left"><span class="emo">🧠</span><h3>Terstruktur</h3><p>Pembaca tahu di mana paragraf baru dimulai.</p></div>
-          <div class="card anim from-right"><span class="emo">⚡</span><h3>Hemat Waktu</h3><p>Tidak perlu tekan tombol spasi berkali-kali. Cepat dan mudah!</p></div>
+        <div class="kicker anim">Contoh 2</div>
+        <h2 class="anim">Diskon di Toko</h2>
+        <div class="codebox small anim zoom">
+          <span class="kw">JIKA</span> total ≥ Rp100.000 <span class="op">AND</span> member <span class="kw">MAKA</span> diskon 20%
         </div>
+        <div class="grid3" style="margin-top:12px;">
+          <div class="card anim from-left"><span class="emo">🛒</span><h3>Rp150.000</h3><p>Member <span class="ok">✔</span></p><p class="res ok">Diskon 20%</p></div>
+          <div class="card anim bounce"><span class="emo">🛍️</span><h3>Rp150.000</h3><p>Bukan member <span class="no">✘</span></p><p class="res no">Tanpa diskon</p></div>
+          <div class="card anim from-right"><span class="emo">🧾</span><h3>Rp80.000</h3><p>Member <span class="ok">✔</span></p><p class="res no">Tanpa diskon</p></div>
+        </div>
+        <div class="note anim">Satu syarat saja tidak terpenuhi, maka diskon <b>tidak</b> diberikan.</div>
       </div>
     </section>
 
     <!-- 10 -->
-    <section class="slide" data-duration="150" data-title="Rangkuman">
+    <section class="slide" data-duration="180" data-title="Contoh: Cuaca">
       <div class="slide-inner">
-        <div class="kicker anim">Rangkuman</div>
-        <h2 class="anim">Yang Sudah Kita Pelajari</h2>
-        <ul class="summary">
-          <li class="anim from-left"><b>Indentasi</b> adalah jarak paragraf dari tepi halaman.</li>
-          <li class="anim from-left"><b>First Line Indent</b> = baris pertama menjorok ke dalam.</li>
-          <li class="anim from-left"><b>Hanging Indent</b> = baris kedua dan seterusnya menjorok.</li>
-          <li class="anim from-left"><b>Left Indent</b> = seluruh paragraf geser dari kiri.</li>
-          <li class="anim from-left"><b>Right Indent</b> = seluruh paragraf geser dari kanan.</li>
-          <li class="anim from-left">Indentasi diatur dengan <b>mistar (ruler)</b> di komputer.</li>
-        </ul>
+        <div class="kicker anim">Contoh 3</div>
+        <h2 class="anim">Cuaca &amp; Perlengkapan</h2>
+        <div class="codebox small anim zoom">
+          <span class="kw">JIKA</span> hujan <span class="op">OR</span> panas terik <span class="kw">MAKA</span> bawa pelindung
+        </div>
+        <div class="result-list" style="margin-top:12px;">
+          <div class="row anim from-right"><span class="name">Hujan</span><span class="val">Tidak panas</span><span class="badge ok" style="justify-self:start;">Bawa pelindung</span></div>
+          <div class="row anim from-right"><span class="name">Tidak hujan</span><span class="val">Panas terik</span><span class="badge ok" style="justify-self:start;">Bawa pelindung</span></div>
+          <div class="row anim from-right"><span class="name">Tidak hujan</span><span class="val">Tidak panas</span><span class="badge no" style="justify-self:start;">Tidak perlu</span></div>
+        </div>
+        <div class="note anim">Karena memakai <b>OR</b>, cukup <b>salah satu</b> syarat terpenuhi.</div>
       </div>
     </section>
 
     <!-- 11 -->
-    <section class="slide" data-duration="120" data-title="Penutup">
+    <section class="slide" data-duration="240" data-title="Latihan">
+      <div class="slide-inner">
+        <div class="kicker anim">Latihan</div>
+        <h2 class="anim">Ayo Uji Pemahamanmu</h2>
+        <div class="quiz-text">
+          <div class="q anim from-left">
+            <p><b>1.</b> JIKA nilai ≥ 80 AND tugas lengkap MAKA "NAIK KELAS". Nilai Dina 85 dan semua tugas lengkap. Hasilnya?</p>
+            <div class="answer">Jawaban: <b class="ok">NAIK KELAS</b> — kedua syarat bernilai benar.</div>
+          </div>
+          <div class="q anim from-left">
+            <p><b>2.</b> JIKA hujan OR berawan gelap MAKA bawa payung. Hari ini berawan gelap tetapi tidak hujan. Hasilnya?</p>
+            <div class="answer">Jawaban: <b class="ok">Bawa payung</b> — cukup satu syarat benar (OR).</div>
+          </div>
+          <div class="q anim from-left">
+            <p><b>3.</b> JIKA total ≥ Rp100.000 AND member MAKA diskon 20%. Belanja Rp120.000 tetapi bukan member. Hasilnya?</p>
+            <div class="answer">Jawaban: <b class="no">Tidak dapat diskon</b> — salah satu syarat bernilai salah (AND).</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 12 -->
+    <section class="slide" data-duration="150" data-title="Rangkuman">
+      <div class="slide-inner">
+        <div class="kicker anim">Rangkuman</div>
+        <h2 class="anim">Poin Penting Hari Ini</h2>
+        <ul class="summary">
+          <li class="anim from-left"><b>Logika IF</b> adalah cara mengambil keputusan berdasarkan syarat tertentu.</li>
+          <li class="anim from-left"><b>AND</b> berarti semua syarat harus benar.</li>
+          <li class="anim from-left"><b>OR</b> berarti cukup satu syarat benar.</li>
+          <li class="anim from-left">Kerjakan operasi di dalam <b>kurung ( )</b> lebih dahulu.</li>
+          <li class="anim from-left">Logika ini dipakai untuk kelulusan, diskon belanja, cuaca, dan banyak hal lain.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 13 -->
+    <section class="slide" data-duration="150" data-title="Penutup">
       <div class="slide-inner center">
         <div class="kicker anim">Penutup</div>
         <h2 class="anim zoom">Refleksi &amp; Tindak Lanjut</h2>
         <div class="grid3" style="width:100%; text-align:left;">
-          <div class="card anim from-left"><span class="emo">📝</span><h3>Refleksi</h3><p>Tuliskan satu hal baru yang kamu pelajari di buku catatanmu.</p></div>
-          <div class="card anim zoom"><span class="emo">📚</span><h3>Di Rumah</h3><p>Perhatikan baris pertama paragraf di buku cerita atau buku pelajaranmu.</p></div>
-          <div class="card anim from-right"><span class="emo">🤲</span><h3>Berdoa</h3><p>Tutup pelajaran dengan doa bersama dipimpin ketua kelas.</p></div>
+          <div class="card anim from-left"><span class="emo">📝</span><h3>Refleksi</h3><p>Tuliskan satu hal baru yang kamu pelajari di bagian bawah catatanmu.</p></div>
+          <div class="card anim zoom"><span class="emo">📚</span><h3>Tindak Lanjut</h3><p>Pelajari kembali catatan di rumah. Minggu depan akan dibahas oleh guru pengampu.</p></div>
+          <div class="card anim from-right"><span class="emo">🤲</span><h3>Berdoa</h3><p>Tutup pembelajaran dengan doa bersama yang dipimpin oleh ketua kelas.</p></div>
         </div>
         <div class="thanks anim">Terima kasih — tetap semangat belajar! 🌟</div>
       </div>
     </section>
 
-    <!-- 12 — QUIZ PILIHAN GANDA KOMPLEKS -->
+    <!-- 14 — QUIZ (PILIHAN GANDA KOMPLEKS) -->
     <section class="slide quiz-slide" data-duration="60" data-title="Ujian — 10 Menit" data-quiz="true">
       <div class="slide-inner">
         <div class="kicker anim">Ujian Akhir</div>
@@ -971,14 +1017,14 @@
               <div class="quiz-num">1</div>
               <div class="quiz-tag">Soal 1</div>
             </div>
-            <p class="quiz-q">Diketahui: <b>Indentasi</b> adalah jarak paragraf dari tepi halaman. Pilih semua pernyataan yang <b>BENAR</b>!</p>
+            <p class="quiz-q">Diketahui aturan: <b>JIKA nilai ≥ 75 AND kehadiran ≥ 90% MAKA "LULUS"</b>. Pilih semua pernyataan yang BENAR!</p>
             <span class="quiz-hint-inline">💡 Jawaban bisa lebih dari satu</span>
             <div class="quiz-options">
-              <div class="quiz-opt" data-opt="A" data-correct="true">A. Indentasi membuat paragraf lebih rapi</div>
-              <div class="quiz-opt" data-opt="B" data-correct="false">B. Indentasi sama dengan menekan spasi banyak kali</div>
-              <div class="quiz-opt" data-opt="C" data-correct="true">C. Baris pertama paragraf bisa menjorok ke dalam</div>
-              <div class="quiz-opt" data-opt="D" data-correct="true">D. Indentasi bisa diatur dengan mistar (ruler)</div>
-              <div class="quiz-opt" data-opt="E" data-correct="false">E. Indentasi hanya bisa dibuat di buku tulis</div>
+              <div class="quiz-opt" data-opt="A" data-correct="true">A. Ani: nilai 85, kehadiran 95% → LULUS</div>
+              <div class="quiz-opt" data-opt="B" data-correct="false">B. Budi: nilai 80, kehadiran 85% → LULUS</div>
+              <div class="quiz-opt" data-opt="C" data-correct="true">C. Citra: nilai 70, kehadiran 95% → TIDAK LULUS</div>
+              <div class="quiz-opt" data-opt="D" data-correct="true">D. Dani: nilai 90, kehadiran 90% → LULUS</div>
+              <div class="quiz-opt" data-opt="E" data-correct="false">E. Eka: nilai 75, kehadiran 100% → TIDAK LULUS</div>
             </div>
             <div class="quiz-score" data-score-for="0"></div>
           </div>
@@ -988,14 +1034,14 @@
               <div class="quiz-num">2</div>
               <div class="quiz-tag">Soal 2</div>
             </div>
-            <p class="quiz-q">Diketahui: Ada beberapa <b>jenis indentasi</b> di komputer. Pilih semua nama jenis indentasi yang <b>BENAR</b>!</p>
+            <p class="quiz-q">Diketahui aturan: <b>JIKA hujan OR panas terik MAKA bawa pelindung</b>. Pilih semua pernyataan yang BENAR!</p>
             <span class="quiz-hint-inline">💡 Jawaban bisa lebih dari satu</span>
             <div class="quiz-options">
-              <div class="quiz-opt" data-opt="A" data-correct="true">A. First Line Indent</div>
-              <div class="quiz-opt" data-opt="B" data-correct="true">B. Hanging Indent</div>
-              <div class="quiz-opt" data-opt="C" data-correct="false">C. Spasi Indent</div>
-              <div class="quiz-opt" data-opt="D" data-correct="false">D. Enter Indent</div>
-              <div class="quiz-opt" data-opt="E" data-correct="false">E. Tengah Indent</div>
+              <div class="quiz-opt" data-opt="A" data-correct="true">A. Hujan, tidak panas → bawa pelindung</div>
+              <div class="quiz-opt" data-opt="B" data-correct="false">B. Tidak hujan, panas terik → tidak bawa pelindung</div>
+              <div class="quiz-opt" data-opt="C" data-correct="true">C. Tidak hujan, tidak panas → tidak bawa pelindung</div>
+              <div class="quiz-opt" data-opt="D" data-correct="false">D. Hujan, panas terik → tidak bawa pelindung</div>
+              <div class="quiz-opt" data-opt="E" data-correct="false">E. Hujan, tidak panas → tidak bawa pelindung</div>
             </div>
             <div class="quiz-score" data-score-for="1"></div>
           </div>
@@ -1005,14 +1051,14 @@
               <div class="quiz-num">3</div>
               <div class="quiz-tag">Soal 3</div>
             </div>
-            <p class="quiz-q">Diketahui: Di komputer, ada beberapa cara mengatur <b>indentasi</b>. Pilih semua cara yang <b>TEPAT</b>!</p>
+            <p class="quiz-q">Diketahui aturan: <b>JIKA total ≥ Rp100.000 AND member MAKA diskon 20%</b>. Pilih semua pernyataan yang BENAR!</p>
             <span class="quiz-hint-inline">💡 Jawaban bisa lebih dari satu</span>
             <div class="quiz-options">
-              <div class="quiz-opt" data-opt="A" data-correct="true">A. Menggeser segitiga di mistar (ruler)</div>
-              <div class="quiz-opt" data-opt="B" data-correct="true">B. Menggunakan menu Paragraf</div>
-              <div class="quiz-opt" data-opt="C" data-correct="true">C. Mengatur jarak paragraf dari tepi halaman</div>
-              <div class="quiz-opt" data-opt="D" data-correct="false">D. Menekan tombol spasi berulang kali</div>
-              <div class="quiz-opt" data-opt="E" data-correct="false">E. Menekan tombol Enter berulang kali</div>
+              <div class="quiz-opt" data-opt="A" data-correct="true">A. Total Rp150.000, member → dapat diskon 20%</div>
+              <div class="quiz-opt" data-opt="B" data-correct="false">B. Total Rp150.000, bukan member → dapat diskon 20%</div>
+              <div class="quiz-opt" data-opt="C" data-correct="true">C. Total Rp80.000, member → tidak dapat diskon</div>
+              <div class="quiz-opt" data-opt="D" data-correct="true">D. Total Rp80.000, bukan member → tidak dapat diskon</div>
+              <div class="quiz-opt" data-opt="E" data-correct="false">E. Total Rp120.000, member → tidak dapat diskon</div>
             </div>
             <div class="quiz-score" data-score-for="2"></div>
           </div>
@@ -1052,7 +1098,7 @@
         </button>
       </div>
       <div class="ctrl-right">
-        <span class="hint">Spasi = jeda · ← → = pindah slide · F = layar penuh</span>
+        <span class="hint">Spasi = jeda · ← → = pindah slide</span>
       </div>
     </div>
   </footer>
@@ -1081,7 +1127,7 @@
 
 <div class="start-overlay" id="startOverlay">
   <div class="start-card">
-    <div class="logo">TIK</div>
+    <div class="logo">IF</div>
     <h2>Video Pembelajaran Bersuara</h2>
     <p>Materi dijelaskan oleh <b>robot guru yang lucu</b> dengan narasi suara AI. Slide berganti otomatis saat narasi selesai, dan diakhiri <b>3 soal pilihan ganda kompleks + timer 10 menit</b>. Robot bisa <b>digeser</b> jika menutupi teks.</p>
     <button class="start-btn" id="btnStart" type="button">▶ Mulai Video Bersuara</button>
@@ -1101,18 +1147,20 @@
   const QUIZ_TOTAL_MS = 10 * 60 * 1000;
 
   const narrations = [
-    "Halo teman-teman kelas dua! Selamat datang di pelajaran TIK. Hari ini kita akan belajar membuat paragraf jadi rapi. Namanya indentasi. Ayo kita mulai dengan semangat!",
-    "Teman-teman, indentasi adalah jarak paragraf dari tepi halaman. Kalau kita beri indentasi, paragraf akan menjorok ke dalam. Biasanya dipakai di baris pertama setiap paragraf. Di buku cerita juga begitu, lho.",
-    "Coba perhatikan dua paragraf ini. Yang kiri, semua barisnya rata dari tepi. Yang kanan, baris pertamanya agak masuk ke dalam. Mana yang lebih rapi dan enak dibaca? Tentu yang kanan, kan? Itulah gunanya indentasi.",
-    "Di komputer, kita bisa mengatur indentasi pakai mistar. Namanya ruler. Di atas mistar ada segitiga kecil. Kita bisa menggeser segitiga itu ke kanan atau ke kiri untuk mengatur paragraf.",
-    "Ini namanya First Line Indent. Artinya baris pertama paragraf yang menjorok ke dalam. Baris kedua dan seterusnya tetap rata dari tepi kiri. Cocok untuk menulis cerita atau buku.",
-    "Ini namanya Hanging Indent. Kebalikannya. Baris pertama rata, tetapi baris kedua dan seterusnya yang menjorok ke dalam. Cocok untuk menulis daftar atau catatan rujukan.",
-    "Selain itu ada Left Indent dan Right Indent. Left Indent artinya seluruh paragraf digeser dari tepi kiri. Right Indent artinya seluruh paragraf digeser dari tepi kanan. Semuanya bisa diatur dengan mistar di komputer.",
-    "Caranya mudah, teman-teman. Pertama, pilih paragraf yang mau diatur. Kedua, lihat mistar di atas. Ketiga, geser segitiga kecil sesuai keinginan. Selesai! Paragraf kita jadi rapi.",
-    "Dengan indentasi, dokumen kita jadi rapi, enak dibaca, dan lebih terstruktur. Buku cerita, surat, dan laporan biasanya memakai indentasi, lho. Jadi tidak perlu menekan spasi berkali-kali.",
-    "Mari kita rangkum. Indentasi adalah jarak paragraf dari tepi halaman. Ada First Line Indent, Hanging Indent, Left Indent, dan Right Indent. Indentasi bisa diatur dengan mistar di komputer. Hasilnya, paragraf kita jadi rapi dan enak dibaca.",
-    "Sebagai penutup, coba ingat-ingat lagi ya, hari ini kita sudah belajar tentang indentasi. Coba di rumah, kalian bisa lihat buku cerita atau buku pelajaran kalian. Perhatikan baris pertama paragrafnya. Mudah-mudahan bermanfaat. Terima kasih, tetap semangat belajar!",
-    "Nah, sekarang saatnya ujian. Ada tiga soal. Pada setiap soal, jawabannya bisa lebih dari satu. Centang semua pilihan yang menurut kalian benar. Kalian punya waktu sepuluh menit. Perhatikan jam besar di layar karena waktu akan terus berjalan. Waktu dimulai sekarang. Selamat mengerjakan!"
+    "Halo teman-teman kelas enam. Selamat datang di pembelajaran TIK. Hari ini kita akan belajar tentang logika IF dan kondisi ganda. Kita akan memahami bagaimana komputer mengambil keputusan berdasarkan satu atau beberapa syarat. Pembelajaran ini berlangsung sekitar empat puluh menit. Pastikan kalian sudah menyiapkan buku catatan dan alat tulis. Simak penjelasan berikut dengan saksama, lalu catat poin-poin pentingnya. Mari kita mulai dengan semangat.",
+    "Tujuan pembelajaran kita hari ini ada empat. Pertama, kalian dapat membaca dan memahami rangkuman materi tentang penggabungan logika IF. Kedua, kalian dapat menuliskan kembali pengertian logika IF dengan kondisi lain secara rapi dan terstruktur. Ketiga, kalian dapat mengidentifikasi contoh masalah sehari-hari yang diselesaikan dengan kondisi ganda. Keempat, kalian dapat membuat peta konsep atau ringkasan visual. Selain itu, kalian diharapkan menunjukkan sikap mandiri dan disiplin selama belajar.",
+    "Logika IF adalah logika bersyarat atau kondisional. Artinya, komputer akan menjalankan suatu aksi hanya jika syarat tertentu terpenuhi. Bentuk sederhananya adalah: jika syarat, maka aksi. Contohnya, jika hujan maka bawa payung. Jika bangun terlambat maka naik angkot. Dalam kehidupan sehari-hari, kita sering mengambil keputusan dengan pola seperti ini tanpa menyadarinya. Logika IF membantu komputer dan manusia membuat keputusan secara terstruktur, bukan asal-asalan.",
+    "Sekarang kita lihat contoh IF sederhana dengan satu syarat. Misalnya, jika nilai lebih besar atau sama dengan tujuh puluh lima, maka hasilnya lulus. Jika nilai Ani delapan puluh, karena delapan puluh lebih besar dari tujuh puluh lima, maka hasilnya lulus. Tetapi jika nilai Budi enam puluh lima, maka hasilnya tidak lulus. IF sederhana hanya memeriksa satu syarat. Bagaimana jika sekolah juga melihat kehadiran? Di sinilah kita membutuhkan kondisi ganda.",
+    "Operator AND digunakan ketika semua syarat harus benar. Hasilnya benar hanya jika seluruh kondisi bernilai benar. Jika satu saja kondisi salah, maka hasil akhirnya salah. Contoh: jika nilai lebih besar atau sama dengan tujuh puluh lima AND kehadiran lebih besar atau sama dengan sembilan puluh persen, maka lulus. Ani punya nilai delapan puluh lima dan kehadiran sembilan puluh lima persen, jadi Ani lulus. Tetapi jika kehadirannya hanya delapan puluh persen, maka Ani tidak lulus karena satu syarat tidak terpenuhi.",
+    "Operator OR digunakan ketika cukup satu syarat terpenuhi. Hasilnya benar jika minimal satu kondisi bernilai benar. Hasilnya baru salah jika semua kondisi salah. Contoh: jika nilai lebih besar atau sama dengan tujuh puluh lima OR juara lomba, maka lulus. Jika nilai tujuh puluh tetapi menjadi juara lomba, hasilnya tetap lulus karena salah satu syarat benar. Tetapi jika nilai tujuh puluh dan tidak juara lomba, maka hasilnya tidak lulus.",
+    "Sekarang kita gabungkan IF dengan AND dan OR. Perhatikan contoh berikut: jika dalam kurung nilai lebih besar atau sama dengan tujuh puluh lima AND kehadiran lebih besar atau sama dengan sembilan puluh persen, OR juara lomba, maka lulus. Langkah pertama, selesaikan bagian dalam kurung terlebih dahulu. Langkah kedua, gabungkan hasilnya dengan kondisi juara lomba menggunakan OR. Langkah ketiga, ambil keputusan akhir. Jika hasil akhirnya benar, maka lulus. Jika salah, maka tidak lulus. Ingat, operasi di dalam kurung selalu dikerjakan lebih dahulu.",
+    "Mari kita terapkan pada contoh kelulusan. Aturannya: jika nilai lebih besar atau sama dengan tujuh puluh lima AND kehadiran lebih besar atau sama dengan sembilan puluh persen, maka lulus. Ani memiliki nilai delapan puluh lima dan kehadiran sembilan puluh lima persen. Kedua syarat benar, jadi Ani lulus. Budi memiliki nilai sembilan puluh, tetapi kehadirannya delapan puluh persen. Karena kehadiran tidak memenuhi syarat, Budi tidak lulus. Citra memiliki nilai tujuh puluh dan kehadiran sembilan puluh lima persen. Karena nilai tidak memenuhi syarat, Citra juga tidak lulus. Kesimpulannya, karena memakai AND, kedua syarat harus terpenuhi.",
+    "Contoh kedua, diskon di toko. Aturannya: jika total belanja lebih besar atau sama dengan seratus ribu rupiah AND menjadi member, maka mendapat diskon dua puluh persen. Jika belanja seratus lima puluh ribu dan menjadi member, maka diskon diberikan. Jika belanja seratus lima puluh ribu tetapi bukan member, maka tidak ada diskon. Jika belanja delapan puluh ribu meskipun member, juga tidak ada diskon karena total belanja belum memenuhi syarat. Jadi, satu syarat saja tidak terpenuhi, diskon tidak diberikan.",
+    "Contoh ketiga, cuaca dan perlengkapan. Aturannya: jika hujan OR panas terik, maka bawa pelindung. Jika hujan, meskipun tidak panas, kita tetap membawa pelindung. Jika tidak hujan tetapi panas terik, kita juga membawa pelindung. Tetapi jika tidak hujan dan tidak panas, kita tidak perlu membawa pelindung. Karena memakai OR, cukup salah satu syarat terpenuhi.",
+    "Sekarang saatnya latihan. Soal pertama: jika nilai lebih besar atau sama dengan delapan puluh AND tugas lengkap, maka naik kelas. Nilai Dina delapan puluh lima dan semua tugas lengkap. Karena kedua syarat benar, hasilnya naik kelas. Soal kedua: jika hujan OR berawan gelap, maka bawa payung. Hari ini berawan gelap tetapi tidak hujan. Karena salah satu syarat benar, hasilnya bawa payung. Soal ketiga: jika total belanja lebih besar atau sama dengan seratus ribu AND member, maka diskon dua puluh persen. Belanja seratus dua puluh ribu tetapi bukan member. Karena satu syarat salah, hasilnya tidak mendapat diskon. Silakan tulis jawaban kalian di buku catatan.",
+    "Mari kita rangkum poin penting hari ini. Logika IF adalah cara mengambil keputusan berdasarkan syarat tertentu. AND berarti semua syarat harus benar. OR berarti cukup satu syarat benar. Operasi di dalam kurung dikerjakan lebih dahulu. Logika ini banyak dipakai untuk menentukan kelulusan, diskon belanja, cuaca, dan berbagai masalah sehari-hari. Pastikan kalian mencatat poin-poin ini dengan rapi.",
+    "Sebagai penutup, tuliskan satu hal baru yang kalian pelajari di bagian bawah catatan. Pelajari kembali catatan kalian di rumah karena minggu depan akan dibahas oleh guru pengampu. Akhirnya, mari kita tutup pembelajaran dengan doa bersama yang dipimpin oleh ketua kelas. Terima kasih, tetap semangat belajar, dan sampai jumpa.",
+    "Nah, sekarang saatnya ujian. Ada tiga soal pilihan ganda kompleks. Pada setiap soal, jawaban benar bisa lebih dari satu. Centang semua pilihan yang menurut kalian benar. Kalian punya waktu sepuluh menit untuk mengerjakannya. Perhatikan timer besar di layar karena waktu akan terus berjalan. Waktu dimulai sekarang. Selamat mengerjakan!"
   ];
 
   /* ============ ELEMENTS ============ */
@@ -1166,8 +1214,10 @@
     robotTeacher.addEventListener('pointerdown', (e) => {
       robotDragging = true;
       const rect = robotTeacher.getBoundingClientRect();
-      dragStartX = e.clientX; dragStartY = e.clientY;
-      dragStartLeft = rect.left; dragStartTop = rect.top;
+      dragStartX = e.clientX;
+      dragStartY = e.clientY;
+      dragStartLeft = rect.left;
+      dragStartTop = rect.top;
       robotTeacher.style.left = dragStartLeft + 'px';
       robotTeacher.style.top = dragStartTop + 'px';
       robotTeacher.style.bottom = 'auto';
@@ -1202,6 +1252,8 @@
     robotTeacher.addEventListener('pointerleave', endDrag);
   }
   initRobotDrag();
+
+  // Sembunyikan hint setelah 6 detik kalau belum digeser
   setTimeout(() => {
     if (!robotHasBeenDragged && robotHint) robotHint.style.display = 'none';
   }, 6000);
@@ -1216,8 +1268,10 @@
       voices.find(v => v.default) ||
       voices[0] || null;
   }
-  if (synth) { pickVoice(); synth.onvoiceschanged = pickVoice; }
-  else {
+  if (synth) {
+    pickVoice();
+    synth.onvoiceschanged = pickVoice;
+  } else {
     btnVoice.disabled = true;
     btnVoice.textContent = '🔇 Narasi tidak tersedia';
     btnVoice.classList.add('off');
@@ -1229,12 +1283,18 @@
       .map(s => s.trim()).filter(Boolean);
   }
 
-  function robotSpeakStart() { activeUtterances++; robotTeacher.classList.add('speaking'); }
+  function robotSpeakStart() {
+    activeUtterances++;
+    robotTeacher.classList.add('speaking');
+  }
   function robotSpeakEnd() {
     activeUtterances = Math.max(0, activeUtterances - 1);
     if (activeUtterances === 0) robotTeacher.classList.remove('speaking');
   }
-  function robotSpeakCancel() { activeUtterances = 0; robotTeacher.classList.remove('speaking'); }
+  function robotSpeakCancel() {
+    activeUtterances = 0;
+    robotTeacher.classList.remove('speaking');
+  }
 
   function updateCaption() {
     if (!started) { elCaption.textContent = 'Klik “Mulai Video Bersuara” untuk memulai.'; return; }
@@ -1262,7 +1322,7 @@
       const u = new SpeechSynthesisUtterance(text);
       u.lang = 'id-ID';
       if (selectedVoice) u.voice = selectedVoice;
-      u.rate = 0.95; u.pitch = 1.05; u.volume = 1;
+      u.rate = 0.98; u.pitch = 1.05; u.volume = 1;
       u.onstart = () => {
         if (mySession !== speakSessionId) return;
         robotSpeakStart();
@@ -1285,6 +1345,7 @@
     });
   }
 
+  /* ============ NARRATION END ============ */
   function onNarrationEnd(i) {
     if (i !== idx) return;
     if (!started || !playing) return;
@@ -1316,11 +1377,12 @@
     else { playing = false; updatePlayIcon(); elCaption.textContent = 'Video selesai. Terima kasih.'; }
   }
 
+  /* ============ HELPERS ============ */
   const pad = n => String(n).padStart(2, '0');
   const fmt = ms => { const s = Math.max(0, Math.round(ms / 1000)); return pad(Math.floor(s / 60)) + ':' + pad(s % 60); };
   const isQuizSlide = i => i === QUIZ_INDEX;
 
-  /* ============ QUIZ ============ */
+  /* ============ QUIZ UI ============ */
   function updateQuizTimerDisplay() {
     if (!elQuizTimer) return;
     const totalSec = Math.ceil(quizRemainingMs / 1000);
@@ -1342,15 +1404,23 @@
 
   function onQuizTimeUp() {
     document.querySelectorAll('.quiz-card').forEach(card => {
-      let totalCorrect = 0, userCorrect = 0, userWrong = 0;
+      const cardIdx = parseInt(card.dataset.quizCard, 10);
+      let totalCorrect = 0;
+      let userCorrect = 0;
+      let userSelected = 0;
+      let userWrong = 0;
+
       card.querySelectorAll('.quiz-opt').forEach(o => {
         const isCorrect = o.dataset.correct === 'true';
         const isSelected = o.classList.contains('selected');
         if (isCorrect) totalCorrect++;
+        if (isSelected) userSelected++;
         if (isCorrect) o.classList.add('correct');
         if (isSelected && !isCorrect) { o.classList.add('wrong'); userWrong++; }
         if (isSelected && isCorrect) userCorrect++;
       });
+
+      // Skor berdasarkan exact match
       let scoreEl = card.querySelector('.quiz-score');
       if (!scoreEl) {
         scoreEl = document.createElement('div');
@@ -1359,13 +1429,14 @@
       }
       const exactMatch = (userCorrect === totalCorrect) && (userWrong === 0);
       const partialMatch = (userCorrect > 0) && !exactMatch;
+
       scoreEl.classList.add('show');
       if (exactMatch) {
         scoreEl.classList.add('perfect');
         scoreEl.textContent = '⭐ Tepat sekali!';
       } else if (partialMatch) {
         scoreEl.classList.add('partial');
-        scoreEl.textContent = '◐ Belum tepat — lihat jawaban hijau';
+        scoreEl.textContent = '◐ Belum tepat — perhatikan jawaban hijau';
       } else {
         scoreEl.classList.add('none');
         scoreEl.textContent = '✗ Perhatikan jawaban hijau';
@@ -1382,7 +1453,7 @@
       );
       u.lang = 'id-ID';
       if (selectedVoice) u.voice = selectedVoice;
-      u.rate = 0.95; u.pitch = 1.05;
+      u.rate = 0.98; u.pitch = 1.05;
       u.onstart = robotSpeakStart;
       u.onend = robotSpeakEnd;
       u.onerror = robotSpeakEnd;
@@ -1390,6 +1461,7 @@
     }
   }
 
+  // Klik opsi: toggles
   document.querySelectorAll('.quiz-opt').forEach(opt => {
     opt.addEventListener('click', () => {
       if (quizState === 'ended') return;
@@ -1438,6 +1510,7 @@
       slideDeadline = Number.MAX_SAFE_INTEGER;
       activate(idx);
       render();
+
       if (started && narrationOn && synth) {
         speakSlide(idx);
         setTimeout(() => {
@@ -1455,6 +1528,7 @@
     const durMs = durations[idx] * 1000;
     slideDeadline = (started && narrationOn && synth) ? Math.max(durMs, 120000) : durMs;
     activate(idx);
+
     if (started && narrationOn && synth) { speakSlide(idx); }
     else { updateCaption(); }
     render();
@@ -1531,27 +1605,20 @@
 
   /* ============ FULLSCREEN ============ */
   function toggleFullscreen() {
-    const doc = document;
-    const el = doc.documentElement;
-    const isFull = doc.fullscreenElement || doc.webkitFullscreenElement || doc.mozFullScreenElement || doc.msFullscreenElement;
-    if (!isFull) {
-      const req = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen || el.msRequestFullscreen;
-      if (req) {
-        const p = req.call(el);
-        if (p && p.catch) p.catch(() => {});
-      }
+    if (!document.fullscreenElement) {
+      const p = document.documentElement.requestFullscreen && document.documentElement.requestFullscreen();
+      if (p && p.then) p.catch(() => {});
     } else {
-      const ex = doc.exitFullscreen || doc.webkitExitFullscreen || doc.mozCancelFullScreen || doc.msExitFullscreen;
-      if (ex) {
-        const p = ex.call(doc);
-        if (p && p.catch) p.catch(() => {});
-      }
+      const p = document.exitFullscreen && document.exitFullscreen();
+      if (p && p.then) p.catch(() => {});
     }
   }
   document.addEventListener('fullscreenchange', () => {
-    if (btnFullscreen) btnFullscreen.title = document.fullscreenElement ? 'Keluar layar penuh (F)' : 'Layar penuh (F)';
+    btnFullscreen.textContent = document.fullscreenElement ? '⛶' : '⛶';
+    btnFullscreen.title = document.fullscreenElement ? 'Keluar layar penuh' : 'Layar penuh';
   });
 
+  /* ============ START ============ */
   function startVideo() {
     if (started) return;
     started = true;
@@ -1562,9 +1629,11 @@
     enterSlide(0);
   }
 
+  /* ============ LOOP ============ */
   function loop(now) {
     const dt = Math.min(now - lastTime, 250);
     lastTime = now;
+
     if (started && playing) {
       realElapsedMs += dt;
       if (isQuizSlide(idx)) {
@@ -1585,6 +1654,7 @@
     requestAnimationFrame(loop);
   }
 
+  /* ============ EVENTS ============ */
   btnStart.addEventListener('click', startVideo);
   btnPlay.addEventListener('click', togglePlay);
   btnPrev.addEventListener('click', () => changeSlide(idx - 1));
@@ -1603,6 +1673,7 @@
     if (synth) try { synth.cancel(); } catch (e) {}
   });
 
+  /* ============ INIT ============ */
   activate(0);
   updatePlayIcon();
   updateCaption();
