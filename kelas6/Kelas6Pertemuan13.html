@@ -475,14 +475,14 @@
   #caption{min-width:0; flex:1; color:var(--ink2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
 
   /* Controls */
-  .controls{padding:8px clamp(12px,2.4vw,32px) 12px;}
+  .controls{padding:8px clamp(12px,2.4vw,32px) 12px; transition:opacity .3s ease;}
   .slide-rail{height:3px; background:rgba(255,255,255,.55); border-radius:999px; overflow:hidden; margin-bottom:10px;}
   #slideProgress{height:100%; width:0; background:linear-gradient(90deg,#38bdf8,#a78bfa); border-radius:999px; transition:width .18s linear;}
   .ctrl-row{display:flex; align-items:center; justify-content:space-between; gap:12px;}
   .ctrl-left{display:flex; align-items:center; gap:8px; min-width:0;}
   .dot{width:8px; height:8px; border-radius:50%; background:var(--mint); box-shadow:0 0 8px var(--mint); animation:blink 1.8s ease-in-out infinite; flex:none;}
   #slideTitle{font-size:11.5px; color:var(--ink3); font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
-  .ctrl-center{display:flex; align-items:center; gap:6px;}
+  .ctrl-center{display:flex; align-items:center; gap:6px; transition:opacity .3s ease;}
   .ctrl-center button{
     display:grid; place-items:center; width:38px; height:38px; border-radius:12px;
     background:var(--card-hi); border:1.5px solid var(--line2);
@@ -499,9 +499,108 @@
   .ctrl-center button.primary:hover{filter:brightness(1.08);}
   .ctrl-center svg{width:16px; height:16px; fill:currentColor;}
   .ctrl-center button.primary svg{width:18px; height:18px;}
-  .ctrl-right{display:flex; align-items:center; gap:8px;}
+  .ctrl-right{display:flex; align-items:center; gap:8px; transition:opacity .3s ease;}
   .hint{font-size:10.5px; color:var(--ink4);}
   .hide{display:none !important;}
+
+  /* Navigasi disembunyikan saat slide khusus */
+  .controls.nav-hidden .ctrl-center,
+  .controls.nav-hidden .ctrl-right{
+    opacity:0;
+    pointer-events:none;
+  }
+
+  /* ============ NOTE-TAKING OVERLAY ============ */
+  .note-overlay{
+    position:fixed; inset:0; z-index:90;
+    background:rgba(15,23,42,.72);
+    backdrop-filter:blur(10px);
+    display:flex; align-items:center; justify-content:center;
+    opacity:0; pointer-events:none;
+    transition:opacity .4s ease;
+    padding:20px;
+  }
+  .note-overlay.show{opacity:1; pointer-events:auto;}
+  .note-card{
+    background:#fff;
+    border-radius:24px;
+    padding:clamp(20px,3vw,30px) clamp(24px,4vw,40px);
+    text-align:center;
+    box-shadow:0 24px 60px rgba(0,0,0,.35);
+    border:3px solid var(--violet-line);
+    max-width:800px; width:100%;
+    animation:notePop .5s cubic-bezier(.34,1.56,.64,1);
+  }
+  @keyframes notePop{from{transform:scale(.8); opacity:0;} to{transform:scale(1); opacity:1;}}
+  .note-icon{font-size:clamp(36px,4vw,48px); margin-bottom:6px; display:inline-block; animation:floatRotate 3s ease-in-out infinite;}
+  .note-card h2{font-size:clamp(20px,2.5vw,28px); color:var(--ink); margin-bottom:4px;}
+  .note-card p{font-size:clamp(12px,1.1vw,14px); color:var(--ink2); margin-bottom:10px; line-height:1.5;}
+  
+  /* Kotak Materi Catatan */
+  .note-content-box {
+    text-align: left;
+    background: #f8fafc;
+    border: 2px dashed var(--sky-line);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin: 12px 0 16px;
+    font-size: clamp(13px, 1.2vw, 15px);
+    color: var(--ink2);
+    line-height: 1.6;
+    max-height: 30vh;
+    overflow-y: auto;
+    box-shadow: inset 0 2px 8px rgba(0,0,0,0.02);
+  }
+  .note-content-box b { color: var(--sky); }
+  
+  .note-timer-display{
+    font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+    font-size:clamp(48px,6vw,72px);
+    font-weight:900; color:var(--sky);
+    letter-spacing:-0.03em;
+    margin:0;
+    font-variant-numeric:tabular-nums;
+    transition:color .3s;
+    line-height: 1;
+  }
+  .note-timer-display.urgent{color:var(--rose); animation:urgentFlash .8s ease-in-out infinite;}
+  .note-sub{font-size:clamp(11px,.9vw,13px); color:var(--ink4); margin-top:6px; letter-spacing:.05em;}
+
+  /* ============ ICE BREAKING SLIDE ============ */
+  .icebreak-slide .slide-inner{
+    max-width:1200px; width:100%;
+    display:flex; flex-direction:column;
+    gap:14px; text-align:center;
+    max-height:100%;
+  }
+  .icebreak-slide h2{color:var(--pink); margin-bottom:4px;}
+  .icebreak-slide .lead{margin:0 auto;}
+  .icebreak-video-wrap{
+    position:relative;
+    width:100%;
+    aspect-ratio:16/9;
+    max-height:62vh;
+    margin:0 auto;
+    background:#0f172a;
+    border-radius:20px;
+    overflow:hidden;
+    box-shadow:0 20px 50px rgba(0,0,0,.32);
+    border:3px solid var(--pink);
+  }
+  .icebreak-iframe{
+    position:absolute; inset:0;
+    width:100%; height:100%;
+    border:none;
+  }
+  .icebreak-placeholder{
+    position:absolute; inset:0;
+    display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
+    gap:12px; color:#fff;
+    background:linear-gradient(135deg,#1e293b,#0f172a);
+  }
+  .icebreak-placeholder-icon{font-size:clamp(40px,6vw,72px); animation:timerPulse 1.5s ease-in-out infinite;}
+  .icebreak-placeholder p{color:#cbd5e1; font-weight:600;}
 
   /* ============ QUIZ SLIDE ============ */
   .quiz-slide .slide-inner{
@@ -746,7 +845,7 @@
     <div class="topbar-right">
       <button class="chip voice" id="btnVoice" type="button" title="Nyalakan/matikan narasi suara">🔊 Narasi</button>
       <button class="chip fullscreen-btn" id="btnFullscreen" type="button" title="Layar penuh">⛶</button>
-      <div class="chip" id="counter">1 / 14</div>
+      <div class="chip" id="counter">1 / 16</div>
       <div class="chip time" id="timeLeft">00:00</div>
     </div>
   </header>
@@ -784,8 +883,10 @@
       </div>
     </section>
 
-    <!-- 3 -->
-    <section class="slide" data-duration="180" data-title="Apa itu Logika IF?">
+    <!-- 3 : PENGERTIAN + CATAT 5 MENIT -->
+    <section class="slide" data-duration="180" data-title="Apa itu Logika IF?" 
+             data-note-minutes="5" 
+             data-note-content="<b>Logika IF</b> adalah cara komputer mengambil keputusan berdasarkan syarat tertentu.<br><br><b>Bentuk Umum:</b><br><span style='color:#d97706;font-weight:bold'>JIKA</span> syarat <span style='color:#d97706;font-weight:bold'>MAKA</span> aksi<br><br><b>Contoh:</b><br>1. JIKA hujan MAKA bawa payung<br>2. JIKA bangun terlambat MAKA naik angkot">
       <div class="slide-inner">
         <div class="kicker anim">Pengertian</div>
         <h2 class="anim">Apa itu Logika <span class="grad">IF</span>?</h2>
@@ -847,6 +948,21 @@
       </div>
     </section>
 
+    <!-- ICE BREAKING 1 -->
+    <section class="slide icebreak-slide" data-duration="220" data-title="Ice Breaking 1" data-icebreak="true" data-video-id="SCL1X7K_vCo">
+      <div class="slide-inner">
+        <div class="kicker anim" style="background:var(--pink-bg);border-color:var(--pink-line);color:var(--pink);">Ice Breaking</div>
+        <h2 class="anim zoom">Berdiri Sebentar! 🕺💃</h2>
+        <p class="lead anim">Silakan berdiri semua. Mari kita lakukan ice breaking bersama. Ikuti gerakan di layar!</p>
+        <div class="icebreak-video-wrap anim bounce">
+          <div class="icebreak-placeholder" id="icebreakPlaceholder1">
+            <div class="icebreak-placeholder-icon">🎬</div>
+            <p>Video akan segera diputar...</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- 6 -->
     <section class="slide" data-duration="210" data-title="Operator OR">
       <div class="slide-inner">
@@ -878,8 +994,10 @@
       </div>
     </section>
 
-    <!-- 7 -->
-    <section class="slide" data-duration="240" data-title="Gabungan IF + AND + OR">
+    <!-- 7 : GABUNGAN + CATAT 5 MENIT -->
+    <section class="slide" data-duration="240" data-title="Gabungan IF + AND + OR" 
+             data-note-minutes="5" 
+             data-note-content="<b>Menggabungkan IF + AND + OR</b><br><br><b>Contoh Aturan:</b><br>JIKA (nilai ≥ 75 AND kehadiran ≥ 90%) OR juara lomba MAKA 'LULUS'<br><br><b>Langkah Penyelesaian:</b><br>1. Kerjakan bagian dalam kurung ( ) lebih dahulu.<br>2. Gabungkan hasilnya dengan OR.<br>3. Ambil keputusan akhir (BENAR/SALAH).">
       <div class="slide-inner">
         <div class="kicker anim">Langkah 3</div>
         <h2 class="anim">Menggabungkan <span class="grad">IF</span> + <span class="grad-sky">AND</span> + <span class="grad-mint">OR</span></h2>
@@ -926,6 +1044,21 @@
           <div class="card anim from-right"><span class="emo">🧾</span><h3>Rp80.000</h3><p>Member <span class="ok">✔</span></p><p class="res no">Tanpa diskon</p></div>
         </div>
         <div class="note anim">Satu syarat saja tidak terpenuhi, maka diskon <b>tidak</b> diberikan.</div>
+      </div>
+    </section>
+
+    <!-- ICE BREAKING 2 -->
+    <section class="slide icebreak-slide" data-duration="220" data-title="Ice Breaking 2" data-icebreak="true" data-video-id="lTIeWhyTFBU">
+      <div class="slide-inner">
+        <div class="kicker anim" style="background:var(--pink-bg);border-color:var(--pink-line);color:var(--pink);">Ice Breaking</div>
+        <h2 class="anim zoom">Berdiri Lagi Yuk! 🕺💃</h2>
+        <p class="lead anim">Silakan berdiri semua. Ini ice breaking kedua. Ikuti gerakan di layar!</p>
+        <div class="icebreak-video-wrap anim bounce">
+          <div class="icebreak-placeholder" id="icebreakPlaceholder2">
+            <div class="icebreak-placeholder-icon">🎬</div>
+            <p>Video akan segera diputar...</p>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -997,7 +1130,7 @@
       </div>
     </section>
 
-    <!-- 14 — QUIZ (PILIHAN GANDA KOMPLEKS) -->
+    <!-- 14 — QUIZ -->
     <section class="slide quiz-slide" data-duration="60" data-title="Ujian — 10 Menit" data-quiz="true">
       <div class="slide-inner">
         <div class="kicker anim">Ujian Akhir</div>
@@ -1075,10 +1208,10 @@
 
   <div class="narration-bar">
     <span class="nlabel">Narasi AI</span>
-    <span id="caption">Klik “Mulai Video Bersuara” untuk memulai.</span>
+    <span id="caption">Klik "Mulai Video Bersuara" untuk memulai.</span>
   </div>
 
-  <footer class="controls">
+  <footer class="controls" id="controls">
     <div class="slide-rail"><div id="slideProgress"></div></div>
     <div class="ctrl-row">
       <div class="ctrl-left">
@@ -1105,6 +1238,21 @@
 
 </div>
 
+<!-- ===== NOTE OVERLAY ===== -->
+<div class="note-overlay" id="noteOverlay">
+  <div class="note-card">
+    <div class="note-icon">📝</div>
+    <h2>Silahkan Mencatat</h2>
+    <p>Saya berikan waktu <b>5 menit</b> untuk mencatat materi di bawah ini dengan rapi.</p>
+    
+    <!-- Kotak Materi Catatan -->
+    <div class="note-content-box" id="noteContentBox"></div>
+    
+    <div class="note-timer-display" id="noteTimerDisplay">05:00</div>
+    <div class="note-sub">Gunakan waktu ini dengan sebaik-baiknya</div>
+  </div>
+</div>
+
 <!-- ===== CUTE ROBOT GURU ===== -->
 <div class="robot-teacher" id="robotTeacher" aria-hidden="true">
   <div class="robot-hint" id="robotHint">Geser aku! 👋</div>
@@ -1129,9 +1277,9 @@
   <div class="start-card">
     <div class="logo">IF</div>
     <h2>Video Pembelajaran Bersuara</h2>
-    <p>Materi dijelaskan oleh <b>robot guru yang lucu</b> dengan narasi suara AI. Slide berganti otomatis saat narasi selesai, dan diakhiri <b>3 soal pilihan ganda kompleks + timer 10 menit</b>. Robot bisa <b>digeser</b> jika menutupi teks.</p>
+    <p>Materi dijelaskan oleh <b>robot guru yang lucu</b> dengan narasi suara AI. Slide berganti otomatis saat narasi selesai. Ada <b>2 sesi mencatat 5 menit</b> dan <b>2 ice breaking</b> yang dipisah di tengah pembelajaran. Diakhiri <b>3 soal pilihan ganda kompleks + timer 10 menit</b>. Robot bisa <b>digeser</b> jika menutupi teks.</p>
     <button class="start-btn" id="btnStart" type="button">▶ Mulai Video Bersuara</button>
-    <div class="start-note">Klik sekali untuk mengizinkan suara. Gunakan Chrome/Edge, pastikan volume aktif.</div>
+    <div class="start-note">Klik sekali untuk mengizinkan suara &amp; masuk layar penuh. Gunakan Chrome/Edge, pastikan volume aktif.</div>
   </div>
 </div>
 
@@ -1147,20 +1295,22 @@
   const QUIZ_TOTAL_MS = 10 * 60 * 1000;
 
   const narrations = [
-    "Halo teman-teman kelas enam. Selamat datang di pembelajaran TIK. Hari ini kita akan belajar tentang logika IF dan kondisi ganda. Kita akan memahami bagaimana komputer mengambil keputusan berdasarkan satu atau beberapa syarat. Pembelajaran ini berlangsung sekitar empat puluh menit. Pastikan kalian sudah menyiapkan buku catatan dan alat tulis. Simak penjelasan berikut dengan saksama, lalu catat poin-poin pentingnya. Mari kita mulai dengan semangat.",
-    "Tujuan pembelajaran kita hari ini ada empat. Pertama, kalian dapat membaca dan memahami rangkuman materi tentang penggabungan logika IF. Kedua, kalian dapat menuliskan kembali pengertian logika IF dengan kondisi lain secara rapi dan terstruktur. Ketiga, kalian dapat mengidentifikasi contoh masalah sehari-hari yang diselesaikan dengan kondisi ganda. Keempat, kalian dapat membuat peta konsep atau ringkasan visual. Selain itu, kalian diharapkan menunjukkan sikap mandiri dan disiplin selama belajar.",
-    "Logika IF adalah logika bersyarat atau kondisional. Artinya, komputer akan menjalankan suatu aksi hanya jika syarat tertentu terpenuhi. Bentuk sederhananya adalah: jika syarat, maka aksi. Contohnya, jika hujan maka bawa payung. Jika bangun terlambat maka naik angkot. Dalam kehidupan sehari-hari, kita sering mengambil keputusan dengan pola seperti ini tanpa menyadarinya. Logika IF membantu komputer dan manusia membuat keputusan secara terstruktur, bukan asal-asalan.",
-    "Sekarang kita lihat contoh IF sederhana dengan satu syarat. Misalnya, jika nilai lebih besar atau sama dengan tujuh puluh lima, maka hasilnya lulus. Jika nilai Ani delapan puluh, karena delapan puluh lebih besar dari tujuh puluh lima, maka hasilnya lulus. Tetapi jika nilai Budi enam puluh lima, maka hasilnya tidak lulus. IF sederhana hanya memeriksa satu syarat. Bagaimana jika sekolah juga melihat kehadiran? Di sinilah kita membutuhkan kondisi ganda.",
-    "Operator AND digunakan ketika semua syarat harus benar. Hasilnya benar hanya jika seluruh kondisi bernilai benar. Jika satu saja kondisi salah, maka hasil akhirnya salah. Contoh: jika nilai lebih besar atau sama dengan tujuh puluh lima AND kehadiran lebih besar atau sama dengan sembilan puluh persen, maka lulus. Ani punya nilai delapan puluh lima dan kehadiran sembilan puluh lima persen, jadi Ani lulus. Tetapi jika kehadirannya hanya delapan puluh persen, maka Ani tidak lulus karena satu syarat tidak terpenuhi.",
-    "Operator OR digunakan ketika cukup satu syarat terpenuhi. Hasilnya benar jika minimal satu kondisi bernilai benar. Hasilnya baru salah jika semua kondisi salah. Contoh: jika nilai lebih besar atau sama dengan tujuh puluh lima OR juara lomba, maka lulus. Jika nilai tujuh puluh tetapi menjadi juara lomba, hasilnya tetap lulus karena salah satu syarat benar. Tetapi jika nilai tujuh puluh dan tidak juara lomba, maka hasilnya tidak lulus.",
-    "Sekarang kita gabungkan IF dengan AND dan OR. Perhatikan contoh berikut: jika dalam kurung nilai lebih besar atau sama dengan tujuh puluh lima AND kehadiran lebih besar atau sama dengan sembilan puluh persen, OR juara lomba, maka lulus. Langkah pertama, selesaikan bagian dalam kurung terlebih dahulu. Langkah kedua, gabungkan hasilnya dengan kondisi juara lomba menggunakan OR. Langkah ketiga, ambil keputusan akhir. Jika hasil akhirnya benar, maka lulus. Jika salah, maka tidak lulus. Ingat, operasi di dalam kurung selalu dikerjakan lebih dahulu.",
-    "Mari kita terapkan pada contoh kelulusan. Aturannya: jika nilai lebih besar atau sama dengan tujuh puluh lima AND kehadiran lebih besar atau sama dengan sembilan puluh persen, maka lulus. Ani memiliki nilai delapan puluh lima dan kehadiran sembilan puluh lima persen. Kedua syarat benar, jadi Ani lulus. Budi memiliki nilai sembilan puluh, tetapi kehadirannya delapan puluh persen. Karena kehadiran tidak memenuhi syarat, Budi tidak lulus. Citra memiliki nilai tujuh puluh dan kehadiran sembilan puluh lima persen. Karena nilai tidak memenuhi syarat, Citra juga tidak lulus. Kesimpulannya, karena memakai AND, kedua syarat harus terpenuhi.",
-    "Contoh kedua, diskon di toko. Aturannya: jika total belanja lebih besar atau sama dengan seratus ribu rupiah AND menjadi member, maka mendapat diskon dua puluh persen. Jika belanja seratus lima puluh ribu dan menjadi member, maka diskon diberikan. Jika belanja seratus lima puluh ribu tetapi bukan member, maka tidak ada diskon. Jika belanja delapan puluh ribu meskipun member, juga tidak ada diskon karena total belanja belum memenuhi syarat. Jadi, satu syarat saja tidak terpenuhi, diskon tidak diberikan.",
-    "Contoh ketiga, cuaca dan perlengkapan. Aturannya: jika hujan OR panas terik, maka bawa pelindung. Jika hujan, meskipun tidak panas, kita tetap membawa pelindung. Jika tidak hujan tetapi panas terik, kita juga membawa pelindung. Tetapi jika tidak hujan dan tidak panas, kita tidak perlu membawa pelindung. Karena memakai OR, cukup salah satu syarat terpenuhi.",
-    "Sekarang saatnya latihan. Soal pertama: jika nilai lebih besar atau sama dengan delapan puluh AND tugas lengkap, maka naik kelas. Nilai Dina delapan puluh lima dan semua tugas lengkap. Karena kedua syarat benar, hasilnya naik kelas. Soal kedua: jika hujan OR berawan gelap, maka bawa payung. Hari ini berawan gelap tetapi tidak hujan. Karena salah satu syarat benar, hasilnya bawa payung. Soal ketiga: jika total belanja lebih besar atau sama dengan seratus ribu AND member, maka diskon dua puluh persen. Belanja seratus dua puluh ribu tetapi bukan member. Karena satu syarat salah, hasilnya tidak mendapat diskon. Silakan tulis jawaban kalian di buku catatan.",
-    "Mari kita rangkum poin penting hari ini. Logika IF adalah cara mengambil keputusan berdasarkan syarat tertentu. AND berarti semua syarat harus benar. OR berarti cukup satu syarat benar. Operasi di dalam kurung dikerjakan lebih dahulu. Logika ini banyak dipakai untuk menentukan kelulusan, diskon belanja, cuaca, dan berbagai masalah sehari-hari. Pastikan kalian mencatat poin-poin ini dengan rapi.",
-    "Sebagai penutup, tuliskan satu hal baru yang kalian pelajari di bagian bawah catatan. Pelajari kembali catatan kalian di rumah karena minggu depan akan dibahas oleh guru pengampu. Akhirnya, mari kita tutup pembelajaran dengan doa bersama yang dipimpin oleh ketua kelas. Terima kasih, tetap semangat belajar, dan sampai jumpa.",
-    "Nah, sekarang saatnya ujian. Ada tiga soal pilihan ganda kompleks. Pada setiap soal, jawaban benar bisa lebih dari satu. Centang semua pilihan yang menurut kalian benar. Kalian punya waktu sepuluh menit untuk mengerjakannya. Perhatikan timer besar di layar karena waktu akan terus berjalan. Waktu dimulai sekarang. Selamat mengerjakan!"
+    /* 0 Pembuka */ "Halo teman-teman kelas enam. Selamat datang di pembelajaran TIK. Hari ini kita akan belajar tentang logika IF dan kondisi ganda. Kita akan memahami bagaimana komputer mengambil keputusan berdasarkan satu atau beberapa syarat. Pembelajaran ini berlangsung sekitar empat puluh menit. Pastikan kalian sudah menyiapkan buku catatan dan alat tulis. Simak penjelasan berikut dengan saksama, lalu catat poin-poin pentingnya. Mari kita mulai dengan semangat.",
+    /* 1 Tujuan */ "Tujuan pembelajaran kita hari ini ada empat. Pertama, kalian dapat membaca dan memahami rangkuman materi tentang penggabungan logika IF. Kedua, kalian dapat menuliskan kembali pengertian logika IF dengan kondisi lain secara rapi dan terstruktur. Ketiga, kalian dapat mengidentifikasi contoh masalah sehari-hari yang diselesaikan dengan kondisi ganda. Keempat, kalian dapat membuat peta konsep atau ringkasan visual. Selain itu, kalian diharapkan menunjukkan sikap mandiri dan disiplin selama belajar.",
+    /* 2 Pengertian */ "Logika IF adalah logika bersyarat atau kondisional. Artinya, komputer akan menjalankan suatu aksi hanya jika syarat tertentu terpenuhi. Bentuk sederhananya adalah: jika syarat, maka aksi. Contohnya, jika hujan maka bawa payung. Jika bangun terlambat maka naik angkot. Dalam kehidupan sehari-hari, kita sering mengambil keputusan dengan pola seperti ini tanpa menyadarinya. Logika IF membantu komputer dan manusia membuat keputusan secara terstruktur, bukan asal-asalan.",
+    /* 3 IF Sederhana */ "Sekarang kita lihat contoh IF sederhana dengan satu syarat. Misalnya, jika nilai lebih besar atau sama dengan tujuh puluh lima, maka hasilnya lulus. Jika nilai Ani delapan puluh, karena delapan puluh lebih besar dari tujuh puluh lima, maka hasilnya lulus. Tetapi jika nilai Budi enam puluh lima, maka hasilnya tidak lulus. IF sederhana hanya memeriksa satu syarat. Bagaimana jika sekolah juga melihat kehadiran? Di sinilah kita membutuhkan kondisi ganda.",
+    /* 4 AND */ "Operator AND digunakan ketika semua syarat harus benar. Hasilnya benar hanya jika seluruh kondisi bernilai benar. Jika satu saja kondisi salah, maka hasil akhirnya salah. Contoh: jika nilai lebih besar atau sama dengan tujuh puluh lima AND kehadiran lebih besar atau sama dengan sembilan puluh persen, maka lulus. Ani punya nilai delapan puluh lima dan kehadiran sembilan puluh lima persen, jadi Ani lulus. Tetapi jika kehadirannya hanya delapan puluh persen, maka Ani tidak lulus karena satu syarat tidak terpenuhi.",
+    /* 5 ICE BREAK 1 */ "Silahkan berdiri semua. Mari kita lakukan ice breaking bersama-sama. Ikuti gerakan yang ada di layar ya. Ayo bergerak!",
+    /* 6 OR */ "Operator OR digunakan ketika cukup satu syarat terpenuhi. Hasilnya benar jika minimal satu kondisi bernilai benar. Hasilnya baru salah jika semua kondisi salah. Contoh: jika nilai lebih besar atau sama dengan tujuh puluh lima OR juara lomba, maka lulus. Jika nilai tujuh puluh tetapi menjadi juara lomba, hasilnya tetap lulus karena salah satu syarat benar. Tetapi jika nilai tujuh puluh dan tidak juara lomba, maka hasilnya tidak lulus.",
+    /* 7 Gabungan */ "Sekarang kita gabungkan IF dengan AND dan OR. Perhatikan contoh berikut: jika dalam kurung nilai lebih besar atau sama dengan tujuh puluh lima AND kehadiran lebih besar atau sama dengan sembilan puluh persen, OR juara lomba, maka lulus. Langkah pertama, selesaikan bagian dalam kurung terlebih dahulu. Langkah kedua, gabungkan hasilnya dengan kondisi juara lomba menggunakan OR. Langkah ketiga, ambil keputusan akhir. Jika hasil akhirnya benar, maka lulus. Jika salah, maka tidak lulus. Ingat, operasi di dalam kurung selalu dikerjakan lebih dahulu.",
+    /* 8 Kelulusan */ "Mari kita terapkan pada contoh kelulusan. Aturannya: jika nilai lebih besar atau sama dengan tujuh puluh lima AND kehadiran lebih besar atau sama dengan sembilan puluh persen, maka lulus. Ani memiliki nilai delapan puluh lima dan kehadiran sembilan puluh lima persen. Kedua syarat benar, jadi Ani lulus. Budi memiliki nilai sembilan puluh, tetapi kehadirannya delapan puluh persen. Karena kehadiran tidak memenuhi syarat, Budi tidak lulus. Citra memiliki nilai tujuh puluh dan kehadiran sembilan puluh lima persen. Karena nilai tidak memenuhi syarat, Citra juga tidak lulus. Kesimpulannya, karena memakai AND, kedua syarat harus terpenuhi.",
+    /* 9 Diskon */ "Contoh kedua, diskon di toko. Aturannya: jika total belanja lebih besar atau sama dengan seratus ribu rupiah AND menjadi member, maka mendapat diskon dua puluh persen. Jika belanja seratus lima puluh ribu dan menjadi member, maka diskon diberikan. Jika belanja seratus lima puluh ribu tetapi bukan member, maka tidak ada diskon. Jika belanja delapan puluh ribu meskipun member, juga tidak ada diskon karena total belanja belum memenuhi syarat. Jadi, satu syarat saja tidak terpenuhi, diskon tidak diberikan.",
+    /* 10 ICE BREAK 2 */ "Waktunya ice breaking kedua. Silahkan berdiri semua dan ikuti gerakan di layar. Ayo semangat!",
+    /* 11 Cuaca */ "Contoh ketiga, cuaca dan perlengkapan. Aturannya: jika hujan OR panas terik, maka bawa pelindung. Jika hujan, meskipun tidak panas, kita tetap membawa pelindung. Jika tidak hujan tetapi panas terik, kita juga membawa pelindung. Tetapi jika tidak hujan dan tidak panas, kita tidak perlu membawa pelindung. Karena memakai OR, cukup salah satu syarat terpenuhi.",
+    /* 12 Latihan */ "Sekarang saatnya latihan. Soal pertama: jika nilai lebih besar atau sama dengan delapan puluh AND tugas lengkap, maka naik kelas. Nilai Dina delapan puluh lima dan semua tugas lengkap. Karena kedua syarat benar, hasilnya naik kelas. Soal kedua: jika hujan OR berawan gelap, maka bawa payung. Hari ini berawan gelap tetapi tidak hujan. Karena salah satu syarat benar, hasilnya bawa payung. Soal ketiga: jika total belanja lebih besar atau sama dengan seratus ribu AND member, maka diskon dua puluh persen. Belanja seratus dua puluh ribu tetapi bukan member. Karena satu syarat salah, hasilnya tidak mendapat diskon. Silakan tulis jawaban kalian di buku catatan.",
+    /* 13 Rangkuman */ "Mari kita rangkum poin penting hari ini. Logika IF adalah cara mengambil keputusan berdasarkan syarat tertentu. AND berarti semua syarat harus benar. OR berarti cukup satu syarat benar. Operasi di dalam kurung dikerjakan lebih dahulu. Logika ini banyak dipakai untuk menentukan kelulusan, diskon belanja, cuaca, dan berbagai masalah sehari-hari. Pastikan kalian mencatat poin-poin ini dengan rapi.",
+    /* 14 Penutup */ "Sebagai penutup, tuliskan satu hal baru yang kalian pelajari di bagian bawah catatan. Pelajari kembali catatan kalian di rumah karena minggu depan akan dibahas oleh guru pengampu. Akhirnya, mari kita tutup pembelajaran dengan doa bersama yang dipimpin oleh ketua kelas. Terima kasih, tetap semangat belajar, dan sampai jumpa.",
+    /* 15 Quiz */ "Nah, sekarang saatnya ujian. Ada tiga soal pilihan ganda kompleks. Pada setiap soal, jawaban benar bisa lebih dari satu. Centang semua pilihan yang menurut kalian benar. Kalian punya waktu sepuluh menit untuk mengerjakannya. Perhatikan timer besar di layar karena waktu akan terus berjalan. Waktu dimulai sekarang. Selamat mengerjakan!"
   ];
 
   /* ============ ELEMENTS ============ */
@@ -1183,6 +1333,10 @@
   const robotHint = document.getElementById('robotHint');
   const elQuizTimer = document.getElementById('quizTimerDisplay');
   const elQuizTimesUp = document.getElementById('quizTimesUp');
+  const elControls = document.getElementById('controls');
+  const elNoteOverlay = document.getElementById('noteOverlay');
+  const elNoteTimer = document.getElementById('noteTimerDisplay');
+  const elNoteContent = document.getElementById('noteContentBox');
 
   /* ============ STATE ============ */
   const synth = 'speechSynthesis' in window ? window.speechSynthesis : null;
@@ -1203,6 +1357,14 @@
 
   let quizState = 'idle';
   let quizRemainingMs = QUIZ_TOTAL_MS;
+
+  /* Note-taking state */
+  let noteState = 'idle';
+  let noteRemainingMs = 0;
+
+  /* Ice breaking state */
+  let iceState = 'idle';
+  let iceRemainingMs = 0;
 
   /* ============ ROBOT DRAG ============ */
   let robotDragging = false;
@@ -1253,10 +1415,13 @@
   }
   initRobotDrag();
 
-  // Sembunyikan hint setelah 6 detik kalau belum digeser
   setTimeout(() => {
     if (!robotHasBeenDragged && robotHint) robotHint.style.display = 'none';
   }, 6000);
+
+  /* ============ NAV VISIBILITY ============ */
+  function hideNav() { elControls.classList.add('nav-hidden'); }
+  function showNav() { elControls.classList.remove('nav-hidden'); }
 
   /* ============ TTS ============ */
   function pickVoice() {
@@ -1297,9 +1462,9 @@
   }
 
   function updateCaption() {
-    if (!started) { elCaption.textContent = 'Klik “Mulai Video Bersuara” untuk memulai.'; return; }
+    if (!started) { elCaption.textContent = 'Klik "Mulai Video Bersuara" untuk memulai.'; return; }
     if (!synth) { elCaption.textContent = 'Browser ini tidak mendukung narasi suara. Materi tetap bisa dibaca di layar.'; return; }
-    if (!narrationOn) { elCaption.textContent = 'Narasi dimatikan. Klik tombol “Narasi” untuk menyalakan kembali.'; }
+    if (!narrationOn) { elCaption.textContent = 'Narasi dimatikan. Klik tombol "Narasi" untuk menyalakan kembali.'; }
   }
 
   function speakSlide(i) {
@@ -1345,12 +1510,40 @@
     });
   }
 
+  function speakText(text) {
+    if (!synth || !narrationOn) return;
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'id-ID';
+    if (selectedVoice) u.voice = selectedVoice;
+    u.rate = 0.98; u.pitch = 1.05; u.volume = 1;
+    u.onstart = robotSpeakStart;
+    u.onend = robotSpeakEnd;
+    u.onerror = robotSpeakEnd;
+    synth.speak(u);
+  }
+
   /* ============ NARRATION END ============ */
   function onNarrationEnd(i) {
     if (i !== idx) return;
     if (!started || !playing) return;
     if (!narrationOn) return;
+
+    const slide = slides[i];
+
+    /* Ice breaking: setelah narasi "berdiri" selesai, mulai video */
+    if (slide.dataset.icebreak === 'true') {
+      startIceBreakVideo();
+      return;
+    }
+
     if (isQuizSlide(i)) { quizState = 'running'; return; }
+
+    /* Note-taking slide: setelah narasi selesai, mulai waktu mencatat */
+    if (slide.dataset.noteMinutes) {
+      startNoteTime();
+      return;
+    }
+
     scheduleAdvance(700);
   }
 
@@ -1375,6 +1568,71 @@
     if (isQuizSlide(idx)) return;
     if (idx < slides.length - 1) { enterSlide(idx + 1); }
     else { playing = false; updatePlayIcon(); elCaption.textContent = 'Video selesai. Terima kasih.'; }
+  }
+
+  /* ============ NOTE TIME ============ */
+  function startNoteTime() {
+    const slide = slides[idx];
+    const minutes = parseFloat(slide.dataset.noteMinutes) || 5;
+    noteRemainingMs = minutes * 60 * 1000;
+    noteState = 'running';
+    
+    // Menampilkan isi materi yang harus dicatat
+    const content = slide.dataset.noteContent || '<i>Tidak ada catatan khusus untuk slide ini.</i>';
+    if (elNoteContent) elNoteContent.innerHTML = content;
+    
+    showNoteOverlay();
+    hideNav();
+    updateNoteTimerDisplay();
+    elCaption.textContent = 'Silahkan mencatat. Saya berikan waktu ' + minutes + ' menit.';
+    speakText('Silahkan mencatat materi yang ada di layar. Saya berikan waktu ' + minutes + ' menit.');
+  }
+
+  function showNoteOverlay() { elNoteOverlay.classList.add('show'); }
+  function hideNoteOverlay() { elNoteOverlay.classList.remove('show'); }
+
+  function updateNoteTimerDisplay() {
+    if (!elNoteTimer) return;
+    const totalSec = Math.ceil(noteRemainingMs / 1000);
+    const m = Math.floor(totalSec / 60);
+    const s = totalSec % 60;
+    elNoteTimer.textContent = pad(m) + ':' + pad(s);
+    const urgent = noteState === 'running' && totalSec <= 60;
+    elNoteTimer.classList.toggle('urgent', urgent);
+  }
+
+  /* ============ ICE BREAKING ============ */
+  function startIceBreakVideo() {
+    const slide = slides[idx];
+    if (!slide || slide.dataset.icebreak !== 'true') return;
+
+    const wrap = slide.querySelector('.icebreak-video-wrap');
+    const videoId = slide.dataset.videoId;
+    if (!wrap || !videoId) return;
+
+    if (!wrap.querySelector('iframe')) {
+      const placeholder = wrap.querySelector('.icebreak-placeholder');
+      if (placeholder) placeholder.remove();
+
+      const iframe = document.createElement('iframe');
+      iframe.src = 'https://www.youtube.com/embed/' + videoId + '?autoplay=1&rel=0&modestbranding=1&playsinline=1&controls=1';
+      iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen';
+      iframe.allowFullscreen = true;
+      iframe.className = 'icebreak-iframe';
+      wrap.appendChild(iframe);
+    }
+
+    iceState = 'running';
+    if (!iceRemainingMs) {
+      iceRemainingMs = parseFloat(slide.dataset.duration) * 1000 || 220000;
+    }
+    elCaption.textContent = 'Ice breaking sedang berlangsung. Ikuti gerakan di layar!';
+  }
+
+  function stopIceBreakVideo(slideEl) {
+    if (!slideEl) return;
+    const wrap = slideEl.querySelector('.icebreak-video-wrap');
+    if (wrap) wrap.innerHTML = '';
   }
 
   /* ============ HELPERS ============ */
@@ -1404,23 +1662,19 @@
 
   function onQuizTimeUp() {
     document.querySelectorAll('.quiz-card').forEach(card => {
-      const cardIdx = parseInt(card.dataset.quizCard, 10);
       let totalCorrect = 0;
       let userCorrect = 0;
-      let userSelected = 0;
       let userWrong = 0;
 
       card.querySelectorAll('.quiz-opt').forEach(o => {
         const isCorrect = o.dataset.correct === 'true';
         const isSelected = o.classList.contains('selected');
         if (isCorrect) totalCorrect++;
-        if (isSelected) userSelected++;
         if (isCorrect) o.classList.add('correct');
         if (isSelected && !isCorrect) { o.classList.add('wrong'); userWrong++; }
         if (isSelected && isCorrect) userCorrect++;
       });
 
-      // Skor berdasarkan exact match
       let scoreEl = card.querySelector('.quiz-score');
       if (!scoreEl) {
         scoreEl = document.createElement('div');
@@ -1461,7 +1715,6 @@
     }
   }
 
-  // Klik opsi: toggles
   document.querySelectorAll('.quiz-opt').forEach(opt => {
     opt.addEventListener('click', () => {
       if (quizState === 'ended') return;
@@ -1475,7 +1728,17 @@
   function render() {
     let slideProg = 0;
     const dur = Math.max(1, durations[idx] * 1000);
-    if (isQuizSlide(idx)) {
+    const slide = slides[idx];
+
+    if (slide.dataset.icebreak === 'true') {
+      const total = parseFloat(slide.dataset.duration) * 1000 || 220000;
+      if (iceState === 'ended') slideProg = 1;
+      else if (iceState === 'running') slideProg = 1 - iceRemainingMs / total;
+      else slideProg = 0;
+    } else if (noteState === 'running') {
+      const total = parseFloat(slide.dataset.noteMinutes) * 60 * 1000;
+      slideProg = 1 - noteRemainingMs / total;
+    } else if (isQuizSlide(idx)) {
       if (quizState === 'ended') slideProg = 1;
       else if (quizState === 'running') slideProg = 1 - quizRemainingMs / QUIZ_TOTAL_MS;
       else slideProg = 0;
@@ -1497,10 +1760,42 @@
   }
 
   function enterSlide(i) {
+    const prevSlide = slides[idx];
+    if (prevSlide && prevSlide.dataset.icebreak === 'true') {
+      stopIceBreakVideo(prevSlide);
+    }
+
     idx = Math.max(0, Math.min(slides.length - 1, i));
     slideElapsed = 0;
     lastSpokenSlide = -1;
     cancelPendingAdvance();
+
+    noteState = 'idle';
+    noteRemainingMs = 0;
+    iceState = 'idle';
+    iceRemainingMs = 0;
+    hideNoteOverlay();
+    showNav();
+
+    const slide = slides[idx];
+
+    if (slide.dataset.icebreak === 'true') {
+      activate(idx);
+      render();
+      hideNav();
+      iceState = 'intro';
+      iceRemainingMs = parseFloat(slide.dataset.duration) * 1000 || 220000;
+      elCaption.textContent = 'Bersiap untuk ice breaking...';
+
+      if (started && narrationOn && synth) {
+        speakSlide(idx);
+      } else {
+        setTimeout(() => {
+          if (idx === i && iceState === 'intro') startIceBreakVideo();
+        }, 3000);
+      }
+      return;
+    }
 
     if (isQuizSlide(idx)) {
       quizState = 'intro';
@@ -1526,11 +1821,25 @@
 
     quizState = 'idle';
     const durMs = durations[idx] * 1000;
-    slideDeadline = (started && narrationOn && synth) ? Math.max(durMs, 120000) : durMs;
     activate(idx);
 
-    if (started && narrationOn && synth) { speakSlide(idx); }
-    else { updateCaption(); }
+    if (slide.dataset.noteMinutes) {
+      noteState = 'intro';
+      noteRemainingMs = parseFloat(slide.dataset.noteMinutes) * 60 * 1000;
+      slideDeadline = Infinity;
+
+      if (started && narrationOn && synth) {
+        speakSlide(idx);
+      } else {
+        setTimeout(() => {
+          if (idx === i && noteState === 'intro') startNoteTime();
+        }, 3000);
+      }
+    } else {
+      slideDeadline = (started && narrationOn && synth) ? Math.max(durMs, 120000) : durMs;
+      if (started && narrationOn && synth) { speakSlide(idx); }
+      else { updateCaption(); }
+    }
     render();
   }
 
@@ -1604,17 +1913,27 @@
   }
 
   /* ============ FULLSCREEN ============ */
+  function requestFullscreen() {
+    const el = document.documentElement;
+    try {
+      if (el.requestFullscreen) return el.requestFullscreen().catch(() => {});
+      if (el.webkitRequestFullscreen) return el.webkitRequestFullscreen();
+      if (el.msRequestFullscreen) return el.msRequestFullscreen();
+    } catch (e) {}
+  }
+
   function toggleFullscreen() {
-    if (!document.fullscreenElement) {
-      const p = document.documentElement.requestFullscreen && document.documentElement.requestFullscreen();
-      if (p && p.then) p.catch(() => {});
+    if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+      requestFullscreen();
     } else {
-      const p = document.exitFullscreen && document.exitFullscreen();
-      if (p && p.then) p.catch(() => {});
+      try {
+        if (document.exitFullscreen) document.exitFullscreen().catch(() => {});
+        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+      } catch (e) {}
     }
   }
   document.addEventListener('fullscreenchange', () => {
-    btnFullscreen.textContent = document.fullscreenElement ? '⛶' : '⛶';
+    btnFullscreen.textContent = '⛶';
     btnFullscreen.title = document.fullscreenElement ? 'Keluar layar penuh' : 'Layar penuh';
   });
 
@@ -1626,6 +1945,9 @@
     playing = true;
     lastTime = performance.now();
     updatePlayIcon();
+
+    requestFullscreen();
+
     enterSlide(0);
   }
 
@@ -1636,7 +1958,28 @@
 
     if (started && playing) {
       realElapsedMs += dt;
-      if (isQuizSlide(idx)) {
+
+      const slide = slides[idx];
+
+      if (slide.dataset.icebreak === 'true') {
+        if (iceState === 'running') {
+          iceRemainingMs = Math.max(0, iceRemainingMs - dt);
+          if (iceRemainingMs <= 0) {
+            iceState = 'ended';
+            showNav();
+            advanceSlide();
+          }
+        }
+      } else if (noteState === 'running') {
+        noteRemainingMs = Math.max(0, noteRemainingMs - dt);
+        updateNoteTimerDisplay();
+        if (noteRemainingMs <= 0) {
+          noteState = 'ended';
+          hideNoteOverlay();
+          showNav();
+          advanceSlide();
+        }
+      } else if (isQuizSlide(idx)) {
         if (quizState === 'running') {
           quizRemainingMs = Math.max(0, quizRemainingMs - dt);
           updateQuizTimerDisplay();
@@ -1678,6 +2021,7 @@
   updatePlayIcon();
   updateCaption();
   updateQuizTimerDisplay();
+  updateNoteTimerDisplay();
   render();
   requestAnimationFrame(loop);
 })();
