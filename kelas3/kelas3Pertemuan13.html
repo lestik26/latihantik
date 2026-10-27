@@ -526,9 +526,12 @@
     align-items:center; justify-content:center;
     gap:12px; color:#fff;
     background:linear-gradient(135deg,#1e293b,#0f172a);
+    cursor:pointer; /* Tambahan: Klik untuk play manual */
   }
+  .icebreak-placeholder:hover{background:linear-gradient(135deg,#334155,#1e293b);}
   .icebreak-placeholder-icon{font-size:clamp(40px,6vw,72px); animation:timerPulse 1.5s ease-in-out infinite;}
-  .icebreak-placeholder p{color:#cbd5e1; font-weight:600;}
+  .icebreak-placeholder p{color:#cbd5e1; font-weight:600; text-align:center;}
+  .icebreak-placeholder small{font-size:11px; color:var(--ink4); font-weight:400;}
 
   /* ============ QUIZ SLIDE ============ */
   .quiz-slide{
@@ -809,9 +812,10 @@
         <h2 class="anim zoom">Ayo Semangat Pagi! ☀️</h2>
         <p class="lead anim">Mari kita saksikan video pembuka untuk membangkitkan semangat belajar kita hari ini!</p>
         <div class="icebreak-video-wrap anim bounce" style="border-color:var(--sky);">
-          <div class="icebreak-placeholder">
+          <!-- Ditambahkan onClick manual untuk jaga-jaga jika autoplay gagal -->
+          <div class="icebreak-placeholder" onclick="document.dispatchEvent(new Event('forcePlayVideo'))">
             <div class="icebreak-placeholder-icon">🎬</div>
-            <p>Video akan segera diputar...</p>
+            <p>Video akan segera diputar...<br><small>(Klik di sini jika video tidak berputar)</small></p>
           </div>
         </div>
       </div>
@@ -905,9 +909,9 @@
         <h2 class="anim zoom">Berdiri Sebentar! 🕺💃</h2>
         <p class="lead anim">Silakan berdiri semua. Mari kita lakukan ice breaking bersama. Ikuti gerakan di layar!</p>
         <div class="icebreak-video-wrap anim bounce">
-          <div class="icebreak-placeholder">
+          <div class="icebreak-placeholder" onclick="document.dispatchEvent(new Event('forcePlayVideo'))">
             <div class="icebreak-placeholder-icon">🎬</div>
-            <p>Video akan segera diputar...</p>
+            <p>Video akan segera diputar...<br><small>(Klik di sini jika video tidak berputar)</small></p>
           </div>
         </div>
       </div>
@@ -1012,9 +1016,9 @@
         <h2 class="anim zoom">Berdiri Lagi Yuk! 🕺💃</h2>
         <p class="lead anim">Silakan berdiri semua. Ini ice breaking kedua. Ikuti gerakan di layar!</p>
         <div class="icebreak-video-wrap anim bounce">
-          <div class="icebreak-placeholder">
+          <div class="icebreak-placeholder" onclick="document.dispatchEvent(new Event('forcePlayVideo'))">
             <div class="icebreak-placeholder-icon">🎬</div>
-            <p>Video akan segera diputar...</p>
+            <p>Video akan segera diputar...<br><small>(Klik di sini jika video tidak berputar)</small></p>
           </div>
         </div>
       </div>
@@ -1562,24 +1566,27 @@
   function startVideoPlayer() {
     const slide = slides[idx];
     if (!slide || !slide.dataset.videoType) return;
+    if (videoState === 'running') return; // Prevent double execution
 
     const wrap = slide.querySelector('.icebreak-video-wrap');
     const videoId = slide.dataset.videoId;
     if (!wrap || !videoId) return;
+
+    videoState = 'running'; // Set immediately to prevent race conditions
 
     if (!wrap.querySelector('iframe')) {
       const placeholder = wrap.querySelector('.icebreak-placeholder');
       if (placeholder) placeholder.remove();
 
       const iframe = document.createElement('iframe');
-      iframe.src = 'https://www.youtube.com/embed/' + videoId + '?autoplay=1&rel=0&modestbranding=1&playsinline=1&controls=1';
+      // Tambahkan &mute=0 agar tegas meminta suara
+      iframe.src = 'https://www.youtube.com/embed/' + videoId + '?autoplay=1&rel=0&modestbranding=1&playsinline=1&controls=1&mute=0';
       iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen';
       iframe.allowFullscreen = true;
       iframe.className = 'icebreak-iframe';
       wrap.appendChild(iframe);
     }
 
-    videoState = 'running';
     if (!videoRemainingMs) {
       videoRemainingMs = parseFloat(slide.dataset.duration) * 1000 || 220000;
     }
@@ -1590,6 +1597,13 @@
       elCaption.textContent = 'Warm-up sedang berlangsung. Mari kita semangat!';
     }
   }
+
+  // Fallback: Klik manual pada placeholder jika autoplay diblokir
+  document.addEventListener('forcePlayVideo', () => {
+    if (slides[idx] && slides[idx].dataset.videoType) {
+      startVideoPlayer();
+    }
+  });
 
   function stopVideoPlayer(slideEl) {
     if (!slideEl) return;
@@ -1742,6 +1756,14 @@
       videoState = 'intro';
       videoRemainingMs = parseFloat(slide.dataset.duration) * 1000 || 220000;
       elCaption.textContent = 'Bersiap memutar video...';
+
+      // FAIL-SAFE: Jika narasi macet, paksa video berputar setelah 10 detik
+      const currentIdx = idx;
+      setTimeout(() => {
+        if (idx === currentIdx && videoState === 'intro') {
+          startVideoPlayer();
+        }
+      }, 10000);
 
       if (started && narrationOn && synth) {
         speakSlide(idx);
