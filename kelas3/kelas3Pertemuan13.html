@@ -404,14 +404,14 @@
   #caption{min-width:0; flex:1; color:var(--ink2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
 
   /* ===== Controls ===== */
-  .controls{padding:6px clamp(10px,2vw,28px) 10px;}
+  .controls{padding:6px clamp(10px,2vw,28px) 10px; transition:opacity .3s ease;}
   .slide-rail{height:3px; background:rgba(255,255,255,.55); border-radius:999px; overflow:hidden; margin-bottom:8px;}
   #slideProgress{height:100%; width:0; background:linear-gradient(90deg,#38bdf8,#a78bfa); border-radius:999px; transition:width .18s linear;}
   .ctrl-row{display:flex; align-items:center; justify-content:space-between; gap:10px;}
   .ctrl-left{display:flex; align-items:center; gap:8px; min-width:0;}
   .dot{width:7px; height:7px; border-radius:50%; background:var(--mint); box-shadow:0 0 8px var(--mint); animation:blink 1.8s ease-in-out infinite; flex:none;}
   #slideTitle{font-size:11px; color:var(--ink3); font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
-  .ctrl-center{display:flex; align-items:center; gap:5px;}
+  .ctrl-center{display:flex; align-items:center; gap:5px; transition:opacity .3s ease;}
   .ctrl-center button{
     display:grid; place-items:center; width:36px; height:36px; border-radius:11px;
     background:var(--card-hi); border:1.5px solid var(--line2);
@@ -427,9 +427,108 @@
   .ctrl-center button.primary:hover{filter:brightness(1.08);}
   .ctrl-center svg{width:15px; height:15px; fill:currentColor;}
   .ctrl-center button.primary svg{width:17px; height:17px;}
-  .ctrl-right{display:flex; align-items:center; gap:8px;}
+  .ctrl-right{display:flex; align-items:center; gap:8px; transition:opacity .3s ease;}
   .hint{font-size:10px; color:var(--ink4);}
   .hide{display:none !important;}
+
+  /* Navigasi disembunyikan HANYA saat slide mencatat */
+  .controls.nav-hidden .ctrl-center,
+  .controls.nav-hidden .ctrl-right{
+    opacity:0;
+    pointer-events:none;
+  }
+
+  /* ============ NOTE-TAKING OVERLAY ============ */
+  .note-overlay{
+    position:fixed; inset:0; z-index:90;
+    background:rgba(15,23,42,.72);
+    backdrop-filter:blur(10px);
+    display:flex; align-items:center; justify-content:center;
+    opacity:0; pointer-events:none;
+    transition:opacity .4s ease;
+    padding:20px;
+  }
+  .note-overlay.show{opacity:1; pointer-events:auto;}
+  .note-card{
+    background:#fff;
+    border-radius:24px;
+    padding:clamp(20px,3vw,30px) clamp(24px,4vw,40px);
+    text-align:center;
+    box-shadow:0 24px 60px rgba(0,0,0,.35);
+    border:3px solid var(--violet-line);
+    max-width:800px; width:100%;
+    animation:notePop .5s cubic-bezier(.34,1.56,.64,1);
+  }
+  @keyframes notePop{from{transform:scale(.8); opacity:0;} to{transform:scale(1); opacity:1;}}
+  .note-icon{font-size:clamp(36px,4vw,48px); margin-bottom:6px; display:inline-block; animation:floatRotate 3s ease-in-out infinite;}
+  .note-card h2{font-size:clamp(20px,2.5vw,28px); color:var(--ink); margin-bottom:4px;}
+  .note-card p{font-size:clamp(12px,1.1vw,14px); color:var(--ink2); margin-bottom:10px; line-height:1.5;}
+  
+  /* Kotak Materi Catatan */
+  .note-content-box {
+    text-align: left;
+    background: #f8fafc;
+    border: 2px dashed var(--sky-line);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin: 12px 0 16px;
+    font-size: clamp(13px, 1.2vw, 15px);
+    color: var(--ink2);
+    line-height: 1.6;
+    max-height: 30vh;
+    overflow-y: auto;
+    box-shadow: inset 0 2px 8px rgba(0,0,0,0.02);
+  }
+  .note-content-box b { color: var(--sky); }
+  
+  .note-timer-display{
+    font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+    font-size:clamp(48px,6vw,72px);
+    font-weight:900; color:var(--sky);
+    letter-spacing:-0.03em;
+    margin:0;
+    font-variant-numeric:tabular-nums;
+    transition:color .3s;
+    line-height: 1;
+  }
+  .note-timer-display.urgent{color:var(--rose); animation:urgentFlash .8s ease-in-out infinite;}
+  .note-sub{font-size:clamp(11px,.9vw,13px); color:var(--ink4); margin-top:6px; letter-spacing:.05em;}
+
+  /* ============ ICE BREAKING SLIDE ============ */
+  .icebreak-slide .slide-inner{
+    max-width:1200px; width:100%;
+    display:flex; flex-direction:column;
+    gap:14px; text-align:center;
+    max-height:100%;
+  }
+  .icebreak-slide h2{color:var(--pink); margin-bottom:4px;}
+  .icebreak-slide .lead{margin:0 auto;}
+  .icebreak-video-wrap{
+    position:relative;
+    width:100%;
+    aspect-ratio:16/9;
+    max-height:62vh;
+    margin:0 auto;
+    background:#0f172a;
+    border-radius:20px;
+    overflow:hidden;
+    box-shadow:0 20px 50px rgba(0,0,0,.32);
+    border:3px solid var(--pink);
+  }
+  .icebreak-iframe{
+    position:absolute; inset:0;
+    width:100%; height:100%;
+    border:none;
+  }
+  .icebreak-placeholder{
+    position:absolute; inset:0;
+    display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
+    gap:12px; color:#fff;
+    background:linear-gradient(135deg,#1e293b,#0f172a);
+  }
+  .icebreak-placeholder-icon{font-size:clamp(40px,6vw,72px); animation:timerPulse 1.5s ease-in-out infinite;}
+  .icebreak-placeholder p{color:#cbd5e1; font-weight:600;}
 
   /* ============ QUIZ SLIDE ============ */
   .quiz-slide{
@@ -666,7 +765,7 @@
     <div class="topbar-right">
       <button class="chip voice" id="btnVoice" type="button" title="Nyalakan/matikan narasi suara">🔊 Narasi</button>
       <button class="chip fullscreen-btn" id="btnFullscreen" type="button" title="Layar penuh (F)">⛶</button>
-      <div class="chip" id="counter">1 / 12</div>
+      <div class="chip" id="counter">1 / 14</div>
       <div class="chip time" id="timeLeft">00:00</div>
     </div>
   </header>
@@ -690,8 +789,10 @@
       </div>
     </section>
 
-    <!-- 2 -->
-    <section class="slide" data-duration="120" data-title="Apa itu Internet?">
+    <!-- 2 : PENGERTIAN + CATAT 5 MENIT -->
+    <section class="slide" data-duration="120" data-title="Apa itu Internet?"
+             data-note-minutes="5"
+             data-note-content="<b>Pengertian Internet:</b><br>Internet adalah jaringan komputer raksasa yang menghubungkan jutaan komputer di seluruh dunia.<br><br><b>Kata Kunci:</b><br>Internet, Jaringan, Komputer, Global, Terhubung.">
       <div class="slide-inner">
         <div class="kicker anim">Pengertian &amp; Pertanyaan Pemantik</div>
         <h2 class="anim">Apa itu <span class="grad">Internet</span>?</h2>
@@ -767,6 +868,21 @@
       </div>
     </section>
 
+    <!-- ICE BREAKING 1 -->
+    <section class="slide icebreak-slide" data-duration="220" data-title="Ice Breaking 1" data-icebreak="true" data-video-id="SCL1X7K_vCo">
+      <div class="slide-inner">
+        <div class="kicker anim" style="background:var(--pink-bg);border-color:var(--pink-line);color:var(--pink);">Ice Breaking</div>
+        <h2 class="anim zoom">Berdiri Sebentar! 🕺💃</h2>
+        <p class="lead anim">Silakan berdiri semua. Mari kita lakukan ice breaking bersama. Ikuti gerakan di layar!</p>
+        <div class="icebreak-video-wrap anim bounce">
+          <div class="icebreak-placeholder" id="icebreakPlaceholder1">
+            <div class="icebreak-placeholder-icon">🎬</div>
+            <p>Video akan segera diputar...</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- 6 -->
     <section class="slide" data-duration="150" data-title="Bagaimana Data Sampai">
       <div class="slide-inner">
@@ -791,8 +907,10 @@
       </div>
     </section>
 
-    <!-- 7 -->
-    <section class="slide" data-duration="150" data-title="Manfaat Internet">
+    <!-- 7 : MANFAAT INTERNET + CATAT 5 MENIT -->
+    <section class="slide" data-duration="150" data-title="Manfaat Internet"
+             data-note-minutes="5"
+             data-note-content="<b>Manfaat Internet:</b><br>1. Belajar<br>2. Mencari Informasi<br>3. Berkomunikasi<br>4. Berkarya & Bermain<br><br><b>Bijak Berinternet:</b><br>Jaga data diri, minta izin orang tua/guru, dan gunakan untuk hal baik.">
       <div class="slide-inner">
         <div class="kicker anim">Manfaat</div>
         <h2 class="anim">Apa Gunanya <span class="grad">Internet</span>?</h2>
@@ -817,6 +935,21 @@
           <div class="step anim from-left"><span class="n">2</span><div><b>Jaga data diri</b><p>Jangan membagikan alamat rumah, kata sandi, atau foto pribadi kepada orang yang tidak dikenal.</p></div></div>
           <div class="step anim from-left"><span class="n">3</span><div><b>Gunakan untuk hal baik</b><p>Pakai internet untuk belajar dan mencari informasi yang bermanfaat.</p></div></div>
           <div class="step anim from-left"><span class="n">4</span><div><b>Bersikap sopan</b><p>Saat mengirim pesan atau komentar, gunakan kata-kata yang baik dan sopan.</p></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ICE BREAKING 2 -->
+    <section class="slide icebreak-slide" data-duration="220" data-title="Ice Breaking 2" data-icebreak="true" data-video-id="lTIeWhyTFBU">
+      <div class="slide-inner">
+        <div class="kicker anim" style="background:var(--pink-bg);border-color:var(--pink-line);color:var(--pink);">Ice Breaking</div>
+        <h2 class="anim zoom">Berdiri Lagi Yuk! 🕺💃</h2>
+        <p class="lead anim">Silakan berdiri semua. Ini ice breaking kedua. Ikuti gerakan di layar!</p>
+        <div class="icebreak-video-wrap anim bounce">
+          <div class="icebreak-placeholder" id="icebreakPlaceholder2">
+            <div class="icebreak-placeholder-icon">🎬</div>
+            <p>Video akan segera diputar...</p>
+          </div>
         </div>
       </div>
     </section>
@@ -949,7 +1082,7 @@
     <span id="caption">Klik “Mulai Video Bersuara” untuk memulai.</span>
   </div>
 
-  <footer class="controls">
+  <footer class="controls" id="controls">
     <div class="slide-rail"><div id="slideProgress"></div></div>
     <div class="ctrl-row">
       <div class="ctrl-left">
@@ -976,6 +1109,21 @@
 
 </div>
 
+<!-- ===== NOTE OVERLAY ===== -->
+<div class="note-overlay" id="noteOverlay">
+  <div class="note-card">
+    <div class="note-icon">📝</div>
+    <h2>Silahkan Mencatat</h2>
+    <p>Saya berikan waktu <b>5 menit</b> untuk mencatat materi di bawah ini dengan rapi.</p>
+    
+    <!-- Kotak Materi Catatan -->
+    <div class="note-content-box" id="noteContentBox"></div>
+    
+    <div class="note-timer-display" id="noteTimerDisplay">05:00</div>
+    <div class="note-sub">Gunakan waktu ini dengan sebaik-baiknya</div>
+  </div>
+</div>
+
 <!-- ===== CUTE ROBOT GURU ===== -->
 <div class="robot-teacher" id="robotTeacher" aria-hidden="true">
   <div class="robot-hint" id="robotHint">Geser aku! 👋</div>
@@ -1000,9 +1148,9 @@
   <div class="start-card">
     <div class="logo">TIK</div>
     <h2>Video Pembelajaran Bersuara</h2>
-    <p>Materi dijelaskan oleh <b>robot guru yang lucu</b> dengan narasi suara AI. Slide berganti otomatis saat narasi selesai, dan diakhiri <b>3 soal pilihan ganda kompleks + timer 10 menit</b>.<br><br><b>Siapkan buku tulis dan alat tulismu!</b> Saat ujian dimulai, tulis semua soal dan semua pilihan jawaban, lalu centang jawaban yang benar. Robot bisa <b>digeser</b> jika menutupi teks.</p>
+    <p>Materi dijelaskan oleh <b>robot guru yang lucu</b> dengan narasi suara AI. Slide berganti otomatis saat narasi selesai. <br><br>Terdapat <b>2 sesi mencatat 5 menit</b> dan <b>2 ice breaking</b>. Diakhiri <b>3 soal pilihan ganda kompleks + timer 10 menit</b>. Robot bisa <b>digeser</b> jika menutupi teks.</p>
     <button class="start-btn" id="btnStart" type="button">▶ Mulai Video Bersuara</button>
-    <div class="start-note">Klik sekali untuk mengizinkan suara. Gunakan Chrome/Edge, pastikan volume aktif.</div>
+    <div class="start-note">Klik sekali untuk mengizinkan suara &amp; masuk layar penuh. Gunakan Chrome/Edge, pastikan volume aktif.</div>
   </div>
 </div>
 
@@ -1013,22 +1161,25 @@
   /* ============ DATA ============ */
   const slides = Array.from(document.querySelectorAll('.slide'));
   const durations = slides.map(s => parseFloat(s.dataset.duration) || 60);
+  const TOTAL_SEC = durations.reduce((a, b) => a + b, 0);
   const QUIZ_INDEX = slides.findIndex(s => s.dataset.quiz === 'true');
   const QUIZ_TOTAL_MS = 10 * 60 * 1000;
 
   const narrations = [
-    "Halo teman-teman kelas tiga! Selamat datang di pelajaran TIK. Hari ini kita akan belajar tentang internet. Internet itu apa ya? Ayo kita cari tahu bersama!",
-    "Pernahkah kalian menonton video kartun di YouTube, atau melihat alamat di Google Maps bersama ayah dan ibu? Bagaimana caranya video dan gambar itu bisa sampai ke layar HP atau komputer kita? Jawabannya karena ada internet. Internet adalah jaringan komputer raksasa yang menghubungkan jutaan komputer di seluruh dunia.",
-    "Bayangkan komputer-komputer di seluruh dunia dihubungkan oleh tali tak terlihat. Mereka saling terhubung, sehingga bisa saling mengirim informasi. Kumpulan jaringan itulah yang disebut internet. Jadi, internet bukan satu komputer saja ya.",
-    "Sekarang perhatikan dua gambar ini. Komputer yang tidak terhubung ke internet hanya bisa memakai data miliknya sendiri. Tetapi komputer yang terhubung ke internet bisa bertukar informasi, mengirim pesan, dan mencari informasi dari seluruh dunia. Itulah bedanya.",
-    "Supaya bisa terhubung ke internet, kita memerlukan perangkat. Ada telepon seluler atau HP, laptop, tablet, dan komputer. Semuanya bisa terhubung ke internet. Dari perangkat itulah kita bisa mencari informasi, menonton video, dan mengirim pesan.",
-    "Bagaimana caranya video bisa sampai ke layar kita? Data dari internet masuk melalui Wi-Fi atau data seluler, lalu menuju HP atau laptop kita. Prosesnya sangat cepat, hanya dalam hitungan detik. Hebat sekali, kan?",
-    "Internet sangat bermanfaat. Kita bisa belajar mencari bahan pelajaran, mencari informasi, berkomunikasi dengan keluarga yang jauh, dan berkarya atau bermain. Dengan internet, dunia terasa dekat walaupun jaraknya jauh.",
-    "Tetapi, kita juga harus bijak menggunakan internet. Minta izin dulu kepada ayah, ibu, atau guru. Jangan membagikan alamat rumah, kata sandi, atau foto pribadi kepada orang yang tidak dikenal. Gunakan internet untuk hal-hal yang baik, dan bersikap sopan saat mengirim pesan.",
-    "Sekarang, coba diskusikan bersama kelompokmu. Apa yang terjadi jika internet di dunia mati selama sehari? Pikirkan baik-baik, tulis jawabanmu di buku tulis, lalu ceritakan di depan kelas. Ternyata internet sangat penting, ya!",
-    "Mari kita rangkum. Internet adalah jaringan komputer raksasa yang menghubungkan jutaan komputer di seluruh dunia. Perangkat yang bisa terhubung antara lain HP, laptop, tablet, dan komputer. Internet bermanfaat untuk belajar, mencari informasi, dan berkomunikasi. Dan yang paling penting, gunakan internet dengan bijak dan aman.",
-    "Sebagai penutup, bagian mana yang paling kalian sukai hari ini? Apa hal baru yang kalian ketahui tentang internet? Di rumah, catat tiga alat yang menggunakan jaringan internet, lalu laporkan pada pertemuan berikutnya. Terima kasih, tetap semangat belajar!",
-    "Nah, sekarang saatnya ujian. Sebelum mengerjakan, tulis semua soal dan semua pilihan jawaban di buku tulis kalian. Kemudian centang jawaban yang benar. Ingat ya, tulis semua soal dan semua pilihan jawaban. Kalian punya waktu sepuluh menit. Waktu dimulai sekarang. Selamat mengerjakan!"
+    /* 0 Pembuka */ "Halo teman-teman kelas tiga! Selamat datang di pelajaran TIK. Hari ini kita akan belajar tentang internet. Internet itu apa ya? Ayo kita cari tahu bersama!",
+    /* 1 Pengertian */ "Pernahkah kalian menonton video kartun di YouTube, atau melihat alamat di Google Maps bersama ayah dan ibu? Bagaimana caranya video dan gambar itu bisa sampai ke layar HP atau komputer kita? Jawabannya karena ada internet. Internet adalah jaringan komputer raksasa yang menghubungkan jutaan komputer di seluruh dunia.",
+    /* 2 Jaringan Raksasa */ "Bayangkan komputer-komputer di seluruh dunia dihubungkan oleh tali tak terlihat. Mereka saling terhubung, sehingga bisa saling mengirim informasi. Kumpulan jaringan itulah yang disebut internet. Jadi, internet bukan satu komputer saja ya.",
+    /* 3 Terhubung vs Tidak */ "Sekarang perhatikan dua gambar ini. Komputer yang tidak terhubung ke internet hanya bisa memakai data miliknya sendiri. Tetapi komputer yang terhubung ke internet bisa bertukar informasi, mengirim pesan, dan mencari informasi dari seluruh dunia. Itulah bedanya.",
+    /* 4 Perangkat */ "Supaya bisa terhubung ke internet, kita memerlukan perangkat. Ada telepon seluler atau HP, laptop, tablet, dan komputer. Semuanya bisa terhubung ke internet. Dari perangkat itulah kita bisa mencari informasi, menonton video, dan mengirim pesan.",
+    /* 5 ICE BREAK 1 */ "Silahkan berdiri semua. Mari kita lakukan ice breaking bersama-sama. Ikuti gerakan yang ada di layar ya. Ayo bergerak!",
+    /* 6 Bagaimana Data Sampai */ "Bagaimana caranya video bisa sampai ke layar kita? Data dari internet masuk melalui Wi-Fi atau data seluler, lalu menuju HP atau laptop kita. Prosesnya sangat cepat, hanya dalam hitungan detik. Hebat sekali, kan?",
+    /* 7 Manfaat Internet */ "Internet sangat bermanfaat. Kita bisa belajar mencari bahan pelajaran, mencari informasi, berkomunikasi dengan keluarga yang jauh, dan berkarya atau bermain. Dengan internet, dunia terasa dekat walaupun jaraknya jauh.",
+    /* 8 Bijak & Aman */ "Tetapi, kita juga harus bijak menggunakan internet. Minta izin dulu kepada ayah, ibu, atau guru. Jangan membagikan alamat rumah, kata sandi, atau foto pribadi kepada orang yang tidak dikenal. Gunakan internet untuk hal-hal yang baik, dan bersikap sopan saat mengirim pesan.",
+    /* 9 ICE BREAK 2 */ "Waktunya ice breaking kedua. Silahkan berdiri semua dan ikuti gerakan di layar. Ayo semangat!",
+    /* 10 Diskusi Kelompok */ "Sekarang, coba diskusikan bersama kelompokmu. Apa yang terjadi jika internet di dunia mati selama sehari? Pikirkan baik-baik, tulis jawabanmu di buku tulis, lalu ceritakan di depan kelas. Ternyata internet sangat penting, ya!",
+    /* 11 Rangkuman */ "Mari kita rangkum. Internet adalah jaringan komputer raksasa yang menghubungkan jutaan komputer di seluruh dunia. Perangkat yang bisa terhubung antara lain HP, laptop, tablet, dan komputer. Internet bermanfaat untuk belajar, mencari informasi, dan berkomunikasi. Dan yang paling penting, gunakan internet dengan bijak dan aman.",
+    /* 12 Penutup */ "Sebagai penutup, bagian mana yang paling kalian sukai hari ini? Apa hal baru yang kalian ketahui tentang internet? Di rumah, catat tiga alat yang menggunakan jaringan internet, lalu laporkan pada pertemuan berikutnya. Terima kasih, tetap semangat belajar!",
+    /* 13 Quiz */ "Nah, sekarang saatnya ujian. Sebelum mengerjakan, tulis semua soal dan semua pilihan jawaban di buku tulis kalian. Kemudian centang jawaban yang benar. Ingat ya, tulis semua soal dan semua pilihan jawaban. Kalian punya waktu sepuluh menit. Waktu dimulai sekarang. Selamat mengerjakan!"
   ];
 
   /* ============ ELEMENTS ============ */
@@ -1051,6 +1202,10 @@
   const robotHint = document.getElementById('robotHint');
   const elQuizTimer = document.getElementById('quizTimerDisplay');
   const elQuizTimesUp = document.getElementById('quizTimesUp');
+  const elControls = document.getElementById('controls');
+  const elNoteOverlay = document.getElementById('noteOverlay');
+  const elNoteTimer = document.getElementById('noteTimerDisplay');
+  const elNoteContent = document.getElementById('noteContentBox');
 
   /* ============ STATE ============ */
   const synth = 'speechSynthesis' in window ? window.speechSynthesis : null;
@@ -1071,6 +1226,14 @@
 
   let quizState = 'idle';
   let quizRemainingMs = QUIZ_TOTAL_MS;
+
+  /* Note-taking state */
+  let noteState = 'idle';
+  let noteRemainingMs = 0;
+
+  /* Ice breaking state */
+  let iceState = 'idle';
+  let iceRemainingMs = 0;
 
   /* ============ ROBOT DRAG ============ */
   let robotDragging = false;
@@ -1121,6 +1284,10 @@
   setTimeout(() => {
     if (!robotHasBeenDragged && robotHint) robotHint.style.display = 'none';
   }, 6000);
+
+  /* ============ NAV VISIBILITY ============ */
+  function hideNav() { elControls.classList.add('nav-hidden'); }
+  function showNav() { elControls.classList.remove('nav-hidden'); }
 
   /* ============ TTS ============ */
   function pickVoice() {
@@ -1201,11 +1368,38 @@
     });
   }
 
+  function speakText(text) {
+    if (!synth || !narrationOn) return;
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'id-ID';
+    if (selectedVoice) u.voice = selectedVoice;
+    u.rate = 0.95; u.pitch = 1.05; u.volume = 1;
+    u.onstart = robotSpeakStart;
+    u.onend = robotSpeakEnd;
+    u.onerror = robotSpeakEnd;
+    synth.speak(u);
+  }
+
+  /* ============ NARRATION END ============ */
   function onNarrationEnd(i) {
     if (i !== idx) return;
     if (!started || !playing) return;
     if (!narrationOn) return;
+
+    const slide = slides[i];
+
+    if (slide.dataset.icebreak === 'true') {
+      startIceBreakVideo();
+      return;
+    }
+
     if (isQuizSlide(i)) { quizState = 'running'; return; }
+
+    if (slide.dataset.noteMinutes) {
+      startNoteTime();
+      return;
+    }
+
     scheduleAdvance(700);
   }
 
@@ -1232,6 +1426,71 @@
     else { playing = false; updatePlayIcon(); elCaption.textContent = 'Video selesai. Terima kasih.'; }
   }
 
+  /* ============ NOTE TIME ============ */
+  function startNoteTime() {
+    const slide = slides[idx];
+    const minutes = parseFloat(slide.dataset.noteMinutes) || 5;
+    noteRemainingMs = minutes * 60 * 1000;
+    noteState = 'running';
+    
+    const content = slide.dataset.noteContent || '<i>Tidak ada catatan khusus untuk slide ini.</i>';
+    if (elNoteContent) elNoteContent.innerHTML = content;
+    
+    showNoteOverlay();
+    hideNav();
+    updateNoteTimerDisplay();
+    elCaption.textContent = 'Silahkan mencatat. Saya berikan waktu ' + minutes + ' menit.';
+    speakText('Silahkan mencatat materi yang ada di layar. Saya berikan waktu ' + minutes + ' menit.');
+  }
+
+  function showNoteOverlay() { elNoteOverlay.classList.add('show'); }
+  function hideNoteOverlay() { elNoteOverlay.classList.remove('show'); }
+
+  function updateNoteTimerDisplay() {
+    if (!elNoteTimer) return;
+    const totalSec = Math.ceil(noteRemainingMs / 1000);
+    const m = Math.floor(totalSec / 60);
+    const s = totalSec % 60;
+    elNoteTimer.textContent = pad(m) + ':' + pad(s);
+    const urgent = noteState === 'running' && totalSec <= 60;
+    elNoteTimer.classList.toggle('urgent', urgent);
+  }
+
+  /* ============ ICE BREAKING ============ */
+  function startIceBreakVideo() {
+    const slide = slides[idx];
+    if (!slide || slide.dataset.icebreak !== 'true') return;
+
+    const wrap = slide.querySelector('.icebreak-video-wrap');
+    const videoId = slide.dataset.videoId;
+    if (!wrap || !videoId) return;
+
+    if (!wrap.querySelector('iframe')) {
+      const placeholder = wrap.querySelector('.icebreak-placeholder');
+      if (placeholder) placeholder.remove();
+
+      const iframe = document.createElement('iframe');
+      iframe.src = 'https://www.youtube.com/embed/' + videoId + '?autoplay=1&rel=0&modestbranding=1&playsinline=1&controls=1';
+      iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen';
+      iframe.allowFullscreen = true;
+      iframe.className = 'icebreak-iframe';
+      wrap.appendChild(iframe);
+    }
+
+    iceState = 'running';
+    if (!iceRemainingMs) {
+      iceRemainingMs = parseFloat(slide.dataset.duration) * 1000 || 220000;
+    }
+    elCaption.textContent = 'Ice breaking sedang berlangsung. Ikuti gerakan di layar!';
+  }
+
+  function stopIceBreakVideo(slideEl) {
+    if (!slideEl) return;
+    const wrap = slideEl.querySelector('.icebreak-video-wrap');
+    if (wrap) wrap.innerHTML = '';
+  }
+
+  /* ============ HELPERS ============ */
   const pad = n => String(n).padStart(2, '0');
   const fmt = ms => { const s = Math.max(0, Math.round(ms / 1000)); return pad(Math.floor(s / 60)) + ':' + pad(s % 60); };
   const isQuizSlide = i => i === QUIZ_INDEX;
@@ -1319,7 +1578,17 @@
   function render() {
     let slideProg = 0;
     const dur = Math.max(1, durations[idx] * 1000);
-    if (isQuizSlide(idx)) {
+    const slide = slides[idx];
+
+    if (slide.dataset.icebreak === 'true') {
+      const total = parseFloat(slide.dataset.duration) * 1000 || 220000;
+      if (iceState === 'ended') slideProg = 1;
+      else if (iceState === 'running') slideProg = 1 - iceRemainingMs / total;
+      else slideProg = 0;
+    } else if (noteState === 'running') {
+      const total = parseFloat(slide.dataset.noteMinutes) * 60 * 1000;
+      slideProg = 1 - noteRemainingMs / total;
+    } else if (isQuizSlide(idx)) {
       if (quizState === 'ended') slideProg = 1;
       else if (quizState === 'running') slideProg = 1 - quizRemainingMs / QUIZ_TOTAL_MS;
       else slideProg = 0;
@@ -1341,10 +1610,41 @@
   }
 
   function enterSlide(i) {
+    const prevSlide = slides[idx];
+    if (prevSlide && prevSlide.dataset.icebreak === 'true') {
+      stopIceBreakVideo(prevSlide);
+    }
+
     idx = Math.max(0, Math.min(slides.length - 1, i));
     slideElapsed = 0;
     lastSpokenSlide = -1;
     cancelPendingAdvance();
+
+    noteState = 'idle';
+    noteRemainingMs = 0;
+    iceState = 'idle';
+    iceRemainingMs = 0;
+    hideNoteOverlay();
+    showNav(); // Pastikan navigasi selalu tampil di slide biasa & ice breaking
+
+    const slide = slides[idx];
+
+    if (slide.dataset.icebreak === 'true') {
+      activate(idx);
+      render();
+      iceState = 'intro';
+      iceRemainingMs = parseFloat(slide.dataset.duration) * 1000 || 220000;
+      elCaption.textContent = 'Bersiap untuk ice breaking...';
+
+      if (started && narrationOn && synth) {
+        speakSlide(idx);
+      } else {
+        setTimeout(() => {
+          if (idx === i && iceState === 'intro') startIceBreakVideo();
+        }, 3000);
+      }
+      return;
+    }
 
     if (isQuizSlide(idx)) {
       quizState = 'intro';
@@ -1354,6 +1654,7 @@
       slideDeadline = Number.MAX_SAFE_INTEGER;
       activate(idx);
       render();
+
       if (started && narrationOn && synth) {
         speakSlide(idx);
         setTimeout(() => {
@@ -1369,10 +1670,25 @@
 
     quizState = 'idle';
     const durMs = durations[idx] * 1000;
-    slideDeadline = (started && narrationOn && synth) ? Math.max(durMs, 120000) : durMs;
     activate(idx);
-    if (started && narrationOn && synth) { speakSlide(idx); }
-    else { updateCaption(); }
+
+    if (slide.dataset.noteMinutes) {
+      noteState = 'intro';
+      noteRemainingMs = parseFloat(slide.dataset.noteMinutes) * 60 * 1000;
+      slideDeadline = Infinity;
+
+      if (started && narrationOn && synth) {
+        speakSlide(idx);
+      } else {
+        setTimeout(() => {
+          if (idx === i && noteState === 'intro') startNoteTime();
+        }, 3000);
+      }
+    } else {
+      slideDeadline = (started && narrationOn && synth) ? Math.max(durMs, 120000) : durMs;
+      if (started && narrationOn && synth) { speakSlide(idx); }
+      else { updateCaption(); }
+    }
     render();
   }
 
@@ -1475,15 +1791,57 @@
     playing = true;
     lastTime = performance.now();
     updatePlayIcon();
+
+    // Trigger Fullscreen
+    const doc = document;
+    const el = doc.documentElement;
+    const req = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen || el.msRequestFullscreen;
+    if (req) {
+      const p = req.call(el);
+      if (p && p.catch) p.catch(() => {});
+    }
+
     enterSlide(0);
   }
 
+  /* ============ LOOP ============ */
   function loop(now) {
     const dt = Math.min(now - lastTime, 250);
     lastTime = now;
+
     if (started && playing) {
       realElapsedMs += dt;
-      if (isQuizSlide(idx)) {
+
+      const slide = slides[idx];
+
+      if (slide.dataset.icebreak === 'true') {
+        if (iceState === 'running') {
+          iceRemainingMs = Math.max(0, iceRemainingMs - dt);
+          if (iceRemainingMs <= 0) {
+            iceState = 'outro';
+            elCaption.textContent = 'Ice breaking selesai. Silakan duduk kembali.';
+            speakText('Waktu ice breaking selesai. Silakan duduk kembali, kita akan lanjutkan materi.');
+            
+            const currentIdx = idx; // Perbaikan bug referensi
+            setTimeout(() => {
+              if (idx === currentIdx && iceState === 'outro') {
+                iceState = 'ended';
+                showNav();
+                advanceSlide();
+              }
+            }, 5000); // 5 detik untuk duduk kembali
+          }
+        }
+      } else if (noteState === 'running') {
+        noteRemainingMs = Math.max(0, noteRemainingMs - dt);
+        updateNoteTimerDisplay();
+        if (noteRemainingMs <= 0) {
+          noteState = 'ended';
+          hideNoteOverlay();
+          showNav();
+          advanceSlide();
+        }
+      } else if (isQuizSlide(idx)) {
         if (quizState === 'running') {
           quizRemainingMs = Math.max(0, quizRemainingMs - dt);
           updateQuizTimerDisplay();
@@ -1501,6 +1859,7 @@
     requestAnimationFrame(loop);
   }
 
+  /* ============ EVENTS ============ */
   btnStart.addEventListener('click', startVideo);
   btnPlay.addEventListener('click', togglePlay);
   btnPrev.addEventListener('click', () => changeSlide(idx - 1));
@@ -1523,6 +1882,7 @@
   updatePlayIcon();
   updateCaption();
   updateQuizTimerDisplay();
+  updateNoteTimerDisplay();
   render();
   requestAnimationFrame(loop);
 })();
