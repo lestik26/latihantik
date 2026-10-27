@@ -494,7 +494,7 @@
   .note-timer-display.urgent{color:var(--rose); animation:urgentFlash .8s ease-in-out infinite;}
   .note-sub{font-size:clamp(11px,.9vw,13px); color:var(--ink4); margin-top:6px; letter-spacing:.05em;}
 
-  /* ============ ICE BREAKING SLIDE ============ */
+  /* ============ VIDEO SLIDE (WARMUP & ICE BREAKING) ============ */
   .icebreak-slide .slide-inner{
     max-width:1200px; width:100%;
     display:flex; flex-direction:column;
@@ -765,7 +765,7 @@
     <div class="topbar-right">
       <button class="chip voice" id="btnVoice" type="button" title="Nyalakan/matikan narasi suara">🔊 Narasi</button>
       <button class="chip fullscreen-btn" id="btnFullscreen" type="button" title="Layar penuh (F)">⛶</button>
-      <div class="chip" id="counter">1 / 14</div>
+      <div class="chip" id="counter">1 / 20</div>
       <div class="chip time" id="timeLeft">00:00</div>
     </div>
   </header>
@@ -789,7 +789,35 @@
       </div>
     </section>
 
-    <!-- 2 : PENGERTIAN + CATAT 5 MENIT -->
+    <!-- 2 -->
+    <section class="slide" data-duration="120" data-title="Tujuan Pembelajaran">
+      <div class="slide-inner">
+        <div class="kicker anim">Tujuan Pembelajaran</div>
+        <h2 class="anim">Apa yang akan kita capai hari ini?</h2>
+        <div class="grid3">
+          <div class="card anim from-left"><div class="ico">📖</div><h3>Memahami</h3><p>Pengertian internet dan jaringan komputer.</p></div>
+          <div class="card anim zoom"><div class="ico">📱</div><h3>Mengidentifikasi</h3><p>Perangkat yang bisa terhubung ke internet.</p></div>
+          <div class="card anim from-right"><div class="ico">🛡️</div><h3>Menerapkan</h3><p>Cara bijak dan aman dalam berinternet.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3 : WARM-UP VIDEO -->
+    <section class="slide icebreak-slide" data-duration="180" data-title="Warm-up" data-video-type="warmup" data-video-id="N_5KMuwLhq8">
+      <div class="slide-inner">
+        <div class="kicker anim" style="background:var(--sky-bg);border-color:var(--sky-line);color:var(--sky);">Warm-up</div>
+        <h2 class="anim zoom">Ayo Semangat Pagi! ☀️</h2>
+        <p class="lead anim">Mari kita saksikan video pembuka untuk membangkitkan semangat belajar kita hari ini!</p>
+        <div class="icebreak-video-wrap anim bounce" style="border-color:var(--sky);">
+          <div class="icebreak-placeholder">
+            <div class="icebreak-placeholder-icon">🎬</div>
+            <p>Video akan segera diputar...</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4 : PENGERTIAN + CATAT 1 -->
     <section class="slide" data-duration="120" data-title="Apa itu Internet?"
              data-note-minutes="5"
              data-note-content="<b>Pengertian Internet:</b><br>Internet adalah jaringan komputer raksasa yang menghubungkan jutaan komputer di seluruh dunia.<br><br><b>Kata Kunci:</b><br>Internet, Jaringan, Komputer, Global, Terhubung.">
@@ -807,7 +835,7 @@
       </div>
     </section>
 
-    <!-- 3 -->
+    <!-- 5 -->
     <section class="slide" data-duration="150" data-title="Jaringan Raksasa">
       <div class="slide-inner">
         <div class="kicker anim">Jaringan Komputer</div>
@@ -832,8 +860,8 @@
       </div>
     </section>
 
-    <!-- 4 -->
-    <section class="slide" data-duration="150" data-title="Terhubung vs Tidak Terhubung">
+    <!-- 6 -->
+    <section class="slide" data-duration="150" data-title="Terhubung vs Tidak">
       <div class="slide-inner">
         <div class="kicker anim">Bandingkan</div>
         <h2 class="anim">Terhubung atau <span class="grad">Tidak Terhubung</span>?</h2>
@@ -853,8 +881,10 @@
       </div>
     </section>
 
-    <!-- 5 -->
-    <section class="slide" data-duration="150" data-title="Perangkat yang Terhubung">
+    <!-- 7 : PERANGKAT + CATAT 2 -->
+    <section class="slide" data-duration="150" data-title="Perangkat yang Terhubung"
+             data-note-minutes="5"
+             data-note-content="<b>Perangkat yang bisa terhubung ke internet:</b><br>1. Telepon Seluler (HP)<br>2. Laptop<br>3. Tablet<br>4. Komputer<br>5. Smart TV">
       <div class="slide-inner">
         <div class="kicker anim">Perangkat</div>
         <h2 class="anim">Alat Apa Saja yang Bisa <span class="grad">Terhubung ke Internet</span>?</h2>
@@ -868,14 +898,14 @@
       </div>
     </section>
 
-    <!-- ICE BREAKING 1 -->
-    <section class="slide icebreak-slide" data-duration="220" data-title="Ice Breaking 1" data-icebreak="true" data-video-id="SCL1X7K_vCo">
+    <!-- 8 : ICE BREAKING 1 -->
+    <section class="slide icebreak-slide" data-duration="220" data-title="Ice Breaking 1" data-video-type="icebreak" data-video-id="SCL1X7K_vCo">
       <div class="slide-inner">
         <div class="kicker anim" style="background:var(--pink-bg);border-color:var(--pink-line);color:var(--pink);">Ice Breaking</div>
         <h2 class="anim zoom">Berdiri Sebentar! 🕺💃</h2>
         <p class="lead anim">Silakan berdiri semua. Mari kita lakukan ice breaking bersama. Ikuti gerakan di layar!</p>
         <div class="icebreak-video-wrap anim bounce">
-          <div class="icebreak-placeholder" id="icebreakPlaceholder1">
+          <div class="icebreak-placeholder">
             <div class="icebreak-placeholder-icon">🎬</div>
             <p>Video akan segera diputar...</p>
           </div>
@@ -883,7 +913,7 @@
       </div>
     </section>
 
-    <!-- 6 -->
+    <!-- 9 -->
     <section class="slide" data-duration="150" data-title="Bagaimana Data Sampai">
       <div class="slide-inner">
         <div class="kicker anim">Cara Kerja</div>
@@ -907,10 +937,29 @@
       </div>
     </section>
 
-    <!-- 7 : MANFAAT INTERNET + CATAT 5 MENIT -->
+    <!-- 10 -->
+    <section class="slide" data-duration="150" data-title="Jenis Jaringan">
+      <div class="slide-inner">
+        <div class="kicker anim">Jenis Jaringan</div>
+        <h2 class="anim">Mengenal <span class="grad">LAN &amp; WAN</span></h2>
+        <div class="grid2">
+          <div class="card anim from-left">
+            <span class="emo">🏫</span><h3>LAN (Local Area Network)</h3>
+            <p>Jaringan komputer lokal yang jangkauannya kecil, misalnya jaringan di <b>rumah</b> atau <b>sekolah</b>.</p>
+          </div>
+          <div class="card anim from-right">
+            <span class="emo">🌍</span><h3>WAN (Wide Area Network)</h3>
+            <p>Jaringan komputer yang jangkauannya sangat luas, menghubungkan antar <b>kota</b> atau <b>negara</b>.</p>
+          </div>
+        </div>
+        <div class="note anim"><b>Internet</b> adalah contoh terbesar dari jaringan WAN, karena menghubungkan seluruh jaringan di dunia.</div>
+      </div>
+    </section>
+
+    <!-- 11 : MANFAAT + CATAT 3 -->
     <section class="slide" data-duration="150" data-title="Manfaat Internet"
              data-note-minutes="5"
-             data-note-content="<b>Manfaat Internet:</b><br>1. Belajar<br>2. Mencari Informasi<br>3. Berkomunikasi<br>4. Berkarya & Bermain<br><br><b>Bijak Berinternet:</b><br>Jaga data diri, minta izin orang tua/guru, dan gunakan untuk hal baik.">
+             data-note-content="<b>Manfaat Internet:</b><br>1. Belajar (mencari bahan pelajaran, video edukasi).<br>2. Mencari Informasi (berita, alamat).<br>3. Berkomunikasi (pesan, panggilan video).<br>4. Hiburan (menonton film, bermain game).">
       <div class="slide-inner">
         <div class="kicker anim">Manfaat</div>
         <h2 class="anim">Apa Gunanya <span class="grad">Internet</span>?</h2>
@@ -924,8 +973,25 @@
       </div>
     </section>
 
-    <!-- 8 -->
-    <section class="slide" data-duration="150" data-title="Bijak & Aman Berinternet">
+    <!-- 12 -->
+    <section class="slide" data-duration="150" data-title="Bahaya Internet">
+      <div class="slide-inner">
+        <div class="kicker anim" style="background:var(--rose-bg);border-color:var(--rose-line);color:var(--rose);">Peringatan</div>
+        <h2 class="anim">Bahaya di <span class="grad">Internet</span></h2>
+        <p class="lead anim">Selain bermanfaat, internet juga punya bahaya yang harus kita waspadai, terutama untuk anak-anak.</p>
+        <div class="grid2">
+          <div class="card anim from-left" style="border-color:var(--rose-line);"><span class="emo">🚫</span><h3>Berita Bohong (Hoax)</h3><p>Informasi palsu yang bisa menyesatkan dan membuat panik.</p></div>
+          <div class="card anim from-right" style="border-color:var(--rose-line);"><span class="emo">🎮</span><h3>Kecanduan Game</h3><p>Bermain game terlalu lama bisa membuat lupa waktu dan lupa belajar.</p></div>
+          <div class="card anim from-left" style="border-color:var(--rose-line);"><span class="emo">😈</span><h3>Penipuan</h3><p>Orang jahat bisa meminta uang atau data penting secara diam-diam.</p></div>
+          <div class="card anim from-right" style="border-color:var(--rose-line);"><span class="emo">🗣️</span><h3>Perundungan (Bullying)</h3><p>Kata-kata jahat yang dikirim lewat internet bisa menyakiti perasaan orang lain.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 13 : BIJAK & AMAN + CATAT 4 -->
+    <section class="slide" data-duration="150" data-title="Bijak & Aman Berinternet"
+             data-note-minutes="5"
+             data-note-content="<b>Cara Bijak & Aman Berinternet:</b><br>1. Minta izin orang tua/guru.<br>2. Jaga data diri (alamat, kata sandi, foto).<br>3. Jangan mudah percaya berita bohong.<br>4. Gunakan untuk hal baik dan sopan.">
       <div class="slide-inner">
         <div class="kicker anim">Pelindungan Data Diri</div>
         <h2 class="anim">Bijak dan <span class="grad">Aman</span> Menggunakan Internet</h2>
@@ -939,14 +1005,14 @@
       </div>
     </section>
 
-    <!-- ICE BREAKING 2 -->
-    <section class="slide icebreak-slide" data-duration="220" data-title="Ice Breaking 2" data-icebreak="true" data-video-id="lTIeWhyTFBU">
+    <!-- 14 : ICE BREAKING 2 -->
+    <section class="slide icebreak-slide" data-duration="220" data-title="Ice Breaking 2" data-video-type="icebreak" data-video-id="lTIeWhyTFBU">
       <div class="slide-inner">
         <div class="kicker anim" style="background:var(--pink-bg);border-color:var(--pink-line);color:var(--pink);">Ice Breaking</div>
         <h2 class="anim zoom">Berdiri Lagi Yuk! 🕺💃</h2>
         <p class="lead anim">Silakan berdiri semua. Ini ice breaking kedua. Ikuti gerakan di layar!</p>
         <div class="icebreak-video-wrap anim bounce">
-          <div class="icebreak-placeholder" id="icebreakPlaceholder2">
+          <div class="icebreak-placeholder">
             <div class="icebreak-placeholder-icon">🎬</div>
             <p>Video akan segera diputar...</p>
           </div>
@@ -954,7 +1020,7 @@
       </div>
     </section>
 
-    <!-- 9 -->
+    <!-- 15 -->
     <section class="slide" data-duration="150" data-title="Diskusi Kelompok">
       <div class="slide-inner">
         <div class="kicker anim">Berpikir Kritis · Diskusi Kelompok</div>
@@ -971,23 +1037,43 @@
       </div>
     </section>
 
-    <!-- 10 -->
-    <section class="slide" data-duration="150" data-title="Rangkuman">
+    <!-- 16 -->
+    <section class="slide" data-duration="150" data-title="Studi Kasus">
+      <div class="slide-inner">
+        <div class="kicker anim">Studi Kasus</div>
+        <h2 class="anim">Belajar Online di Rumah</h2>
+        <div class="grid2">
+          <div class="card anim from-left">
+            <span class="emo">📝</span><h3>Cerita</h3>
+            <p>Budi belajar online dari rumah menggunakan laptop. Ia mengirim tugas melalui email dan menonton video pelajaran dari guru.</p>
+          </div>
+          <div class="card anim from-right" style="border-color:var(--mint-line);">
+            <span class="emo">💡</span><h3>Kesimpulan</h3>
+            <p>Internet memudahkan kita untuk <b>belajar tanpa harus bertatap muka</b>. Kita bisa berkomunikasi dan mengirim tugas dengan cepat.</p>
+          </div>
+        </div>
+        <div class="note anim">Namun, kita tetap harus <b>fokus dan bijak</b> agar tidak tergoda membuka hal lain saat belajar online.</div>
+      </div>
+    </section>
+
+    <!-- 17 : RANGKUMAN + CATAT 5 -->
+    <section class="slide" data-duration="150" data-title="Rangkuman"
+             data-note-minutes="5"
+             data-note-content="<b>Rangkuman Singkat:</b><br>- Internet = Jaringan komputer global.<br>- Perangkat: HP, Laptop, Tablet, Komputer.<br>- Manfaat: Belajar, Info, Komunikasi, Hiburan.<br>- Bahaya: Hoax, Penipuan, Kecanduan.<br>- Cara Aman: Jaga data diri, sopan, minta izin.">
       <div class="slide-inner">
         <div class="kicker anim">Rangkuman</div>
         <h2 class="anim">Yang Sudah Kita Pelajari</h2>
         <ul class="summary">
           <li class="anim from-left"><b>Internet</b> adalah jaringan komputer raksasa yang menghubungkan jutaan komputer di seluruh dunia.</li>
-          <li class="anim from-left">Internet menghubungkan komputer dari <b>berbagai negara</b>.</li>
           <li class="anim from-left">Perangkat yang bisa terhubung: <b>HP, laptop, tablet, dan komputer</b>.</li>
           <li class="anim from-left">Internet bermanfaat untuk <b>belajar, mencari informasi, dan berkomunikasi</b>.</li>
+          <li class="anim from-left">Harus waspada terhadap <b>bahaya internet</b> seperti hoax dan penipuan.</li>
           <li class="anim from-left">Kita harus <b>menjaga data diri</b> dan menggunakan internet dengan bijak.</li>
-          <li class="anim from-left">Kata kunci: <b>Internet, Jaringan, Komputer, Global, Terhubung</b>.</li>
         </ul>
       </div>
     </section>
 
-    <!-- 11 -->
+    <!-- 18 -->
     <section class="slide" data-duration="120" data-title="Penutup">
       <div class="slide-inner center">
         <div class="kicker anim">Penutup</div>
@@ -1001,7 +1087,7 @@
       </div>
     </section>
 
-    <!-- 12 — QUIZ PILIHAN GANDA KOMPLEKS -->
+    <!-- 19 — QUIZ -->
     <section class="slide quiz-slide" data-duration="60" data-title="Ujian — 10 Menit" data-quiz="true">
       <div class="slide-inner">
         <div class="kicker anim">Ujian Akhir</div>
@@ -1072,6 +1158,16 @@
           <div class="quiz-timesup-icon">⏰</div>
           <div class="quiz-timesup-text">Waktu Habis! Mari kita periksa jawaban bersama.</div>
         </div>
+      </div>
+    </section>
+
+    <!-- 20 -->
+    <section class="slide" data-duration="60" data-title="Terima Kasih">
+      <div class="slide-inner center">
+        <div class="kicker anim">Selesai</div>
+        <h1 class="anim zoom">Terima Kasih! 🌟</h1>
+        <p class="lead anim">Pembelajaran hari ini telah selesai. Sampai jumpa di pertemuan berikutnya! Jangan lupa untuk selalu belajar dan berbuat baik.</p>
+        <div class="thanks anim" style="font-size:clamp(20px,2vw,30px);">SDIT Hidayatut Taufiq</div>
       </div>
     </section>
 
@@ -1148,7 +1244,7 @@
   <div class="start-card">
     <div class="logo">TIK</div>
     <h2>Video Pembelajaran Bersuara</h2>
-    <p>Materi dijelaskan oleh <b>robot guru yang lucu</b> dengan narasi suara AI. Slide berganti otomatis saat narasi selesai. <br><br>Terdapat <b>2 sesi mencatat 5 menit</b> dan <b>2 ice breaking</b>. Diakhiri <b>3 soal pilihan ganda kompleks + timer 10 menit</b>. Robot bisa <b>digeser</b> jika menutupi teks.</p>
+    <p>Materi dijelaskan oleh <b>robot guru yang lucu</b> dengan narasi suara AI. Slide berganti otomatis saat narasi selesai. <br><br>Terdapat <b>Warm-up</b>, <b>5 sesi mencatat 5 menit</b>, dan <b>2 ice breaking</b>. Diakhiri <b>3 soal pilihan ganda kompleks + timer 10 menit</b>. Robot bisa <b>digeser</b> jika menutupi teks.</p>
     <button class="start-btn" id="btnStart" type="button">▶ Mulai Video Bersuara</button>
     <div class="start-note">Klik sekali untuk mengizinkan suara &amp; masuk layar penuh. Gunakan Chrome/Edge, pastikan volume aktif.</div>
   </div>
@@ -1167,19 +1263,25 @@
 
   const narrations = [
     /* 0 Pembuka */ "Halo teman-teman kelas tiga! Selamat datang di pelajaran TIK. Hari ini kita akan belajar tentang internet. Internet itu apa ya? Ayo kita cari tahu bersama!",
-    /* 1 Pengertian */ "Pernahkah kalian menonton video kartun di YouTube, atau melihat alamat di Google Maps bersama ayah dan ibu? Bagaimana caranya video dan gambar itu bisa sampai ke layar HP atau komputer kita? Jawabannya karena ada internet. Internet adalah jaringan komputer raksasa yang menghubungkan jutaan komputer di seluruh dunia.",
-    /* 2 Jaringan Raksasa */ "Bayangkan komputer-komputer di seluruh dunia dihubungkan oleh tali tak terlihat. Mereka saling terhubung, sehingga bisa saling mengirim informasi. Kumpulan jaringan itulah yang disebut internet. Jadi, internet bukan satu komputer saja ya.",
-    /* 3 Terhubung vs Tidak */ "Sekarang perhatikan dua gambar ini. Komputer yang tidak terhubung ke internet hanya bisa memakai data miliknya sendiri. Tetapi komputer yang terhubung ke internet bisa bertukar informasi, mengirim pesan, dan mencari informasi dari seluruh dunia. Itulah bedanya.",
-    /* 4 Perangkat */ "Supaya bisa terhubung ke internet, kita memerlukan perangkat. Ada telepon seluler atau HP, laptop, tablet, dan komputer. Semuanya bisa terhubung ke internet. Dari perangkat itulah kita bisa mencari informasi, menonton video, dan mengirim pesan.",
-    /* 5 ICE BREAK 1 */ "Silahkan berdiri semua. Mari kita lakukan ice breaking bersama-sama. Ikuti gerakan yang ada di layar ya. Ayo bergerak!",
-    /* 6 Bagaimana Data Sampai */ "Bagaimana caranya video bisa sampai ke layar kita? Data dari internet masuk melalui Wi-Fi atau data seluler, lalu menuju HP atau laptop kita. Prosesnya sangat cepat, hanya dalam hitungan detik. Hebat sekali, kan?",
-    /* 7 Manfaat Internet */ "Internet sangat bermanfaat. Kita bisa belajar mencari bahan pelajaran, mencari informasi, berkomunikasi dengan keluarga yang jauh, dan berkarya atau bermain. Dengan internet, dunia terasa dekat walaupun jaraknya jauh.",
-    /* 8 Bijak & Aman */ "Tetapi, kita juga harus bijak menggunakan internet. Minta izin dulu kepada ayah, ibu, atau guru. Jangan membagikan alamat rumah, kata sandi, atau foto pribadi kepada orang yang tidak dikenal. Gunakan internet untuk hal-hal yang baik, dan bersikap sopan saat mengirim pesan.",
-    /* 9 ICE BREAK 2 */ "Waktunya ice breaking kedua. Silahkan berdiri semua dan ikuti gerakan di layar. Ayo semangat!",
-    /* 10 Diskusi Kelompok */ "Sekarang, coba diskusikan bersama kelompokmu. Apa yang terjadi jika internet di dunia mati selama sehari? Pikirkan baik-baik, tulis jawabanmu di buku tulis, lalu ceritakan di depan kelas. Ternyata internet sangat penting, ya!",
-    /* 11 Rangkuman */ "Mari kita rangkum. Internet adalah jaringan komputer raksasa yang menghubungkan jutaan komputer di seluruh dunia. Perangkat yang bisa terhubung antara lain HP, laptop, tablet, dan komputer. Internet bermanfaat untuk belajar, mencari informasi, dan berkomunikasi. Dan yang paling penting, gunakan internet dengan bijak dan aman.",
-    /* 12 Penutup */ "Sebagai penutup, bagian mana yang paling kalian sukai hari ini? Apa hal baru yang kalian ketahui tentang internet? Di rumah, catat tiga alat yang menggunakan jaringan internet, lalu laporkan pada pertemuan berikutnya. Terima kasih, tetap semangat belajar!",
-    /* 13 Quiz */ "Nah, sekarang saatnya ujian. Sebelum mengerjakan, tulis semua soal dan semua pilihan jawaban di buku tulis kalian. Kemudian centang jawaban yang benar. Ingat ya, tulis semua soal dan semua pilihan jawaban. Kalian punya waktu sepuluh menit. Waktu dimulai sekarang. Selamat mengerjakan!"
+    /* 1 Tujuan */ "Tujuan pembelajaran kita hari ini ada tiga. Pertama, kalian bisa memahami pengertian internet dan jaringan komputer. Kedua, kalian bisa menyebutkan perangkat yang terhubung ke internet. Ketiga, kalian bisa menerapkan cara bijak dan aman dalam menggunakan internet.",
+    /* 2 Warmup */ "Sebelum mulai belajar, mari kita saksikan video pembuka untuk membangkitkan semangat kita hari ini. Ayo perhatikan layar!",
+    /* 3 Pengertian */ "Pernahkah kalian menonton video kartun di YouTube, atau melihat alamat di Google Maps bersama ayah dan ibu? Bagaimana caranya video dan gambar itu bisa sampai ke layar HP atau komputer kita? Jawabannya karena ada internet. Internet adalah jaringan komputer raksasa yang menghubungkan jutaan komputer di seluruh dunia.",
+    /* 4 Jaringan Raksasa */ "Bayangkan komputer-komputer di seluruh dunia dihubungkan oleh tali tak terlihat. Mereka saling terhubung, sehingga bisa saling mengirim informasi. Kumpulan jaringan itulah yang disebut internet. Jadi, internet bukan satu komputer saja ya.",
+    /* 5 Terhubung vs Tidak */ "Sekarang perhatikan dua gambar ini. Komputer yang tidak terhubung ke internet hanya bisa memakai data miliknya sendiri. Tetapi komputer yang terhubung ke internet bisa bertukar informasi, mengirim pesan, dan mencari informasi dari seluruh dunia. Itulah bedanya.",
+    /* 6 Perangkat */ "Supaya bisa terhubung ke internet, kita memerlukan perangkat. Ada telepon seluler atau HP, laptop, tablet, dan komputer. Semuanya bisa terhubung ke internet. Dari perangkat itulah kita bisa mencari informasi, menonton video, dan mengirim pesan.",
+    /* 7 ICE BREAK 1 */ "Silahkan berdiri semua. Mari kita lakukan ice breaking bersama-sama. Ikuti gerakan yang ada di layar ya. Ayo bergerak!",
+    /* 8 Cara Kerja */ "Bagaimana caranya video bisa sampai ke layar kita? Data dari internet masuk melalui Wi-Fi atau data seluler, lalu menuju HP atau laptop kita. Prosesnya sangat cepat, hanya dalam hitungan detik. Hebat sekali, kan?",
+    /* 9 Jenis Jaringan */ "Tahukah kalian, jaringan komputer itu ada beberapa jenis. Ada LAN atau Local Area Network, yaitu jaringan di rumah atau sekolah. Ada juga WAN atau Wide Area Network, yaitu jaringan yang sangat luas antar kota atau negara. Internet adalah contoh WAN terbesar di dunia.",
+    /* 10 Manfaat */ "Internet sangat bermanfaat. Kita bisa belajar mencari bahan pelajaran, mencari informasi, berkomunikasi dengan keluarga yang jauh, dan berkarya atau bermain. Dengan internet, dunia terasa dekat walaupun jaraknya jauh.",
+    /* 11 Bahaya */ "Tetapi, internet juga punya bahaya lho. Ada berita bohong atau hoax, ada penipuan, ada kecanduan game, dan ada perundungan atau bullying. Kita harus selalu waspada dan berhati-hati.",
+    /* 12 Bijak & Aman */ "Karena itu, kita harus bijak menggunakan internet. Minta izin dulu kepada ayah, ibu, atau guru. Jangan membagikan alamat rumah, kata sandi, atau foto pribadi kepada orang yang tidak dikenal. Gunakan internet untuk hal-hal yang baik, dan bersikap sopan saat mengirim pesan.",
+    /* 13 ICE BREAK 2 */ "Waktunya ice breaking kedua. Silahkan berdiri semua dan ikuti gerakan di layar. Ayo semangat!",
+    /* 14 Diskusi */ "Sekarang, coba diskusikan bersama kelompokmu. Apa yang terjadi jika internet di dunia mati selama sehari? Pikirkan baik-baik, tulis jawabanmu di buku tulis, lalu ceritakan di depan kelas. Ternyata internet sangat penting, ya!",
+    /* 15 Studi Kasus */ "Mari kita lihat studi kasus. Budi belajar online dari rumah menggunakan laptop. Ia mengirim tugas melalui email dan menonton video pelajaran dari guru. Internet memudahkan kita untuk belajar tanpa harus bertatap muka, tetapi kita tetap harus fokus dan bijak.",
+    /* 16 Rangkuman */ "Mari kita rangkum. Internet adalah jaringan komputer raksasa yang menghubungkan jutaan komputer di seluruh dunia. Perangkat yang bisa terhubung antara lain HP, laptop, tablet, dan komputer. Internet bermanfaat untuk belajar, mencari informasi, dan berkomunikasi. Dan yang paling penting, gunakan internet dengan bijak dan aman.",
+    /* 17 Penutup */ "Sebagai penutup, bagian mana yang paling kalian sukai hari ini? Apa hal baru yang kalian ketahui tentang internet? Di rumah, catat tiga alat yang menggunakan jaringan internet, lalu laporkan pada pertemuan berikutnya. Terima kasih, tetap semangat belajar!",
+    /* 18 Quiz */ "Nah, sekarang saatnya ujian. Sebelum mengerjakan, tulis semua soal dan semua pilihan jawaban di buku tulis kalian. Kemudian centang jawaban yang benar. Ingat ya, tulis semua soal dan semua pilihan jawaban. Kalian punya waktu sepuluh menit. Waktu dimulai sekarang. Selamat mengerjakan!",
+    /* 19 Terima Kasih */ "Pembelajaran hari ini telah selesai. Terima kasih atas semangat kalian. Sampai jumpa di pertemuan berikutnya!"
   ];
 
   /* ============ ELEMENTS ============ */
@@ -1231,9 +1333,9 @@
   let noteState = 'idle';
   let noteRemainingMs = 0;
 
-  /* Ice breaking state */
-  let iceState = 'idle';
-  let iceRemainingMs = 0;
+  /* Video state (Warmup & Ice breaking) */
+  let videoState = 'idle';
+  let videoRemainingMs = 0;
 
   /* ============ ROBOT DRAG ============ */
   let robotDragging = false;
@@ -1388,8 +1490,8 @@
 
     const slide = slides[i];
 
-    if (slide.dataset.icebreak === 'true') {
-      startIceBreakVideo();
+    if (slide.dataset.videoType) {
+      startVideoPlayer();
       return;
     }
 
@@ -1456,10 +1558,10 @@
     elNoteTimer.classList.toggle('urgent', urgent);
   }
 
-  /* ============ ICE BREAKING ============ */
-  function startIceBreakVideo() {
+  /* ============ VIDEO PLAYER (Warmup & Ice Breaking) ============ */
+  function startVideoPlayer() {
     const slide = slides[idx];
-    if (!slide || slide.dataset.icebreak !== 'true') return;
+    if (!slide || !slide.dataset.videoType) return;
 
     const wrap = slide.querySelector('.icebreak-video-wrap');
     const videoId = slide.dataset.videoId;
@@ -1477,14 +1579,19 @@
       wrap.appendChild(iframe);
     }
 
-    iceState = 'running';
-    if (!iceRemainingMs) {
-      iceRemainingMs = parseFloat(slide.dataset.duration) * 1000 || 220000;
+    videoState = 'running';
+    if (!videoRemainingMs) {
+      videoRemainingMs = parseFloat(slide.dataset.duration) * 1000 || 220000;
     }
-    elCaption.textContent = 'Ice breaking sedang berlangsung. Ikuti gerakan di layar!';
+    
+    if (slide.dataset.videoType === 'icebreak') {
+      elCaption.textContent = 'Ice breaking sedang berlangsung. Ikuti gerakan di layar!';
+    } else {
+      elCaption.textContent = 'Warm-up sedang berlangsung. Mari kita semangat!';
+    }
   }
 
-  function stopIceBreakVideo(slideEl) {
+  function stopVideoPlayer(slideEl) {
     if (!slideEl) return;
     const wrap = slideEl.querySelector('.icebreak-video-wrap');
     if (wrap) wrap.innerHTML = '';
@@ -1580,10 +1687,10 @@
     const dur = Math.max(1, durations[idx] * 1000);
     const slide = slides[idx];
 
-    if (slide.dataset.icebreak === 'true') {
+    if (slide.dataset.videoType) {
       const total = parseFloat(slide.dataset.duration) * 1000 || 220000;
-      if (iceState === 'ended') slideProg = 1;
-      else if (iceState === 'running') slideProg = 1 - iceRemainingMs / total;
+      if (videoState === 'ended') slideProg = 1;
+      else if (videoState === 'running') slideProg = 1 - videoRemainingMs / total;
       else slideProg = 0;
     } else if (noteState === 'running') {
       const total = parseFloat(slide.dataset.noteMinutes) * 60 * 1000;
@@ -1611,8 +1718,8 @@
 
   function enterSlide(i) {
     const prevSlide = slides[idx];
-    if (prevSlide && prevSlide.dataset.icebreak === 'true') {
-      stopIceBreakVideo(prevSlide);
+    if (prevSlide && prevSlide.dataset.videoType) {
+      stopVideoPlayer(prevSlide);
     }
 
     idx = Math.max(0, Math.min(slides.length - 1, i));
@@ -1622,25 +1729,25 @@
 
     noteState = 'idle';
     noteRemainingMs = 0;
-    iceState = 'idle';
-    iceRemainingMs = 0;
+    videoState = 'idle';
+    videoRemainingMs = 0;
     hideNoteOverlay();
-    showNav(); // Pastikan navigasi selalu tampil di slide biasa & ice breaking
+    showNav();
 
     const slide = slides[idx];
 
-    if (slide.dataset.icebreak === 'true') {
+    if (slide.dataset.videoType) {
       activate(idx);
       render();
-      iceState = 'intro';
-      iceRemainingMs = parseFloat(slide.dataset.duration) * 1000 || 220000;
-      elCaption.textContent = 'Bersiap untuk ice breaking...';
+      videoState = 'intro';
+      videoRemainingMs = parseFloat(slide.dataset.duration) * 1000 || 220000;
+      elCaption.textContent = 'Bersiap memutar video...';
 
       if (started && narrationOn && synth) {
         speakSlide(idx);
       } else {
         setTimeout(() => {
-          if (idx === i && iceState === 'intro') startIceBreakVideo();
+          if (idx === i && videoState === 'intro') startVideoPlayer();
         }, 3000);
       }
       return;
@@ -1792,7 +1899,6 @@
     lastTime = performance.now();
     updatePlayIcon();
 
-    // Trigger Fullscreen
     const doc = document;
     const el = doc.documentElement;
     const req = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen || el.msRequestFullscreen;
@@ -1814,22 +1920,27 @@
 
       const slide = slides[idx];
 
-      if (slide.dataset.icebreak === 'true') {
-        if (iceState === 'running') {
-          iceRemainingMs = Math.max(0, iceRemainingMs - dt);
-          if (iceRemainingMs <= 0) {
-            iceState = 'outro';
-            elCaption.textContent = 'Ice breaking selesai. Silakan duduk kembali.';
-            speakText('Waktu ice breaking selesai. Silakan duduk kembali, kita akan lanjutkan materi.');
-            
-            const currentIdx = idx; // Perbaikan bug referensi
-            setTimeout(() => {
-              if (idx === currentIdx && iceState === 'outro') {
-                iceState = 'ended';
-                showNav();
-                advanceSlide();
-              }
-            }, 5000); // 5 detik untuk duduk kembali
+      if (slide.dataset.videoType) {
+        if (videoState === 'running') {
+          videoRemainingMs = Math.max(0, videoRemainingMs - dt);
+          if (videoRemainingMs <= 0) {
+            if (slide.dataset.videoType === 'icebreak') {
+              videoState = 'outro';
+              elCaption.textContent = 'Ice breaking selesai. Silakan duduk kembali.';
+              speakText('Waktu ice breaking selesai. Silakan duduk kembali, kita akan lanjutkan materi.');
+              
+              const currentIdx = idx;
+              setTimeout(() => {
+                if (idx === currentIdx && videoState === 'outro') {
+                  videoState = 'ended';
+                  advanceSlide();
+                }
+              }, 5000);
+            } else {
+              // Warmup
+              videoState = 'ended';
+              advanceSlide();
+            }
           }
         }
       } else if (noteState === 'running') {
