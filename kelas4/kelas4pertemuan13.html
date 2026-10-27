@@ -503,7 +503,7 @@
   .hint{font-size:10px; color:var(--ink4);}
   .hide{display:none !important;}
 
-  /* Navigasi disembunyikan saat slide khusus */
+  /* Navigasi disembunyikan HANYA saat slide mencatat */
   .controls.nav-hidden .ctrl-center,
   .controls.nav-hidden .ctrl-right{
     opacity:0;
@@ -1713,6 +1713,8 @@
     iceState = 'idle';
     iceRemainingMs = 0;
     hideNoteOverlay();
+    
+    // Selalu tampilkan nav secara default, kecuali saat mencatat
     showNav();
 
     const slide = slides[idx];
@@ -1720,7 +1722,7 @@
     if (slide.dataset.icebreak === 'true') {
       activate(idx);
       render();
-      hideNav();
+      // TIDAK memanggil hideNav() di sini agar navigasi tetap muncul
       iceState = 'intro';
       iceRemainingMs = parseFloat(slide.dataset.duration) * 1000 || 220000;
       elCaption.textContent = 'Bersiap untuk ice breaking...';
@@ -1910,13 +1912,16 @@
             iceState = 'outro';
             elCaption.textContent = 'Ice breaking selesai. Silakan duduk kembali.';
             speakText('Waktu ice breaking selesai. Silakan duduk kembali, kita akan lanjutkan materi.');
+            
+            // Perbaikan bug: gunakan currentIdx untuk referensi
+            const currentIdx = idx; 
             setTimeout(() => {
-              if (idx === i && iceState === 'outro') {
+              if (idx === currentIdx && iceState === 'outro') {
                 iceState = 'ended';
                 showNav();
                 advanceSlide();
               }
-            }, 5000); // 5 detik untuk duduk kembali
+            }, 5000);
           }
         }
       } else if (noteState === 'running') {
