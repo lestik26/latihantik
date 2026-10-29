@@ -1,0 +1,1304 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Ayo Menggambar dengan Paint</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+/* Layout concept: satu slide penuh layar dengan tombol Kembali/Lanjut besar di bawah; jendela Paint sebagai pembuka, tombol stiker tebal untuk layar IFP, dan toolbar Paint di bawah kanvas pada slide menggambar. */
+:root {
+  --bg: #EAF4FF;
+  --surface: #FFFFFF;
+  --surface-2: #F3F8FF;
+  --ink: #1F2347;
+  --ink-soft: #4F5584;
+  --line: #CBD8F0;
+  --paper: #FFFFFF;
+  --outline: #1F2347;
+  --on: #1F2347;
+  --red: #FF5F5F;
+  --orange: #FF9F43;
+  --yellow: #FFCF33;
+  --green: #3ED077;
+  --blue: #4D8BFF;
+  --purple: #9B6BFF;
+  --pink: #FF78B8;
+  --tint-blue: #DCEBFF;
+  --tint-orange: #FFE9D0;
+  --tint-green: #D6F6E3;
+  --font-display: "Fredoka", "Trebuchet MS", "Segoe UI", sans-serif;
+  --font-body: "Nunito", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #12163A; --surface: #1C2152; --surface-2: #242A63; --ink: #F2F4FF; --ink-soft: #B5BBE8;
+    --line: #3A4290; --outline: #0B0E2B;
+    --tint-blue: #1E2C69; --tint-orange: #4A3322; --tint-green: #16423A;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #12163A; --surface: #1C2152; --surface-2: #242A63; --ink: #F2F4FF; --ink-soft: #B5BBE8;
+  --line: #3A4290; --outline: #0B0E2B;
+  --tint-blue: #1E2C69; --tint-orange: #4A3322; --tint-green: #16423A;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font-family: var(--font-body); font-weight: 700; font-size: clamp(17px, 0.9vw + 13px, 24px); line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 10px;
+  display: flex; flex-direction: column;
+}
+h1, h2, h3, h4 { font-family: var(--font-display); line-height: 1.15; text-wrap: balance; margin: 0; font-weight: 700; }
+p { margin: 0; }
+svg { display: block; }
+.ic { width: 100%; height: 100%; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+/* icon fills */
+.sk { stroke: #1F2347; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.f-red { fill: var(--red); } .f-orange { fill: var(--orange); } .f-yellow { fill: var(--yellow); }
+.f-green { fill: var(--green); } .f-blue { fill: var(--blue); } .f-pink { fill: #FF8FB8; }
+.f-white { fill: #fff; } .f-grey { fill: #C9CEE0; } .f-wood { fill: #F3C98B; } .f-ink { fill: #1F2347; }
+
+/* sticker buttons */
+.btn {
+  font: 600 1.05rem var(--font-display); background: var(--yellow); color: var(--on);
+  border: 3px solid var(--outline); border-radius: 16px; padding: .55em 1.1em;
+  box-shadow: 0 4px 0 var(--outline); cursor: pointer; transition: transform .08s, box-shadow .08s;
+}
+.btn:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--outline); }
+.btn:disabled { opacity: .45; cursor: default; box-shadow: 0 2px 0 var(--outline); }
+.btn:focus-visible, .demo:focus-visible, .otile:focus-visible, .mt:focus-visible, .sw:focus-visible, .tb:focus-visible, .sz:focus-visible, .skb:focus-visible, .stab:focus-visible, .pdot:focus-visible, .posture button:focus-visible, .gate-card button:focus-visible {
+  outline: 4px solid var(--purple); outline-offset: 3px;
+}
+.btn.alt { background: var(--surface); color: var(--ink); }
+.btn.blue { background: var(--blue); } .btn.green { background: var(--green); } .btn.pink { background: var(--pink); } .btn.orange { background: var(--orange); }
+.btn.big { font-size: 1.3rem; padding: .6em 1.5em; }
+.btn.sm { font-size: .82rem; padding: .38em .85em; border-radius: 12px; box-shadow: 0 3px 0 var(--outline); }
+
+/* start gate */
+.gate { position: fixed; inset: 0; z-index: 300; display: grid; place-items: center; padding: 20px;
+  background: radial-gradient(circle at 28% 18%, #FFF6CC 0%, var(--bg) 55%); }
+.gate.hide { display: none; }
+.gate-card { background: var(--surface); border: 3px solid var(--outline); border-radius: 30px; box-shadow: 0 10px 0 var(--outline);
+  padding: clamp(24px, 4vw, 48px); display: grid; gap: 18px; justify-items: center; text-align: center; max-width: 660px; }
+.gate-card h1 { font-size: clamp(1.7rem, 4vw, 2.9rem); }
+.gate-card p { color: var(--ink-soft); max-width: 38ch; }
+.gate-icon { width: 96px; height: 96px; border-radius: 50%; background: var(--yellow); border: 3px solid var(--outline);
+  display: grid; place-items: center; padding: 14px; box-shadow: 0 5px 0 var(--outline); }
+
+/* app frame */
+.app { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 10px; max-width: 1280px; width: 100%; margin-inline: auto; }
+.topbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.brand { font: 700 1.15rem var(--font-display); display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+.brand .tile { width: 34px; height: 34px; padding: 3px; }
+.top-title { flex: 1; min-width: 0; text-align: center; font: 600 1rem var(--font-display); color: var(--ink-soft); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.top-right { display: flex; align-items: center; gap: 12px; white-space: nowrap; font: 600 1rem var(--font-display); }
+.stars { display: flex; gap: 2px; }
+.stars svg { width: 22px; height: 22px; fill: none; stroke: var(--ink-soft); stroke-width: 2; stroke-linejoin: round; }
+.stars svg.on { fill: var(--yellow); stroke: var(--outline); }
+@media (max-width: 560px) { .top-title { display: none; } .top-right { margin-left: auto; } }
+.stage { flex: 1; min-height: 0; position: relative; }
+.slide { position: absolute; inset: 0; overflow-y: auto; overflow-x: hidden; border-radius: 28px; background: var(--tint, var(--surface-2)); padding: clamp(14px, 2.4vw, 34px); display: none; flex-direction: column; gap: 18px; }
+.slide > * { flex: none; }
+.slide.on { display: flex; animation: slidein .35s ease; }
+@keyframes slidein { from { opacity: 0; transform: translateX(36px); } to { opacity: 1; transform: none; } }
+.slide.center { justify-content: center; }
+.slide[data-st="blue"] { --tint: var(--tint-blue); --accent: var(--blue); }
+.slide[data-st="orange"] { --tint: var(--tint-orange); --accent: var(--orange); }
+.slide[data-st="green"] { --tint: var(--tint-green); --accent: var(--green); }
+.controls { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.dots { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; flex: 1; }
+.pdot { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--outline); background: var(--surface); padding: 0; cursor: pointer; position: relative; }
+.pdot::before { content: ""; position: absolute; inset: -8px; }
+.pdot.cur { background: var(--dc); transform: scale(1.35); }
+@media (max-width: 520px) { .controls .btn { padding: .5em .8em; } .dots { display: none; } }
+
+.tile { width: 44px; height: 44px; border-radius: 10px; background: var(--paper); border: 2px solid var(--line); display: grid; place-items: center; padding: 5px; flex: none; }
+.dot { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--outline); display: inline-block; }
+
+.st-head { display: grid; gap: 8px; justify-items: start; }
+.badge { font: 600 .85rem var(--font-display); letter-spacing: .08em; text-transform: uppercase; background: var(--accent, var(--blue)); color: var(--on); border: 3px solid var(--outline); border-radius: 999px; padding: .1em .9em; box-shadow: 0 3px 0 var(--outline); }
+.st-head h2 { font-size: clamp(1.8rem, 4.2vw, 3.1rem); }
+.st-head p { color: var(--ink-soft); max-width: 60ch; }
+.card { background: var(--surface); border: 2px solid var(--line); border-radius: 24px; padding: clamp(16px, 2.4vw, 28px); display: grid; gap: 14px; min-width: 0; }
+.card h3 { font-size: clamp(1.3rem, 2.4vw, 1.8rem); }
+.hint { color: var(--ink-soft); font-size: .92em; }
+.msg { min-height: 1.6em; color: var(--ink-soft); }
+.row { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); }
+.tip { background: var(--surface); border-radius: 16px; border: 2px dashed var(--line); padding: 10px 14px; font-size: .85rem; color: var(--ink-soft); }
+.tip summary { cursor: pointer; font: 600 .95rem var(--font-display); color: var(--ink); }
+.tip p { margin-top: 6px; }
+.en { font: 600 .72em var(--font-body); color: var(--ink-soft); letter-spacing: .04em; margin-left: 6px; }
+
+/* cover */
+.win { border: 3px solid var(--outline); border-radius: 20px; overflow: hidden; background: var(--surface); box-shadow: 0 8px 0 var(--outline); }
+.win-bar { display: flex; justify-content: space-between; align-items: center; gap: 10px; background: var(--blue); color: var(--on); padding: 8px 14px; font: 600 .95rem var(--font-display); }
+.win-btns { display: flex; gap: 6px; }
+.win-btns i { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--outline); background: var(--yellow); }
+.win-btns i:nth-child(2) { background: var(--green); } .win-btns i:nth-child(3) { background: var(--red); }
+.menu { display: flex; gap: 18px; padding: 6px 14px; background: var(--surface-2); border-bottom: 2px solid var(--line); font: 600 .9rem var(--font-display); color: var(--ink-soft); }
+.menu .cur { color: var(--ink); border-bottom: 3px solid var(--blue); }
+.ribbon { display: flex; flex-wrap: wrap; gap: 12px 28px; padding: 12px 14px; border-bottom: 2px solid var(--line); }
+.grp { display: flex; flex-direction: column; gap: 6px; }
+.grp-body { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.grp-label { font-size: .7rem; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-soft); }
+.win-body { display: grid; grid-template-columns: 1.15fr .85fr; gap: clamp(16px, 3vw, 32px); padding: clamp(18px, 3vw, 36px); align-items: center; }
+@media (max-width: 700px) { .win-body { grid-template-columns: 1fr; } }
+h1 { font-size: clamp(2.2rem, 5.6vw, 4.2rem); }
+.mark { background: var(--yellow); color: var(--on); padding: 0 .18em; border-radius: .25em; }
+.sub { margin-top: 14px; color: var(--ink-soft); max-width: 34ch; }
+.canvas-frame { background: var(--paper); border: 3px solid var(--outline); border-radius: 12px; padding: 6px; }
+.canvas-frame svg { width: 100%; height: auto; max-height: 38vh; }
+.start-row { display: flex; justify-content: center; }
+
+.bubble { background: var(--surface); border: 3px solid var(--outline); border-radius: 28px; box-shadow: 0 6px 0 var(--outline); padding: clamp(18px, 3vw, 34px); display: grid; gap: 10px; }
+.bubble .tag { font: 600 .8rem var(--font-display); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-soft); }
+.bubble .q { font: 600 clamp(1.4rem, 3.2vw, 2.2rem) var(--font-display); line-height: 1.3; text-wrap: balance; }
+.bubble .q b { color: var(--blue); }
+@media (prefers-color-scheme: light) { .bubble .q b { color: #2B64F0; } }
+.goals-head { font: 600 1rem var(--font-display); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft); }
+.goals { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; }
+.goals li { background: var(--surface); border: 2px solid var(--line); border-radius: 20px; padding: 14px 16px; display: flex; gap: 12px; align-items: center; }
+.goals .chk { width: 34px; height: 34px; border-radius: 50%; border: 3px solid var(--outline); display: grid; place-items: center; flex: none; background: var(--c); }
+.goals .chk svg { width: 18px; height: 18px; fill: none; stroke: var(--on); stroke-width: 3.4; stroke-linecap: round; stroke-linejoin: round; }
+
+/* posture */
+.posture { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; }
+.posture button { display: grid; gap: 8px; justify-items: center; text-align: center; padding: 20px 12px; border-radius: 22px; background: var(--surface-2); color: var(--ink); border: 3px solid var(--line); font: 600 1.2rem var(--font-display); cursor: pointer; }
+.posture button .pi { width: 72px; height: 72px; border-radius: 50%; background: var(--paper); border: 2px solid var(--line); display: grid; place-items: center; }
+.posture button .pi svg { width: 44px; height: 44px; fill: none; stroke: #1F2347; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.posture button.on { background: var(--green); color: var(--on); border-color: var(--outline); box-shadow: 0 4px 0 var(--outline); }
+
+/* breathing */
+.breath-wrap { display: grid; justify-items: center; gap: 12px; }
+.breath-stage { width: min(340px, 56vh, 80vw); aspect-ratio: 1; display: grid; place-items: center; }
+.breath { width: 62%; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #BFE0FF, var(--blue)); border: 4px solid var(--outline); transition: transform 4s ease-in-out; display: grid; place-items: center; box-shadow: 0 0 0 14px color-mix(in srgb, var(--blue) 25%, transparent); }
+.breath span { font: 600 1.15rem var(--font-display); color: var(--on); text-align: center; padding: 0 8px; }
+.breath-time { font: 700 2.2rem var(--font-display); font-variant-numeric: tabular-nums; }
+
+/* observe */
+.observe { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+@media (max-width: 720px) { .observe { grid-template-columns: 1fr; } }
+.otiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 12px; }
+.otile { background: var(--paper); border: 3px solid var(--line); border-radius: 18px; padding: 12px; aspect-ratio: 1; cursor: pointer; }
+.otile[aria-pressed="true"] { border-color: var(--outline); box-shadow: 0 4px 0 var(--outline); transform: translateY(-2px); background: #FFF6CC; }
+.spot { background: var(--surface-2); border-radius: 20px; padding: 18px; display: grid; gap: 10px; }
+.spot .big { width: 110px; height: 110px; background: var(--paper); border-radius: 18px; border: 2px solid var(--line); padding: 10px; }
+.spot h4 { font: 700 1.6rem var(--font-display); }
+.cols { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+
+/* demo cards */
+.demos { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); gap: 14px; }
+.demo { text-align: left; background: var(--surface); border: 3px solid var(--outline); border-radius: 22px; box-shadow: 0 5px 0 var(--outline); padding: 10px 10px 14px; cursor: pointer; display: grid; gap: 8px; font-family: inherit; color: var(--ink); }
+.demo .stage-s { background: var(--paper); border-radius: 14px; border: 2px solid var(--line); }
+.demo .stage-s svg { width: 100%; height: auto; }
+.demo .dn { display: flex; align-items: center; gap: 10px; padding: 0 6px; }
+.demo .dn .tile { width: 40px; height: 40px; }
+.demo .dn b { font: 700 1.25rem var(--font-display); display: block; line-height: 1.1; }
+.demo .df { padding: 0 6px; color: var(--ink-soft); font-size: .92em; }
+.stroke { stroke-dasharray: 400; stroke-dashoffset: 0; }
+.demo.play .stroke { animation: draw 1.6s ease both; }
+@keyframes draw { from { stroke-dashoffset: 400; } to { stroke-dashoffset: 0; } }
+.wipe { transform: scaleX(0); transform-box: fill-box; transform-origin: left center; }
+.demo.play .wipe { animation: wipe 1.4s .3s ease both; }
+@keyframes wipe { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.fillrect { transform: translateY(80px); }
+.demo.play .fillrect { animation: rise 1.4s ease both; }
+@keyframes rise { from { transform: translateY(80px); } to { transform: translateY(0); } }
+
+/* guess game */
+.game { display: grid; grid-template-columns: minmax(0, 240px) minmax(0, 1fr); gap: 22px; align-items: center; }
+@media (max-width: 640px) { .game { grid-template-columns: 1fr; justify-items: center; } .game > div:last-child { width: 100%; } }
+.gstage { width: 220px; height: 220px; background: var(--paper); border: 3px solid var(--outline); border-radius: 24px; padding: 24px; box-shadow: 0 5px 0 var(--outline); }
+.gstage.sil .ic { filter: brightness(0); }
+.gstage .ic { transition: filter .4s; }
+.clue { font: 600 clamp(1.3rem, 2.8vw, 2rem) var(--font-display); line-height: 1.3; }
+.opts { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 14px; }
+.opts .btn { font-size: 1.3rem; }
+.opts .btn.ok { background: var(--green); } .opts .btn.no { background: var(--red); animation: shake .35s; }
+@keyframes shake { 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+.pips { display: flex; gap: 8px; margin-bottom: 8px; }
+.pip { width: 34px; height: 34px; }
+.pip path { fill: none; stroke: var(--ink-soft); stroke-width: 2; stroke-linejoin: round; }
+.pip.on path { fill: var(--yellow); stroke: var(--outline); }
+
+/* draw slide — full-bleed working canvas */
+.slide.draw { gap: 8px; padding: 8px; overflow: hidden; }
+.draw-bar { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex: none; flex-wrap: wrap; }
+.timer { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.timer-time { font: 700 1.6rem var(--font-display); font-variant-numeric: tabular-nums; background: var(--surface); border: 3px solid var(--outline); border-radius: 12px; padding: 0 .45em; min-width: 3.2ch; text-align: center; }
+.timer-time.low { background: var(--red); color: var(--on); animation: pulse 1s infinite; }
+@keyframes pulse { 50% { transform: scale(1.06); } }
+.paint { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; border: 3px solid var(--outline); border-radius: 18px; overflow: hidden; background: var(--surface); box-shadow: 0 6px 0 var(--outline); min-width: 0; }
+.canvas-area { flex: 1 1 auto; min-height: 0; display: flex; align-items: stretch; justify-content: stretch; background: var(--surface-2); overflow: hidden; padding: 0; }
+.cwrap { flex: 1; position: relative; line-height: 0; }
+#cv { display: block; width: 100%; height: 100%; background: #fff; touch-action: none; cursor: crosshair; border: none; border-radius: 0; }
+.over-hint { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; font: 600 clamp(1rem, 2.2vw, 1.8rem) var(--font-display); color: #B7BEDD; line-height: 1.2; text-align: center; padding: 20px; }
+.toolbar { display: flex; flex-wrap: wrap; gap: 6px 16px; padding: 6px 8px; border-top: 3px solid var(--outline); background: var(--surface); align-items: center; flex: none; }
+.tgroup { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.tgroup.grow { flex: 1 1 260px; }
+.tbody { display: flex; gap: 4px; flex-wrap: wrap; align-items: center; }
+.tlabel { font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-soft); }
+.slide.draw .tlabel { display: none; }
+.tb { min-width: 52px; display: grid; justify-items: center; gap: 1px; border-radius: 10px; border: 2px solid var(--line); background: var(--paper); padding: 3px 4px 2px; cursor: pointer; font: 600 .58rem var(--font-display); color: #1F2347; line-height: 1.05; text-align: center; }
+.tb svg { width: 26px; height: 26px; }
+.tb[aria-pressed="true"] { border-color: var(--outline); background: #FFF6CC; box-shadow: 0 3px 0 var(--outline); }
+.sw { width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--outline); cursor: pointer; padding: 0; }
+.sw[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--surface), 0 0 0 5px var(--purple); }
+.swgrid { display: grid; grid-template-columns: repeat(5, 24px); gap: 5px; }
+.sz { width: 34px; height: 34px; border-radius: 9px; border: 2px solid var(--line); background: var(--paper); display: grid; place-items: center; cursor: pointer; padding: 0; }
+.sz[aria-pressed="true"] { border-color: var(--outline); background: #FFF6CC; }
+.sz i { background: #1F2347; border-radius: 50%; display: block; }
+.stabs { display: flex; gap: 5px; flex-wrap: wrap; }
+.stab { font: 600 .68rem var(--font-display); color: var(--ink); background: var(--surface-2); border: 2px solid var(--line); border-radius: 999px; padding: .05em .65em; cursor: pointer; }
+.stab[aria-pressed="true"] { background: var(--purple); color: var(--on); border-color: var(--outline); }
+.sk-list { display: flex; gap: 6px; overflow-x: auto; padding: 2px 2px 3px; }
+.skb { flex: none; width: 52px; display: grid; justify-items: center; gap: 1px; background: var(--paper); border: 2px solid var(--line); border-radius: 10px; padding: 2px 1px; cursor: pointer; font: 600 .55rem var(--font-display); color: #1F2347; }
+.skb svg { width: 32px; height: 32px; }
+.skb[aria-pressed="true"] { border-color: var(--outline); background: #FFF6CC; box-shadow: 0 3px 0 var(--outline); }
+
+/* match */
+.match { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 22px; }
+.mcol { display: grid; gap: 10px; align-content: start; }
+.mcol h4 { font: 600 .85rem var(--font-display); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-soft); }
+.mt { display: flex; align-items: center; gap: 12px; text-align: left; background: var(--paper); color: #1F2347; border: 3px solid var(--line); border-radius: 18px; padding: 8px 14px 8px 8px; cursor: pointer; font: 700 1.1rem var(--font-display); line-height: 1.15; }
+.mt .mi { width: 58px; height: 58px; flex: none; }
+.mt small { display: block; font: 600 .72rem var(--font-body); color: #55597F; letter-spacing: .04em; }
+.mt.real { background: #FFF1DA; }
+.mt.sel { border-color: var(--outline); box-shadow: 0 4px 0 var(--outline); transform: translateY(-2px); }
+.mt.ok { background: #CFF5DD; border-color: var(--outline); cursor: default; }
+.mt.bad { animation: shake .35s; border-color: var(--red); }
+@media (max-width: 480px) { .match { grid-template-columns: 1fr; } }
+
+/* paper demo */
+.cmp { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: 14px; }
+.cmp-p { background: var(--surface-2); border-radius: 20px; padding: 14px; display: grid; gap: 10px; justify-items: start; }
+.cmp-p h4 { font: 700 1.25rem var(--font-display); }
+.cview { width: 100%; height: 160px; position: relative; background: var(--paper); border-radius: 12px; border: 2px solid var(--line); overflow: hidden; }
+.sheet { position: absolute; width: 100px; height: 126px; background: #fff; border: 2px solid #1F2347; border-radius: 6px; top: 14px; left: 14px; }
+.sheet svg { width: 100%; height: 100%; }
+.sheet.old { filter: grayscale(.7); opacity: .85; }
+.screen { position: absolute; inset: 10px; border: 4px solid #1F2347; border-radius: 10px; background: #fff; }
+.screen svg { width: 100%; height: 100%; }
+.mx { opacity: 0; transition: opacity .25s; }
+.mx.show { opacity: 1; }
+.count { font: 700 1.15rem var(--font-display); }
+.count output { display: inline-block; min-width: 1.4ch; color: var(--red); }
+@media (prefers-color-scheme: light) { .count output { color: #D63C3C; } }
+
+/* presentation */
+.pick { display: grid; grid-template-columns: auto 1fr; gap: 16px 26px; align-items: center; }
+@media (max-width: 560px) { .pick { grid-template-columns: 1fr; justify-items: center; text-align: center; } }
+.pick-num { width: 170px; height: 170px; border-radius: 50%; background: var(--pink); color: var(--on); border: 4px solid var(--outline); box-shadow: 0 6px 0 var(--outline); display: grid; place-items: center; font: 700 5rem var(--font-display); font-variant-numeric: tabular-nums; }
+.pick-ctl { display: grid; gap: 10px; justify-items: start; }
+@media (max-width: 560px) { .pick-ctl { justify-items: center; } }
+.pick-ctl label { display: flex; gap: 8px; align-items: center; color: var(--ink-soft); }
+.pick-ctl input { width: 5.5ch; font: 700 1.1rem var(--font-display); padding: .2em .3em; border-radius: 10px; border: 2px solid var(--line); background: var(--surface-2); color: var(--ink); text-align: center; }
+.say { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); gap: 12px; }
+.say div { background: var(--surface-2); border-radius: 18px; padding: 14px 16px; display: flex; gap: 12px; align-items: center; }
+.say .dot { flex: none; width: 26px; height: 26px; }
+
+.finish { background: var(--yellow); color: var(--on); border: 3px solid var(--outline); border-radius: 28px; box-shadow: 0 8px 0 var(--outline); padding: clamp(24px, 5vw, 56px); display: grid; gap: 18px; justify-items: center; text-align: center; }
+.finish h2 { font-size: clamp(2rem, 5vw, 3.4rem); }
+.finish .big { font: 700 2.8rem var(--font-display); font-variant-numeric: tabular-nums; display: flex; align-items: center; gap: 10px; }
+.finish .big svg { width: 54px; height: 54px; fill: #fff; stroke: #1F2347; stroke-width: 2; stroke-linejoin: round; }
+
+@media (prefers-reduced-motion: reduce) {
+  .breath { transition: none; }
+  .slide.on { animation: none; }
+  .timer-time.low { animation: none; }
+  .demo.play *, .mt.bad, .opts .btn.no { animation-duration: .01s !important; animation-delay: 0s !important; }
+}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="i-pencil" viewBox="0 0 64 64"><g transform="rotate(45 32 32)"><rect class="sk f-pink" x="26" y="4" width="12" height="7" rx="2"/><rect class="sk f-grey" x="26" y="11" width="12" height="5"/><rect class="sk" fill="currentColor" x="26" y="16" width="12" height="26"/><polygon class="sk f-wood" points="26,42 38,42 32,56"/><polygon class="f-ink" points="29.6,51 34.4,51 32,56"/></g></symbol>
+    <symbol id="i-eraser" viewBox="0 0 64 64"><g transform="rotate(-35 32 32)"><rect class="sk f-pink" x="8" y="21" width="30" height="22" rx="4"/><rect class="sk f-blue" x="36" y="21" width="20" height="22" rx="4"/></g></symbol>
+    <symbol id="i-bucket" viewBox="0 0 64 64"><path class="sk" fill="none" d="M19 26 C19 6 45 6 45 26"/><path class="sk f-blue" d="M13 26 L51 26 L45 56 L19 56 Z"/><ellipse class="sk f-white" cx="32" cy="26" rx="19" ry="5"/><ellipse class="f-red" cx="32" cy="26.5" rx="15" ry="3"/><path class="sk f-red" d="M58 40 C58 40 62 46 62 49 a4 4 0 0 1 -8 0 C54 46 58 40 58 40Z"/></symbol>
+    <symbol id="i-brush" viewBox="0 0 64 64"><g transform="rotate(45 32 32)"><rect class="sk f-orange" x="29" y="4" width="6" height="26" rx="3"/><rect class="sk f-grey" x="27" y="29" width="10" height="10"/><path class="sk f-blue" d="M27 39 L37 39 C38.5 48 35.5 55 32 59 C28.5 55 25.5 48 27 39Z"/></g></symbol>
+    <symbol id="i-palette" viewBox="0 0 64 64"><path class="sk f-wood" d="M32 6C16 6 5 18 5 32c0 15 12 26 26 26 6 0 7-5 4-8-3-4-1-8 5-8h8c8 0 11-5 11-12C59 17 47 6 32 6Z"/><circle class="sk f-red" cx="20" cy="26" r="5"/><circle class="sk f-yellow" cx="32" cy="18" r="5"/><circle class="sk f-green" cx="45" cy="22" r="5"/><circle class="sk f-blue" cx="17" cy="42" r="5"/></symbol>
+    <symbol id="r-pencils" viewBox="0 0 64 64"><g transform="rotate(-22 32 32)"><use href="#i-pencil" width="64" height="64" style="color:#FF5F5F"/></g><g transform="rotate(22 32 32)"><use href="#i-pencil" width="64" height="64" style="color:#4D8BFF"/></g><use href="#i-pencil" width="64" height="64" style="color:#3ED077"/></symbol>
+    <symbol id="r-brush" viewBox="0 0 64 64"><path d="M4 58 C16 50 26 62 38 54 S54 56 60 50" fill="none" stroke="#4D8BFF" stroke-width="7" stroke-linecap="round"/><use href="#i-brush" width="64" height="64"/></symbol>
+    <symbol id="r-eraser" viewBox="0 0 64 64"><rect class="sk f-white" x="6" y="6" width="38" height="50" rx="3"/><path d="M12 18 H38 M12 26 H38 M12 34 H30" stroke="#B7BEDD" stroke-width="2.5" stroke-linecap="round" fill="none"/><use href="#i-eraser" x="14" y="16" width="50" height="50"/></symbol>
+    <symbol id="r-can" viewBox="0 0 64 64"><path class="sk f-grey" d="M14 22 H50 V52 Q50 58 32 58 Q14 58 14 52 Z"/><rect class="f-white" x="22" y="38" width="20" height="12" rx="2"/><ellipse class="sk f-red" cx="32" cy="22" rx="18" ry="6"/><path class="sk f-red" d="M20 24 V36 a3 3 0 0 0 6 0 V26"/></symbol>
+    <clipPath id="starClip"><polygon points="80,6 91,31 118,34 98,52 104,78 80,64 56,78 62,52 42,34 69,31"/></clipPath>
+  </defs>
+</svg>
+
+<!-- ===== START GATE ===== -->
+<div class="gate" id="startGate">
+  <div class="gate-card">
+    <div class="gate-icon"><svg viewBox="0 0 64 64" aria-hidden="true"><use href="#i-palette"/></svg></div>
+    <h1>Ayo Menggambar dengan Paint</h1>
+    <p>Belajar mengenal alat-alat Paint lewat cerita, permainan, dan menggambar bersama di layar.</p>
+    <button class="btn blue big" id="startBtn" type="button">Mulai Pembelajaran</button>
+  </div>
+</div>
+
+<div class="app">
+  <div class="topbar">
+    <div class="brand"><span class="tile"><svg class="ic" viewBox="0 0 64 64" aria-hidden="true"><use href="#i-palette"/></svg></span>Ayo Menggambar</div>
+    <div class="top-title" id="topTitle"></div>
+    <div class="top-right">
+      <div class="stars" aria-label="Bintang bagian">
+        <svg viewBox="0 0 24 24" data-star="calm" aria-hidden="true"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3 6.1 20.6l1.3-6.6L2.5 9.4l6.6-.8z"/></svg>
+        <svg viewBox="0 0 24 24" data-star="game" aria-hidden="true"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3 6.1 20.6l1.3-6.6L2.5 9.4l6.6-.8z"/></svg>
+        <svg viewBox="0 0 24 24" data-star="match" aria-hidden="true"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3 6.1 20.6l1.3-6.6L2.5 9.4l6.6-.8z"/></svg>
+      </div>
+      <span id="counter" aria-live="polite">1 / 12</span>
+    </div>
+  </div>
+
+  <main class="stage">
+
+    <!-- 1 Cover -->
+    <section class="slide center" id="sl-cover" data-title="Selamat datang" role="group" aria-roledescription="slide">
+      <div class="win">
+        <div class="win-bar"><span>Rumahku.png - Paint</span><span class="win-btns" aria-hidden="true"><i></i><i></i><i></i></span></div>
+        <div class="menu" aria-hidden="true"><span>File</span><span class="cur">Home</span><span>View</span></div>
+        <div class="ribbon" aria-hidden="true">
+          <div class="grp"><div class="grp-body">
+            <span class="tile"><svg class="ic" viewBox="0 0 64 64" style="color:var(--yellow)"><use href="#i-pencil"/></svg></span>
+            <span class="tile"><svg class="ic" viewBox="0 0 64 64"><use href="#i-bucket"/></svg></span>
+            <span class="tile"><svg class="ic" viewBox="0 0 64 64"><use href="#i-eraser"/></svg></span>
+            <span class="tile"><svg class="ic" viewBox="0 0 64 64"><use href="#i-brush"/></svg></span>
+          </div><div class="grp-label">Tools</div></div>
+          <div class="grp"><div class="grp-body" style="max-width:190px">
+            <span class="dot" style="background:var(--red)"></span><span class="dot" style="background:var(--orange)"></span><span class="dot" style="background:var(--yellow)"></span><span class="dot" style="background:var(--green)"></span><span class="dot" style="background:var(--blue)"></span><span class="dot" style="background:var(--purple)"></span><span class="dot" style="background:var(--pink)"></span><span class="dot" style="background:#8B5E3C"></span>
+          </div><div class="grp-label">Colors</div></div>
+        </div>
+        <div class="win-body">
+          <div>
+            <h1>Ayo Menggambar di <span class="mark">Komputer</span>!</h1>
+            <p class="sub">Hari ini kita kenalan dengan Paint, kertas gambar di layar komputer.</p>
+          </div>
+          <div class="canvas-frame">
+            <svg viewBox="0 0 240 170" role="img" aria-label="Gambar rumah dengan matahari dan rumput">
+              <rect width="240" height="170" fill="#8FD3FF"/>
+              <rect y="128" width="240" height="42" fill="#7BDC5A"/>
+              <circle cx="200" cy="34" r="18" fill="#FFCF33" stroke="#1F2347" stroke-width="3"/>
+              <rect x="62" y="76" width="116" height="62" fill="#FFE28A" stroke="#1F2347" stroke-width="3" stroke-linejoin="round"/>
+              <polygon points="50,76 120,22 190,76" fill="#FF5F5F" stroke="#1F2347" stroke-width="3" stroke-linejoin="round"/>
+              <rect x="108" y="98" width="26" height="40" fill="#8B5E3C" stroke="#1F2347" stroke-width="3"/>
+              <rect x="74" y="90" width="24" height="24" fill="#4D8BFF" stroke="#1F2347" stroke-width="3"/>
+              <rect x="144" y="90" width="24" height="24" fill="#4D8BFF" stroke="#1F2347" stroke-width="3"/>
+              <path d="M0 128 H240" stroke="#1F2347" stroke-width="3"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <div class="start-row"><button class="btn blue big" type="button" data-next>Mulai belajar</button></div>
+    </section>
+
+    <!-- 2 Pemantik -->
+    <section class="slide center" id="sl-pemantik" data-title="Pertanyaan pemantik" role="group" aria-roledescription="slide">
+      <div class="bubble">
+        <span class="tag">Pertanyaan pemantik</span>
+        <p class="q">Pernahkah kalian menggambar di kertas? Tahukah kalian, kita juga bisa menggambar di <b>layar komputer</b> dengan aplikasi <b>Paint</b>?</p>
+      </div>
+      <p class="goals-head">Hari ini aku bisa</p>
+      <ul class="goals">
+        <li><span class="chk" style="--c:var(--blue)"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>Mengenal alat-alat di Paint</li>
+        <li><span class="chk" style="--c:var(--orange)"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>Menunjukkan pencil, eraser, dan fill with color</li>
+        <li><span class="chk" style="--c:var(--green)"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>Menggambar dengan benar dan kreatif</li>
+      </ul>
+    </section>
+
+    <!-- 3 Posture -->
+    <section class="slide" id="sl-posture" data-st="blue" data-title="Duduk yang nyaman" role="group" aria-roledescription="slide">
+      <div class="st-head">
+        <span class="badge">Bagian 1 · Belajar Tenang</span>
+        <h2>Duduk yang nyaman</h2>
+        <p>Mindful Learning. Badan tenang dan mata fokus, supaya kita siap belajar di depan komputer.</p>
+      </div>
+      <div class="card">
+        <p class="hint">Ketuk kartu setelah kamu melakukannya.</p>
+        <div class="posture">
+          <button type="button" aria-pressed="false"><span class="pi"><svg viewBox="0 0 32 32"><path d="M16 4v18M10 28h12M16 22l-6 6M16 22l6 6"/></svg></span>Punggung tegak</button>
+          <button type="button" aria-pressed="false"><span class="pi"><svg viewBox="0 0 32 32"><path d="M3 16c5-8 21-8 26 0-5 8-21 8-26 0z"/><circle cx="16" cy="16" r="3.5"/></svg></span>Mata ke layar</button>
+          <button type="button" aria-pressed="false"><span class="pi"><svg viewBox="0 0 32 32"><path d="M6 26h20M10 26V12h8l4 6v8"/></svg></span>Kaki di lantai</button>
+        </div>
+        <p class="msg" id="postureMsg" aria-live="polite">Ketuk setiap kartu setelah kamu melakukannya.</p>
+      </div>
+      <details class="tip"><summary>Panduan guru</summary><p>Minta murid duduk tenang, memusatkan perhatian ke layar IFP, dan mengatur posisi duduk yang ergonomis di depan komputer.</p></details>
+    </section>
+
+    <!-- 4 Breathing -->
+    <section class="slide" id="sl-breath" data-st="blue" data-title="Napas satu menit" role="group" aria-roledescription="slide">
+      <div class="st-head">
+        <span class="badge">Bagian 1 · Belajar Tenang</span>
+        <h2>Napas satu menit</h2>
+        <p>Ikuti lingkaran biru. Tarik napas saat membesar, buang napas saat mengecil.</p>
+      </div>
+      <div class="card">
+        <div class="breath-wrap">
+          <div class="breath-stage"><div class="breath" id="breath"><span id="breathText">Siap?</span></div></div>
+          <div class="breath-time" id="breathTime">1:00</div>
+          <button class="btn blue" id="breathBtn" type="button">Mulai napas</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5 Observe -->
+    <section class="slide" id="sl-observe" data-st="blue" data-title="Amati ikon Paint" role="group" aria-roledescription="slide">
+      <div class="st-head">
+        <span class="badge">Bagian 1 · Belajar Tenang</span>
+        <h2>Amati ikon-ikon Paint</h2>
+        <p>Lihat pelan-pelan. Ketuk satu ikon, lalu perhatikan bentuk dan warnanya.</p>
+      </div>
+      <div class="card">
+        <div class="observe">
+          <div class="otiles" id="otiles"></div>
+          <div class="spot" id="spot" aria-live="polite"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6 Demo cards -->
+    <section class="slide" id="sl-demos" data-st="orange" data-title="Kenalan dengan alat Paint" role="group" aria-roledescription="slide">
+      <div class="st-head">
+        <span class="badge">Bagian 2 · Belajar Seru</span>
+        <h2>Kenalan dengan alat Paint</h2>
+        <p>Joyful Learning. Ketuk kartu untuk melihat alat itu bekerja.</p>
+      </div>
+      <div class="demos">
+        <button class="demo" type="button" aria-label="Pencil: draws lines and pictures. Tap to see.">
+          <div class="stage-s"><svg viewBox="0 0 160 80" aria-hidden="true"><path class="stroke" d="M12 52 C30 14 48 78 68 38 S112 20 148 46" fill="none" stroke="#1F2347" stroke-width="3" stroke-linecap="round"/></svg></div>
+          <div class="dn"><span class="tile"><svg class="ic" viewBox="0 0 64 64" style="color:var(--yellow)"><use href="#i-pencil"/></svg></span><b>Pencil</b></div>
+          <div class="df">Draws lines and pictures.</div>
+        </button>
+        <button class="demo" type="button" aria-label="Brush: paints thick, soft color. Tap to see.">
+          <div class="stage-s"><svg viewBox="0 0 160 80" aria-hidden="true"><path class="stroke" d="M12 46 C40 70 60 20 90 44 S130 62 148 30" fill="none" stroke="#4D8BFF" stroke-width="11" stroke-linecap="round"/></svg></div>
+          <div class="dn"><span class="tile"><svg class="ic" viewBox="0 0 64 64"><use href="#i-brush"/></svg></span><b>Brush</b></div>
+          <div class="df">Paints thick, soft color.</div>
+        </button>
+        <button class="demo" type="button" aria-label="Eraser: removes parts you do not want. Tap to see.">
+          <div class="stage-s"><svg viewBox="0 0 160 80" aria-hidden="true"><path d="M14 40 C34 10 50 70 72 40 S110 10 146 40" fill="none" stroke="#FF5F5F" stroke-width="8" stroke-linecap="round"/><rect class="wipe" x="0" y="0" width="160" height="80" fill="#fff"/></svg></div>
+          <div class="dn"><span class="tile"><svg class="ic" viewBox="0 0 64 64"><use href="#i-eraser"/></svg></span><b>Eraser</b></div>
+          <div class="df">Removes the parts you don't want.</div>
+        </button>
+        <button class="demo" type="button" aria-label="Fill with color: fills a whole area with color. Tap to see.">
+          <div class="stage-s"><svg viewBox="0 0 160 80" aria-hidden="true"><g clip-path="url(#starClip)"><rect class="fillrect" x="0" y="0" width="160" height="80" fill="#3ED077"/></g><polygon points="80,6 91,31 118,34 98,52 104,78 80,64 56,78 62,52 42,34 69,31" fill="none" stroke="#1F2347" stroke-width="3" stroke-linejoin="round"/></svg></div>
+          <div class="dn"><span class="tile"><svg class="ic" viewBox="0 0 64 64"><use href="#i-bucket"/></svg></span><b>Fill with color</b></div>
+          <div class="df">Fills a whole area with color.</div>
+        </button>
+      </div>
+    </section>
+
+    <!-- 7 Game -->
+    <section class="slide" id="sl-game" data-st="orange" data-title="Tebak gambar" role="group" aria-roledescription="slide">
+      <div class="st-head">
+        <span class="badge">Bagian 2 · Belajar Seru</span>
+        <h2>Tebak gambar</h2>
+        <p>Siapa aku? Dengarkan petunjuknya, lalu ketuk jawabanmu.</p>
+      </div>
+      <div class="card">
+        <div class="game">
+          <div class="gstage sil" id="gstage"></div>
+          <div>
+            <div class="pips" id="pips" aria-label="Bintang"></div>
+            <p class="clue" id="clue"></p>
+            <div class="opts" id="opts"></div>
+            <p class="msg" id="gmsg" aria-live="polite"></p>
+            <button class="btn alt" id="gnext" type="button" hidden>Lanjut</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8 Draw -->
+    <section class="slide draw" id="sl-draw" data-st="orange" data-title="Menggambar imajinasimu" role="group" aria-roledescription="slide">
+      <div class="draw-bar">
+        <div class="timer">
+          <div class="timer-time" id="tTime" role="timer" aria-live="off">3:00</div>
+          <button class="btn orange sm" id="tStart" type="button">Mulai</button>
+          <button class="btn alt sm" id="tReset" type="button">Reset</button>
+          <button class="btn pink sm" id="music" type="button" aria-pressed="false">Musik</button>
+        </div>
+        <p class="sr-only" id="tMsg" aria-live="polite">Empat teman boleh menggambar bersamaan di layar.</p>
+        <button class="btn blue sm" id="drawNext" type="button">Lanjut</button>
+      </div>
+
+      <div class="paint">
+        <div class="canvas-area" id="canvasArea">
+          <div class="cwrap" id="cwrap">
+            <canvas id="cv" width="2400" height="1200" aria-label="Kertas gambar untuk menggambar bersama"></canvas>
+            <div class="over-hint" id="overHint">Ayo gambar imajinasimu<br>bersama kelompokmu!</div>
+          </div>
+        </div>
+        <div class="toolbar">
+          <div class="tgroup"><div class="tbody" role="group" aria-label="Tools">
+            <button class="tb" type="button" data-tool="pencil" aria-pressed="true"><svg viewBox="0 0 64 64" style="color:var(--yellow)" aria-hidden="true"><use href="#i-pencil"/></svg>Pencil</button>
+            <button class="tb" type="button" data-tool="brush" aria-pressed="false"><svg viewBox="0 0 64 64" aria-hidden="true"><use href="#i-brush"/></svg>Brush</button>
+            <button class="tb" type="button" data-tool="eraser" aria-pressed="false"><svg viewBox="0 0 64 64" aria-hidden="true"><use href="#i-eraser"/></svg>Eraser</button>
+            <button class="tb" type="button" data-tool="bucket" aria-pressed="false"><svg viewBox="0 0 64 64" aria-hidden="true"><use href="#i-bucket"/></svg>Fill with color</button>
+          </div></div>
+          <div class="tgroup"><div class="tbody" role="group" aria-label="Size">
+            <button class="sz" type="button" data-size="4" aria-pressed="false" aria-label="Small"><i style="width:6px;height:6px"></i></button>
+            <button class="sz" type="button" data-size="8" aria-pressed="true" aria-label="Medium"><i style="width:12px;height:12px"></i></button>
+            <button class="sz" type="button" data-size="16" aria-pressed="false" aria-label="Large"><i style="width:22px;height:22px"></i></button>
+          </div></div>
+          <div class="tgroup"><div class="swgrid" id="swatches" role="group" aria-label="Colors"></div></div>
+          <div class="tgroup grow">
+            <div class="stabs" id="stabs" role="group" aria-label="Sketch category"></div>
+            <div class="sk-list" id="skList" role="group" aria-label="Sketches"></div>
+          </div>
+          <div class="tgroup"><div class="tbody">
+            <button class="btn alt sm" type="button" id="undo">Undo</button>
+            <button class="btn alt sm" type="button" id="blank">Clear</button>
+          </div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 9 Match -->
+    <section class="slide" id="sl-match" data-st="green" data-title="Pasangkan alatnya" role="group" aria-roledescription="slide">
+      <div class="st-head">
+        <span class="badge">Bagian 3 · Belajar Bermakna</span>
+        <h2>Pasangkan alatnya</h2>
+        <p>Meaningful Learning. Ketuk satu alat di komputer, lalu ketuk pasangannya di dunia nyata.</p>
+      </div>
+      <div class="card">
+        <div class="match">
+          <div class="mcol"><h4>Di komputer</h4><div class="mcol" id="mleft"></div></div>
+          <div class="mcol"><h4>Di dunia nyata</h4><div class="mcol" id="mright"></div></div>
+        </div>
+        <p class="msg" id="mmsg" aria-live="polite">Pilih alat di komputer dulu.</p>
+      </div>
+    </section>
+
+    <!-- 10 Paper -->
+    <section class="slide" id="sl-paper" data-st="green" data-title="Hemat kertas" role="group" aria-roledescription="slide">
+      <div class="st-head">
+        <span class="badge">Bagian 3 · Belajar Bermakna</span>
+        <h2>Gambarnya salah. Bagaimana?</h2>
+        <p>Ketuk tombol dan lihat apa yang terjadi di kertas dan di komputer.</p>
+      </div>
+      <div class="card">
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn green" id="wrongBtn" type="button">Gambarku salah!</button>
+          <button class="btn alt" id="wrongReset" type="button">Ulangi</button>
+        </div>
+        <div class="cmp">
+          <div class="cmp-p">
+            <h4>Di kertas</h4>
+            <div class="cview" id="paperView" aria-hidden="true"></div>
+            <p class="count">Lembar kertas terpakai: <output id="paperCount">1</output></p>
+            <p class="hint" id="paperMsg">Kalau salah, kita perlu kertas baru.</p>
+          </div>
+          <div class="cmp-p">
+            <h4>Di komputer</h4>
+            <div class="cview" aria-hidden="true">
+              <div class="screen"><svg viewBox="0 0 200 120">
+                <rect x="50" y="52" width="100" height="56" fill="#FFE28A" stroke="#1F2347" stroke-width="4"/>
+                <polygon points="40,52 100,10 160,52" fill="#FF5F5F" stroke="#1F2347" stroke-width="4" stroke-linejoin="round"/>
+                <g class="mx" id="mx"><path d="M62 24 L138 100 M138 24 L62 100" stroke="#D63C3C" stroke-width="9" stroke-linecap="round"/></g>
+              </svg></div>
+            </div>
+            <p class="count">Lembar kertas terpakai: <output id="pcCount" style="color:var(--green)">0</output></p>
+            <p class="hint" id="pcMsg">Kalau salah, tekan Eraser.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 11 Presentasi -->
+    <section class="slide" id="sl-tell" data-st="green" data-title="Ceritakan gambarmu" role="group" aria-roledescription="slide">
+      <div class="st-head">
+        <span class="badge">Bagian 3 · Belajar Bermakna</span>
+        <h2>Ceritakan gambarmu</h2>
+        <p>Pilih satu teman atau kelompok untuk maju dan bercerita di depan kelas.</p>
+      </div>
+      <div class="card">
+        <div class="pick">
+          <div class="pick-num" id="pickNum" aria-live="polite">?</div>
+          <div class="pick-ctl">
+            <button class="btn pink" id="pickBtn" type="button">Pilih teman</button>
+            <label>Jumlah murid <input id="classSize" type="number" min="2" max="60" value="26" inputmode="numeric"></label>
+            <p class="hint" id="pickInfo">Sudah maju: 0 dari 26</p>
+            <button class="btn alt" id="pickReset" type="button">Mulai dari awal</button>
+          </div>
+        </div>
+        <p class="hint">Saat maju, ceritakan:</p>
+        <div class="say">
+          <div><span class="dot" style="background:var(--red)"></span>Apa yang kamu gambar?</div>
+          <div><span class="dot" style="background:var(--yellow)"></span>Warna apa yang kamu pakai?</div>
+          <div><span class="dot" style="background:var(--green)"></span>Alat Paint apa yang paling kamu suka?</div>
+          <div><span class="dot" style="background:var(--blue)"></span>Apa arti gambar ini untukmu?</div>
+        </div>
+      </div>
+      <details class="tip"><summary>Panduan guru</summary><p>Murid mempresentasikan hasil karya digital sederhana di depan kelas dan menceritakan makna gambar yang mereka buat.</p></details>
+    </section>
+
+    <!-- 12 Finish -->
+    <section class="slide center" id="sl-finish" data-title="Hebat!" role="group" aria-roledescription="slide">
+      <div class="finish">
+        <h2>Hebat! Kamu sudah mengenal Paint</h2>
+        <p>Di rumah, coba buka Paint bersama orang tuamu.</p>
+        <div class="big" aria-live="polite"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3 6.1 20.6l1.3-6.6L2.5 9.4l6.6-.8z"/></svg><span id="starCount">0</span> dari 3</div>
+        <button class="btn alt big" type="button" data-first>Ulangi dari awal</button>
+      </div>
+    </section>
+
+  </main>
+
+  <div class="controls">
+    <button class="btn alt" id="prev" type="button">Kembali</button>
+    <div class="dots" id="dots" aria-label="Pilih slide"></div>
+    <button class="btn blue" id="next" type="button">Lanjut</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var ico = function (id, color) {
+    return '<svg class="ic" viewBox="0 0 64 64" aria-hidden="true"' + (color ? ' style="color:' + color + '"' : "") + '><use href="#' + id + '"/></svg>';
+  };
+  var STAR = '<path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3 6.1 20.6l1.3-6.6L2.5 9.4l6.6-.8z"/>';
+
+  /* ---------- deck ---------- */
+  var slides = $$(".slide"), N = slides.length, cur = -1;
+  var dotsEl = $("#dots"), prevB = $("#prev"), nextB = $("#next"), topTitle = $("#topTitle"), counter = $("#counter");
+  var stColor = { blue: "var(--blue)", orange: "var(--orange)", green: "var(--green)" };
+  var hooks = { enter: {}, leave: {} };
+  slides.forEach(function (s, i) {
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "pdot";
+    b.style.setProperty("--dc", stColor[s.getAttribute("data-st")] || "var(--purple)");
+    b.setAttribute("aria-label", "Slide " + (i + 1) + ": " + s.getAttribute("data-title"));
+    b.addEventListener("click", function () { go(i); });
+    dotsEl.appendChild(b);
+  });
+  function go(i, fromHash) {
+    if (i < 0 || i >= N || i === cur) return;
+    if (cur >= 0) {
+      var lv = hooks.leave[slides[cur].id];
+      if (lv) lv();
+      slides[cur].classList.remove("on");
+    }
+    cur = i;
+    var s = slides[i];
+    s.classList.add("on"); s.scrollTop = 0;
+    $$(".pdot").forEach(function (d, j) { d.classList.toggle("cur", j === i); });
+    topTitle.textContent = s.getAttribute("data-title");
+    counter.textContent = (i + 1) + " / " + N;
+    prevB.disabled = i === 0;
+    nextB.textContent = i === N - 1 ? "Dari awal" : "Lanjut";
+    if (!fromHash) { try { if (location.hash !== "#slide-" + (i + 1)) location.hash = "slide-" + (i + 1); } catch (e) {} }
+    var en = hooks.enter[s.id];
+    if (en) en();
+  }
+  prevB.addEventListener("click", function () { go(cur - 1); });
+  nextB.addEventListener("click", function () { go(cur === N - 1 ? 0 : cur + 1); });
+  $$("[data-next]").forEach(function (b) { b.addEventListener("click", function () { go(cur + 1); }); });
+  $$("[data-first]").forEach(function (b) { b.addEventListener("click", function () { go(0); }); });
+  document.addEventListener("keydown", function (e) {
+    var t = e.target && e.target.tagName;
+    if (t === "INPUT" || t === "TEXTAREA") return;
+    if (e.key === "ArrowRight" || e.key === "PageDown") go(Math.min(cur + 1, N - 1));
+    else if (e.key === "ArrowLeft" || e.key === "PageUp") go(Math.max(cur - 1, 0));
+  });
+  window.addEventListener("hashchange", function () {
+    var m = /^#slide-(\d+)$/.exec(location.hash);
+    if (m) go(+m[1] - 1, true);
+  });
+
+  /* ---------- start gate + fullscreen ---------- */
+  var gate = $("#startGate"), startBtn = $("#startBtn");
+  function goFullscreen() {
+    var el = document.documentElement;
+    var rf = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
+    if (!rf) return;
+    try {
+      var p = rf.call(el, { navigationUI: "hide" });
+      if (p && p.catch) p.catch(function () {});
+    } catch (err) {}
+  }
+  function beginLesson() {
+    goFullscreen();
+    gate.classList.add("hide");
+    if (cur !== 0) go(0);
+    try { location.hash = "slide-1"; } catch (e) {}
+  }
+  startBtn.addEventListener("click", beginLesson);
+  startBtn.addEventListener("keydown", function (e) { if (e.key === "Enter") beginLesson(); });
+
+  /* ---------- progress ---------- */
+  var done = { calm: false, game: false, match: false };
+  function markDone(k) {
+    if (done[k]) return;
+    done[k] = true;
+    var s = $('[data-star="' + k + '"]');
+    if (s) s.classList.add("on");
+    $("#starCount").textContent = Object.keys(done).filter(function (x) { return done[x]; }).length;
+  }
+
+  /* ---------- audio ---------- */
+  var actx = null;
+  function ensureAudio() {
+    try {
+      if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
+      if (actx.state === "suspended") actx.resume();
+    } catch (err) { actx = null; }
+    return actx;
+  }
+  function tone(f, dur, vol, type, delay) {
+    if (!actx) return;
+    var t = actx.currentTime + (delay || 0), o = actx.createOscillator(), g = actx.createGain();
+    o.type = type; o.frequency.value = f;
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(vol, t + 0.04);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g); g.connect(actx.destination);
+    o.start(t); o.stop(t + dur + 0.05);
+  }
+
+  /* ---------- posture ---------- */
+  $$(".posture button").forEach(function (b) {
+    b.addEventListener("click", function () {
+      b.classList.toggle("on");
+      b.setAttribute("aria-pressed", b.classList.contains("on"));
+      var all = $$(".posture button").every(function (x) { return x.classList.contains("on"); });
+      $("#postureMsg").textContent = all ? "Siap! Badanmu sudah duduk dengan nyaman." : "Ketuk setiap kartu setelah kamu melakukannya.";
+    });
+  });
+
+  /* ---------- breathing ---------- */
+  var br = $("#breath"), brText = $("#breathText"), brTime = $("#breathTime"), brBtn = $("#breathBtn"), brTimer = null;
+  function setTime(s) { brTime.textContent = Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); }
+  function stopBreath(finished) {
+    clearInterval(brTimer); brTimer = null;
+    br.style.transform = "scale(1)";
+    brBtn.textContent = finished ? "Ulangi" : "Mulai napas";
+    brText.textContent = finished ? "Bagus! Kamu tenang." : "Siap?";
+    setTime(60);
+    if (finished) markDone("calm");
+  }
+  brBtn.addEventListener("click", function () {
+    if (brTimer) { stopBreath(false); return; }
+    var e = 0;
+    brBtn.textContent = "Berhenti";
+    function step() {
+      if (e >= 60) { stopBreath(true); return; }
+      var inhale = Math.floor(e / 4) % 2 === 0;
+      brText.textContent = inhale ? "Tarik napas..." : "Buang napas...";
+      br.style.transform = inhale ? "scale(1.35)" : "scale(0.85)";
+      setTime(60 - e);
+      e++;
+    }
+    step();
+    brTimer = setInterval(step, 1000);
+  });
+  hooks.leave["sl-breath"] = function () { if (brTimer) stopBreath(false); };
+
+  /* ---------- observe icons ---------- */
+  var tools = [
+    { id: "i-pencil", color: "var(--yellow)", name: "Pencil", shape: "Bentuknya panjang, ujungnya runcing seperti segitiga kecil.", cols: ["#FFCF33", "#FF8FB8", "#F3C98B"] },
+    { id: "i-eraser", name: "Eraser", shape: "Bentuknya kotak yang miring dan sudutnya membulat.", cols: ["#FF8FB8", "#4D8BFF"] },
+    { id: "i-bucket", name: "Fill with color", shape: "Seperti ember, dengan pegangan melengkung dan satu tetes cat.", cols: ["#4D8BFF", "#FF5F5F"] },
+    { id: "i-brush", name: "Brush", shape: "Gagangnya panjang, ujungnya lembut seperti rambut kecil.", cols: ["#FF9F43", "#4D8BFF"] },
+    { id: "i-palette", name: "Colors", shape: "Bulat lonjong dengan banyak titik warna.", cols: ["#FF5F5F", "#FFCF33", "#3ED077", "#4D8BFF"] }
+  ];
+  var otiles = $("#otiles"), spot = $("#spot");
+  tools.forEach(function (t, i) {
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "otile"; b.setAttribute("aria-label", t.name);
+    b.innerHTML = ico(t.id, t.color);
+    b.addEventListener("click", function () { showTool(i); });
+    otiles.appendChild(b);
+  });
+  function showTool(i) {
+    var t = tools[i];
+    $$(".otile").forEach(function (b, j) { b.setAttribute("aria-pressed", j === i); });
+    spot.innerHTML = '<div class="big">' + ico(t.id, t.color) + "</div><h4>" + t.name + "</h4><p>" + t.shape + '</p><div class="cols">' +
+      t.cols.map(function (c) { return '<span class="dot" style="background:' + c + '"></span>'; }).join("") +
+      '</div><p class="hint">Ada ' + t.cols.length + " warna. Bisakah kamu menyebutkannya?</p>";
+  }
+  showTool(0);
+
+  /* ---------- demo cards ---------- */
+  function play(c) { c.classList.remove("play"); void c.offsetWidth; c.classList.add("play"); }
+  $$(".demo").forEach(function (c) { c.addEventListener("click", function () { play(c); }); });
+  hooks.enter["sl-demos"] = function () {
+    if (reduce) return;
+    $$(".demo").forEach(function (c, i) { setTimeout(function () { play(c); }, 250 + i * 350); });
+  };
+
+  /* ---------- guess game (tool names in English) ---------- */
+  var rounds = [
+    { id: "i-pencil", color: "var(--yellow)", clue: "Aku bisa membuat garis dan gambar. Siapa aku?", opts: ["Pencil", "Eraser", "Fill with color"], ans: "Pencil" },
+    { id: "i-eraser", clue: "Aku menghapus bagian gambar yang salah. Siapa aku?", opts: ["Fill with color", "Eraser", "Pencil"], ans: "Eraser" },
+    { id: "i-bucket", clue: "Aku mewarnai satu bidang sekaligus. Siapa aku?", opts: ["Pencil", "Fill with color", "Eraser"], ans: "Fill with color" }
+  ];
+  var ri = 0, score = 0, missed = false, answered = false;
+  var gstage = $("#gstage"), clue = $("#clue"), opts = $("#opts"), gmsg = $("#gmsg"), gnext = $("#gnext"), pips = $("#pips");
+  function renderPips(stars) {
+    pips.innerHTML = rounds.map(function (r, i) {
+      return '<svg class="pip' + (i < stars ? " on" : "") + '" viewBox="0 0 24 24" aria-hidden="true">' + STAR + "</svg>";
+    }).join("");
+  }
+  function renderRound() {
+    var r = rounds[ri];
+    missed = false; answered = false;
+    gstage.className = "gstage sil";
+    gstage.innerHTML = ico(r.id, r.color);
+    clue.textContent = r.clue;
+    gmsg.textContent = "Ketuk jawabanmu.";
+    gnext.hidden = true;
+    opts.innerHTML = "";
+    r.opts.forEach(function (o) {
+      var b = document.createElement("button");
+      b.type = "button"; b.className = "btn"; b.textContent = o;
+      b.addEventListener("click", function () {
+        if (answered) return;
+        if (o === r.ans) {
+          answered = true;
+          if (!missed) score++;
+          b.classList.add("ok");
+          gstage.classList.remove("sil");
+          gmsg.textContent = "Benar! Jawabannya " + r.ans + ".";
+          renderPips(score);
+          gnext.textContent = ri < rounds.length - 1 ? "Lanjut" : "Lihat bintangku";
+          gnext.hidden = false;
+        } else {
+          missed = true;
+          b.classList.remove("no"); void b.offsetWidth; b.classList.add("no");
+          gmsg.textContent = "Hampir! Coba lagi ya.";
+        }
+      });
+      opts.appendChild(b);
+    });
+  }
+  gnext.addEventListener("click", function () {
+    if (ri < rounds.length - 1) { ri++; renderRound(); return; }
+    gstage.className = "gstage";
+    gstage.innerHTML = '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="fill:var(--yellow);stroke:#1F2347;stroke-width:1.2;stroke-linejoin:round">' + STAR + "</svg>";
+    clue.textContent = "Selesai! Kamu mendapat " + score + " bintang dari 3.";
+    opts.innerHTML = "";
+    var again = document.createElement("button");
+    again.type = "button"; again.className = "btn alt"; again.textContent = "Main lagi";
+    again.addEventListener("click", function () { ri = 0; score = 0; renderPips(0); renderRound(); });
+    opts.appendChild(again);
+    gmsg.textContent = score === 3 ? "Hebat sekali, semuanya benar!" : "Bagus! Kita bisa main lagi.";
+    gnext.hidden = true;
+    markDone("game");
+  });
+  renderPips(0); renderRound();
+
+  /* ---------- collaborative canvas ---------- */
+  var cv = $("#cv"), ctx = cv.getContext("2d", { willReadFrequently: true });
+  var W = cv.width, H = cv.height;
+  var area = $("#canvasArea"), overHint = $("#overHint");
+
+  function petalPaths() {
+    var base = [[0, 0], [-12, -12], [-10, -30], [0, -30], [10, -30], [12, -12], [0, 0]], out = [];
+    for (var i = 0; i < 5; i++) {
+      var a = i * 72 * Math.PI / 180, c = Math.cos(a), s = Math.sin(a);
+      var q = base.map(function (p) {
+        return (50 + p[0] * c - p[1] * s).toFixed(1) + " " + (40 + p[0] * s + p[1] * c).toFixed(1);
+      });
+      out.push("M" + q[0] + " C" + q[1] + " " + q[2] + " " + q[3] + " C" + q[4] + " " + q[5] + " " + q[6] + "Z");
+    }
+    return out;
+  }
+  var sketches = [
+    { id: "cat", cat: "animals", name: "Kucing", d: [
+      "M20 40 L22 12 L40 26 Q50 22 60 26 L78 12 L80 40 Q90 55 80 72 Q70 90 50 90 Q30 90 20 72 Q10 55 20 40Z",
+      "M36 50 a4 4 0 1 0 8 0 a4 4 0 1 0 -8 0Z", "M56 50 a4 4 0 1 0 8 0 a4 4 0 1 0 -8 0Z",
+      "M46 62 L54 62 L50 68Z", "M50 68 Q44 76 38 72 M50 68 Q56 76 62 72"] },
+    { id: "fish", cat: "animals", name: "Ikan", d: [
+      "M8 50 Q30 22 60 34 Q76 40 82 50 Q76 60 60 66 Q30 78 8 50Z",
+      "M80 50 L96 32 Q92 50 96 68Z", "M24 46 a3 3 0 1 0 6 0 a3 3 0 1 0 -6 0Z", "M52 36 Q56 24 66 38"] },
+    { id: "butterfly", cat: "animals", name: "Kupu-kupu", d: [
+      "M46 48 C30 10 6 14 10 38 C12 52 34 54 46 52Z", "M54 48 C70 10 94 14 90 38 C88 52 66 54 54 52Z",
+      "M46 54 C28 56 14 70 22 84 C32 94 44 76 46 62Z", "M54 54 C72 56 86 70 78 84 C68 94 56 76 54 62Z",
+      "M50 36 Q44 50 50 78 Q56 50 50 36Z", "M50 36 Q44 22 38 18 M50 36 Q56 22 62 18"] },
+    { id: "bird", cat: "animals", name: "Burung", d: [
+      "M16 64 Q16 40 40 40 Q44 40 46 38 Q46 20 62 20 Q78 20 78 36 L92 40 L78 46 Q80 70 54 80 Q30 88 16 64Z",
+      "M30 58 Q44 44 60 58 Q48 72 30 58Z", "M62 32 a3 3 0 1 0 6 0 a3 3 0 1 0 -6 0Z", "M16 60 L2 54 L6 70 L18 70Z"] },
+    { id: "flower", cat: "plants", name: "Bunga", d: petalPaths().concat([
+      "M41 40 a9 9 0 1 0 18 0 a9 9 0 1 0 -18 0Z", "M50 49 L50 98", "M50 80 Q72 68 82 80 Q68 92 50 86Z"]) },
+    { id: "tree", cat: "plants", name: "Pohon", d: [
+      "M50 8 Q80 8 80 34 Q80 62 50 62 Q20 62 20 34 Q20 8 50 8Z", "M42 62 L42 94 L58 94 L58 62",
+      "M36 30 a4 4 0 1 0 8 0 a4 4 0 1 0 -8 0Z", "M56 40 a4 4 0 1 0 8 0 a4 4 0 1 0 -8 0Z", "M48 20 a4 4 0 1 0 8 0 a4 4 0 1 0 -8 0Z"] },
+    { id: "leaf", cat: "plants", name: "Daun", d: [
+      "M50 6 Q90 30 82 66 Q72 90 50 94 Q28 90 18 66 Q10 30 50 6Z", "M50 10 L50 90", "M50 40 L68 28 M50 58 L72 46 M50 40 L32 28 M50 58 L28 46"] },
+    { id: "star", cat: "deco", name: "Bintang", d: [
+      "M50 8 L60.6 37.4 L91.8 38.4 L67.1 57.6 L75.9 87.6 L50 70 L24.1 87.6 L32.9 57.6 L8.2 38.4 L39.4 37.4Z"] },
+    { id: "heart", cat: "deco", name: "Hati", d: [
+      "M50 90 C10 60 6 34 22 22 C36 12 48 22 50 32 C52 22 64 12 78 22 C94 34 90 60 50 90Z"] },
+    { id: "cloud", cat: "deco", name: "Awan", d: [
+      "M26 74 Q8 74 10 58 Q12 44 28 46 Q30 26 52 26 Q70 24 74 42 Q92 42 92 58 Q92 74 76 74Z"] },
+    { id: "balloon", cat: "deco", name: "Balon", d: [
+      "M50 8 Q82 8 82 38 Q82 62 50 72 Q18 62 18 38 Q18 8 50 8Z", "M50 72 L44 82 L56 82Z", "M50 82 Q40 90 52 96"] },
+    { id: "sun", cat: "deco", name: "Matahari", d: [
+      "M30 50 a20 20 0 1 0 40 0 a20 20 0 1 0 -40 0Z",
+      "M50 6 L50 20 M50 80 L50 94 M6 50 L20 50 M80 50 L94 50 M19 19 L29 29 M71 71 L81 81 M81 19 L71 29 M19 81 L29 71"] }
+  ];
+  var sketchMap = {};
+  sketches.forEach(function (s) { sketchMap[s.id] = s; });
+
+  var palette = [
+    ["#1F2347", "Hitam"], ["#FF5F5F", "Merah"], ["#FF9F43", "Jingga"], ["#FFCF33", "Kuning"], ["#3ED077", "Hijau"],
+    ["#8FD3FF", "Biru muda"], ["#4D8BFF", "Biru"], ["#9B6BFF", "Ungu"], ["#FF78B8", "Merah muda"], ["#8B5E3C", "Cokelat"]
+  ];
+  var tool = "pencil", color = "#FF5F5F", size = 8, stampId = null, curCat = "animals";
+  var actions = [], pointers = {};
+  var stampSizes = { 4: 250, 8: 350, 16: 500 };
+
+  var sw = $("#swatches");
+  palette.forEach(function (p, i) {
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "sw"; b.style.background = p[0]; b.setAttribute("aria-label", p[1]);
+    b.setAttribute("aria-pressed", i === 1);
+    b.addEventListener("click", function () {
+      color = p[0];
+      $$(".sw").forEach(function (x) { x.setAttribute("aria-pressed", x === b); });
+      if (tool === "eraser") setTool("pencil");
+    });
+    sw.appendChild(b);
+  });
+
+  var cats = [["animals", "Hewan"], ["plants", "Tumbuhan"], ["deco", "Pernak-pernik"]];
+  var stabs = $("#stabs"), skList = $("#skList");
+  function sketchSvg(s) {
+    return '<svg viewBox="0 0 100 100" aria-hidden="true" fill="#fff" stroke="#1F2347" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round">' +
+      s.d.map(function (d) { return '<path d="' + d + '"/>'; }).join("") + "</svg>";
+  }
+  function renderSketchList() {
+    $$(".stab", stabs).forEach(function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-cat") === curCat); });
+    skList.innerHTML = "";
+    sketches.filter(function (s) { return s.cat === curCat; }).forEach(function (s) {
+      var b = document.createElement("button");
+      b.type = "button"; b.className = "skb"; b.setAttribute("data-id", s.id);
+      b.setAttribute("aria-pressed", tool === "stamp" && stampId === s.id);
+      b.setAttribute("aria-label", "Sketsa " + s.name);
+      b.innerHTML = sketchSvg(s) + "<span>" + s.name + "</span>";
+      b.addEventListener("click", function () { stampId = s.id; setTool("stamp"); });
+      skList.appendChild(b);
+    });
+  }
+  cats.forEach(function (c) {
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "stab"; b.setAttribute("data-cat", c[0]); b.textContent = c[1];
+    b.addEventListener("click", function () { curCat = c[0]; renderSketchList(); });
+    stabs.appendChild(b);
+  });
+  function setTool(t) {
+    tool = t;
+    $$(".tb").forEach(function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-tool") === t); });
+    $$(".skb").forEach(function (b) { b.setAttribute("aria-pressed", t === "stamp" && b.getAttribute("data-id") === stampId); });
+    cv.style.cursor = t === "bucket" ? "cell" : t === "stamp" ? "copy" : "crosshair";
+  }
+  renderSketchList();
+  $$(".tb").forEach(function (b) { b.addEventListener("click", function () { setTool(b.getAttribute("data-tool")); }); });
+  $$(".sz").forEach(function (b) {
+    b.addEventListener("click", function () {
+      size = +b.getAttribute("data-size");
+      $$(".sz").forEach(function (x) { x.setAttribute("aria-pressed", x === b); });
+    });
+  });
+
+  function fitCanvas() {
+    // CSS handles the stretching. No JS needed for resizing the element.
+  }
+  if (window.ResizeObserver) new ResizeObserver(fitCanvas).observe(area);
+  window.addEventListener("resize", fitCanvas);
+  document.addEventListener("fullscreenchange", function () { setTimeout(fitCanvas, 120); });
+  hooks.enter["sl-draw"] = function () {
+    fitCanvas();
+    requestAnimationFrame(fitCanvas);
+    setTimeout(fitCanvas, 150);
+  };
+
+  function pos(e) {
+    var r = cv.getBoundingClientRect();
+    return { x: (e.clientX - r.left) * W / r.width, y: (e.clientY - r.top) * H / r.height };
+  }
+  function hexRgb(h) { return [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)]; }
+  function fillAt(px, py, hex) {
+    var x0 = Math.max(0, Math.min(W - 1, Math.floor(px))), y0 = Math.max(0, Math.min(H - 1, Math.floor(py)));
+    var img = ctx.getImageData(0, 0, W, H), d = img.data;
+    var i0 = (y0 * W + x0) * 4, tr = d[i0], tg = d[i0 + 1], tb = d[i0 + 2];
+    var f = hexRgb(hex);
+    if (Math.abs(tr - f[0]) + Math.abs(tg - f[1]) + Math.abs(tb - f[2]) < 12) return;
+    var tol = 60, mask = new Uint8Array(W * H), stack = [y0 * W + x0], list = [];
+    mask[y0 * W + x0] = 1;
+    while (stack.length) {
+      var p = stack.pop(); list.push(p);
+      var x = p % W, y = (p - x) / W, n;
+      var nb = [x > 0 ? p - 1 : -1, x < W - 1 ? p + 1 : -1, y > 0 ? p - W : -1, y < H - 1 ? p + W : -1];
+      for (var k = 0; k < 4; k++) {
+        n = nb[k];
+        if (n < 0 || mask[n]) continue;
+        var j = n * 4;
+        if (Math.abs(d[j] - tr) + Math.abs(d[j + 1] - tg) + Math.abs(d[j + 2] - tb) <= tol) { mask[n] = 1; stack.push(n); }
+      }
+    }
+    var edge = [];
+    for (var a = 0; a < list.length; a++) {
+      var q = list[a], qx = q % W, qy = (q - qx) / W;
+      var nn = [qx > 0 ? q - 1 : -1, qx < W - 1 ? q + 1 : -1, qy > 0 ? q - W : -1, qy < H - 1 ? q + W : -1];
+      for (var m = 0; m < 4; m++) {
+        var z = nn[m];
+        if (z < 0 || mask[z]) continue;
+        var o = z * 4;
+        if (d[o] * 0.3 + d[o + 1] * 0.59 + d[o + 2] * 0.11 > 100) { mask[z] = 2; edge.push(z); }
+      }
+    }
+    list = list.concat(edge);
+    for (var u = 0; u < list.length; u++) {
+      var w = list[u] * 4;
+      d[w] = f[0]; d[w + 1] = f[1]; d[w + 2] = f[2]; d[w + 3] = 255;
+    }
+    ctx.putImageData(img, 0, 0);
+  }
+  function strokeSeg(act, x1, y1, x2, y2) {
+    ctx.strokeStyle = act.tool === "eraser" ? "#ffffff" : act.c;
+    ctx.lineWidth = act.w; ctx.lineCap = "round"; ctx.lineJoin = "round";
+    ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+  }
+  function drawStamp(act) {
+    var sk = sketchMap[act.id];
+    if (!sk) return;
+    var k = act.s / 100;
+    ctx.save();
+    ctx.translate(act.x - act.s / 2, act.y - act.s / 2);
+    ctx.scale(k, k);
+    ctx.lineWidth = 5 / k; ctx.lineJoin = "round"; ctx.lineCap = "round"; ctx.strokeStyle = "#1F2347";
+    sk.d.forEach(function (d) { ctx.stroke(new Path2D(d)); });
+    ctx.restore();
+  }
+  function blankCanvas() { ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, W, H); }
+  function render() {
+    blankCanvas();
+    actions.forEach(function (a) {
+      if (a.t === "stroke") {
+        var p = a.pts;
+        strokeSeg(a, p[0], p[1], p[0] + 0.01, p[1]);
+        for (var i = 2; i < p.length; i += 2) strokeSeg(a, p[i - 2], p[i - 1], p[i], p[i + 1]);
+      } else if (a.t === "fill") fillAt(a.x, a.y, a.c);
+      else if (a.t === "stamp") drawStamp(a);
+    });
+  }
+  function strokeWidth() {
+    if (tool === "eraser") return (size * 3 + 8) * 1.5;
+    if (tool === "brush") return size * 2.5 * 1.5;
+    return size * 1.5;
+  }
+  function dismissHint() { if (overHint) { overHint.hidden = true; } }
+  blankCanvas();
+
+  cv.addEventListener("pointerdown", function (e) {
+    e.preventDefault();
+    dismissHint();
+    var p = pos(e), act;
+    if (tool === "bucket") {
+      act = { t: "fill", x: p.x, y: p.y, c: color }; actions.push(act); fillAt(p.x, p.y, color); return;
+    }
+    if (tool === "stamp") {
+      if (!stampId) return;
+      act = { t: "stamp", id: stampId, x: p.x, y: p.y, s: stampSizes[size] || 350 }; actions.push(act); drawStamp(act); return;
+    }
+    act = { t: "stroke", tool: tool, c: color, w: strokeWidth(), pts: [p.x, p.y] };
+    actions.push(act);
+    pointers[e.pointerId] = { act: act, x: p.x, y: p.y };
+    try { cv.setPointerCapture(e.pointerId); } catch (err) {}
+    strokeSeg(act, p.x, p.y, p.x + 0.01, p.y);
+  });
+  cv.addEventListener("pointermove", function (e) {
+    var st = pointers[e.pointerId];
+    if (!st) return;
+    var p = pos(e);
+    strokeSeg(st.act, st.x, st.y, p.x, p.y);
+    st.act.pts.push(p.x, p.y);
+    st.x = p.x; st.y = p.y;
+  });
+  function endPointer(e) { delete pointers[e.pointerId]; }
+  cv.addEventListener("pointerup", endPointer);
+  cv.addEventListener("pointercancel", endPointer);
+  cv.addEventListener("lostpointercapture", endPointer);
+
+  $("#undo").addEventListener("click", function () {
+    if (Object.keys(pointers).length) return;
+    actions.pop(); render();
+  });
+  $("#blank").addEventListener("click", function () {
+    if (Object.keys(pointers).length) return;
+    actions = []; render();
+    if (overHint) overHint.hidden = false;
+  });
+  $("#drawNext").addEventListener("click", function () { go(cur + 1); });
+
+  /* ---------- timer ---------- */
+  var tLeft = 180, tRun = null, tBtn = $("#tStart"), tDisp = $("#tTime"), tMsg = $("#tMsg");
+  function fmtT(s) { return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); }
+  function tShow() { tDisp.textContent = fmtT(tLeft); tDisp.classList.toggle("low", tLeft > 0 && tLeft <= 30); }
+  tBtn.addEventListener("click", function () {
+    if (tRun) { clearInterval(tRun); tRun = null; tBtn.textContent = "Lanjut"; return; }
+    if (tLeft <= 0) tLeft = 180;
+    ensureAudio();
+    tBtn.textContent = "Jeda";
+    tMsg.textContent = "Ayo gambar bersama! Saling bantu ya.";
+    tShow();
+    tRun = setInterval(function () {
+      tLeft--; tShow();
+      if (tLeft <= 0) {
+        clearInterval(tRun); tRun = null;
+        tBtn.textContent = "Mulai";
+        tMsg.textContent = "Waktu habis! Ayo lihat dan ceritakan karya kelompokmu.";
+        tone(523.25, 0.5, 0.12, "triangle", 0); tone(659.25, 0.5, 0.12, "triangle", 0.3); tone(783.99, 0.9, 0.12, "triangle", 0.6);
+      }
+    }, 1000);
+  });
+  $("#tReset").addEventListener("click", function () {
+    clearInterval(tRun); tRun = null; tLeft = 180; tShow();
+    tBtn.textContent = "Mulai";
+    tMsg.textContent = "Empat teman boleh menggambar bersamaan di layar.";
+  });
+
+  /* ---------- music ---------- */
+  var musicOn = false, mTimer = null, mStep = 0;
+  var scale = [261.63, 293.66, 329.63, 392.0, 440.0, 523.25, 587.33];
+  var seq = [0, 2, 4, 2, 5, 4, 2, 1, 0, 2, 4, 5, 6, 5, 4, 2];
+  function tick() {
+    var f = scale[seq[mStep % seq.length]];
+    tone(f, 0.7, 0.07, "triangle");
+    if (mStep % 4 === 0) tone(f / 2, 1.4, 0.05, "sine");
+    mStep++;
+  }
+  var musicBtn = $("#music");
+  function setMusic(on) {
+    musicOn = on;
+    musicBtn.setAttribute("aria-pressed", on);
+    musicBtn.textContent = on ? "Musik ON" : "Musik";
+    clearInterval(mTimer);
+    if (on) { tick(); mTimer = setInterval(tick, 480); }
+  }
+  musicBtn.addEventListener("click", function () {
+    if (!ensureAudio()) return;
+    setMusic(!musicOn);
+  });
+  hooks.leave["sl-draw"] = function () { if (musicOn) setMusic(false); };
+
+  /* ---------- matching (English left, Indonesian right) ---------- */
+  var pairs = [
+    { k: "pencil", d: "Pencil", di: "i-pencil", dc: "var(--yellow)", ri: "r-pencils", rn: "Pensil warna", why: "Sama-sama dipakai untuk membuat garis dan gambar." },
+    { k: "brush", d: "Brush", di: "i-brush", ri: "r-brush", rn: "Kuas lukis", why: "Sama-sama menyapukan warna dengan lembut." },
+    { k: "eraser", d: "Eraser", di: "i-eraser", ri: "r-eraser", rn: "Karet penghapus", why: "Sama-sama menghapus bagian yang salah." },
+    { k: "bucket", d: "Fill with color", di: "i-bucket", ri: "r-can", rn: "Kaleng cat", why: "Sama-sama mewarnai bidang yang luas." }
+  ];
+  var mleft = $("#mleft"), mright = $("#mright"), mmsg = $("#mmsg"), selL = null, matched = 0;
+  function mk(p, side) {
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "mt" + (side === "r" ? " real" : ""); b.setAttribute("data-k", p.k);
+    b.innerHTML = '<span class="mi">' + (side === "l" ? ico(p.di, p.dc) : ico(p.ri)) + "</span><span>" +
+      (side === "l" ? p.d : p.rn) + "</span>";
+    return b;
+  }
+  pairs.forEach(function (p) {
+    var b = mk(p, "l");
+    b.addEventListener("click", function () {
+      if (b.classList.contains("ok")) return;
+      $$(".mt.sel", mleft).forEach(function (x) { x.classList.remove("sel"); });
+      b.classList.add("sel"); selL = p.k;
+      mmsg.textContent = "Sekarang cari pasangan " + p.d + " di dunia nyata.";
+    });
+    mleft.appendChild(b);
+  });
+  [2, 3, 0, 1].forEach(function (idx) {
+    var p = pairs[idx], b = mk(p, "r");
+    b.addEventListener("click", function () {
+      if (b.classList.contains("ok")) return;
+      if (!selL) { mmsg.textContent = "Pilih alat di komputer dulu."; return; }
+      if (selL === p.k) {
+        var l = $('.mt[data-k="' + p.k + '"]', mleft);
+        l.classList.remove("sel"); l.classList.add("ok"); b.classList.add("ok");
+        selL = null; matched++;
+        mmsg.textContent = "Cocok! " + p.d + " dan " + p.rn.toLowerCase() + ". " + p.why;
+        if (matched === pairs.length) { mmsg.textContent += " Hebat, semua alat sudah berpasangan!"; markDone("match"); }
+      } else {
+        b.classList.remove("bad"); void b.offsetWidth; b.classList.add("bad");
+        mmsg.textContent = "Belum cocok. Coba lagi ya.";
+      }
+    });
+    mright.appendChild(b);
+  });
+
+  /* ---------- paper vs computer ---------- */
+  var wrongs = 0, paperView = $("#paperView"), mx = $("#mx"), mxTimer = null;
+  var sheetSvg = function (bad) {
+    return '<svg viewBox="0 0 96 120"><rect x="22" y="58" width="52" height="34" fill="#FFE28A" stroke="#1F2347" stroke-width="3"/><polygon points="16,58 48,30 80,58" fill="#FF5F5F" stroke="#1F2347" stroke-width="3" stroke-linejoin="round"/>' +
+      (bad ? '<path d="M18 22 L78 100 M78 22 L18 100" stroke="#D63C3C" stroke-width="7" stroke-linecap="round"/>' : "") + "</svg>";
+  };
+  function renderPaper() {
+    var n = Math.min(wrongs + 1, 5), html = "";
+    for (var i = 0; i < n; i++) {
+      var last = i === n - 1;
+      html += '<div class="sheet' + (last ? "" : " old") + '" style="left:' + (14 + i * 26) + "px;top:" + (14 + (i % 2) * 8) + 'px">' + sheetSvg(!last) + "</div>";
+    }
+    paperView.innerHTML = html;
+    $("#paperCount").textContent = wrongs + 1;
+  }
+  renderPaper();
+  $("#wrongBtn").addEventListener("click", function () {
+    wrongs++;
+    renderPaper();
+    $("#paperMsg").textContent = "Gambar yang salah dibuang. Kita pakai kertas baru.";
+    mx.classList.add("show");
+    $("#pcMsg").textContent = "Ada yang salah. Tekan Eraser...";
+    clearTimeout(mxTimer);
+    mxTimer = setTimeout(function () {
+      mx.classList.remove("show");
+      $("#pcMsg").textContent = "Terhapus! Tidak perlu kertas baru.";
+    }, 1200);
+  });
+  $("#wrongReset").addEventListener("click", function () {
+    wrongs = 0; renderPaper();
+    clearTimeout(mxTimer); mx.classList.remove("show");
+    $("#paperMsg").textContent = "Kalau salah, kita perlu kertas baru.";
+    $("#pcMsg").textContent = "Kalau salah, tekan Eraser.";
+  });
+
+  /* ---------- number picker ---------- */
+  var called = [], picking = false;
+  function classSize() { return Math.max(2, Math.min(60, parseInt($("#classSize").value, 10) || 26)); }
+  function pickInfo() { $("#pickInfo").textContent = "Sudah maju: " + called.length + " dari " + classSize(); }
+  $("#classSize").addEventListener("input", pickInfo);
+  $("#pickBtn").addEventListener("click", function () {
+    if (picking) return;
+    var n = classSize(), remain = [];
+    for (var i = 1; i <= n; i++) if (called.indexOf(i) < 0) remain.push(i);
+    if (!remain.length) { $("#pickInfo").textContent = "Semua sudah maju. Hebat!"; return; }
+    picking = true;
+    var c = 0, num = $("#pickNum");
+    var iv = setInterval(function () {
+      num.textContent = 1 + Math.floor(Math.random() * n);
+      if (++c > 12) {
+        clearInterval(iv);
+        var pick = remain[Math.floor(Math.random() * remain.length)];
+        called.push(pick); num.textContent = pick; pickInfo(); picking = false;
+      }
+    }, 80);
+  });
+  $("#pickReset").addEventListener("click", function () { called = []; $("#pickNum").textContent = "?"; pickInfo(); });
+  pickInfo();
+
+  /* ---------- start ---------- */
+  var m0 = /^#slide-(\d+)$/.exec(location.hash);
+  go(m0 ? Math.min(Math.max(+m0[1] - 1, 0), N - 1) : 0, true);
+})();
+</script>
+
+</body></html>
