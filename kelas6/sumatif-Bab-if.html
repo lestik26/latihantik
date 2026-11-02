@@ -1,0 +1,771 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ujian Informatika Kelas 6</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f8fafc; --card:#fff; --line:#e2e8f0;
+  --ind:#3b82f6; --ind-d:#2563eb; --ind-l:#eff6ff;
+  --grn:#10b981; --grn-l:#ecfdf5; --red:#ef4444; --red-l:#fef2f2;
+  --amb:#f59e0b; --amb-l:#fffbeb;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:var(--bg);color:#0f172a;line-height:1.6}
+.hidden{display:none!important}
+.wrap{max-width:1100px;margin:0 auto;padding:20px}
+
+/* Layout Ujian */
+.exam-layout{display:grid;grid-template-columns:1fr 300px;gap:24px;align-items:start}
+@media (max-width:800px){.exam-layout{grid-template-columns:1fr}}
+
+/* Header Soal */
+.top-header{display:flex;justify-content:space-between;align-items:center;background:#fff;padding:16px 24px;border-radius:12px;border:1px solid var(--line);margin-bottom:20px;box-shadow:0 2px 4px rgba(0,0,0,.02)}
+.soal-no{font-weight:800;font-size:1.2rem;color:#475569;display:flex;align-items:center;gap:10px}
+.no-badge{background:var(--ind-d);color:#fff;width:36px;height:36px;display:grid;place-items:center;border-radius:8px;font-size:1.2rem}
+.timer-box{display:flex;align-items:center;gap:10px}
+.timer-lbl{background:#7c3aed;color:#fff;padding:6px 12px;border-radius:6px;font-weight:700;font-size:.9rem}
+.timer-val{background:var(--ind);color:#fff;padding:6px 12px;border-radius:6px;font-weight:700;font-size:1.1rem;font-family:monospace}
+
+/* Kartu Soal */
+.q-card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:24px;margin-bottom:20px;box-shadow:0 4px 6px -1px rgba(0,0,0,.05)}
+.q-text{font-size:1.15rem;font-weight:600;margin-bottom:20px}
+.opts{display:flex;flex-direction:column;gap:12px}
+.opt{display:flex;align-items:flex-start;gap:12px;padding:16px;border:1px solid var(--line);border-radius:10px;cursor:pointer;transition:.2s}
+.opt:hover{background:#f8fafc;border-color:#cbd5e1}
+.opt input[type="radio"], .opt input[type="checkbox"]{margin-top:4px;width:18px;height:18px;accent-color:var(--ind-d)}
+.opt.sel{border-color:var(--ind);background:var(--ind-l)}
+.fill-input{width:100%;padding:14px;border:2px solid var(--line);border-radius:10px;font-size:1rem;font-family:inherit;outline:none}
+.fill-input:focus{border-color:var(--ind)}
+
+/* Tombol Aksi */
+.action-bar{display:flex;justify-content:space-between;align-items:center;margin-top:24px}
+.btn{padding:12px 24px;border-radius:8px;font-weight:700;font-size:1rem;cursor:pointer;border:none;transition:.2s;display:inline-flex;align-items:center;gap:8px}
+.btn.ragu{background:var(--amb);color:#fff}
+.btn.ragu.active{background:#b45309}
+.btn.next{background:var(--ind-d);color:#fff}
+.btn.submit{background:var(--grn);color:#fff}
+.btn.download{background:#0ea5e9;color:#fff;margin-top:15px;width:100%;justify-content:center}
+.btn:hover{opacity:.9;transform:translateY(-1px)}
+
+/* Panel Navigasi Kanan */
+.sidebar{background:#fff;border:1px solid var(--line);border-radius:12px;padding:20px;position:sticky;top:20px}
+.sidebar h3{margin:0 0 16px 0;font-size:1.1rem;color:#334155;border-bottom:1px solid var(--line);padding-bottom:10px}
+.nav-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.nav-btn{aspect-ratio:1;border:1px solid var(--line);border-radius:6px;background:#fff;font-weight:600;color:#475569;cursor:pointer;transition:.2s;display:grid;place-items:center}
+.nav-btn:hover{background:#f1f5f9}
+.nav-btn.active{border:2px solid var(--ind-d);background:var(--ind-l);color:var(--ind-d)}
+.nav-btn.answered{background:var(--grn-l);border-color:#a7f3d0;color:#047857}
+.nav-btn.ragu-flag{background:var(--amb-l);border-color:#fcd34d;color:#b45309}
+
+/* Spreadsheet Simulator (Google Sheets Style) */
+.sheet-wrap{overflow-x:auto;margin-top:16px;border:1px solid #cbd5e1;display:inline-block;background:#fff}
+.sheet-table{border-collapse:collapse;font-family:monospace,Arial,sans-serif;font-size:14px}
+.sheet-table th, .sheet-table td{border:1px solid #cbd5e1;padding:0;height:32px;min-width:120px;position:relative}
+.sheet-table th{background:#f1f5f9;color:#475569;font-weight:500;width:40px;min-width:40px;text-align:center}
+.sheet-table td:first-child{background:#f1f5f9;color:#475569;font-weight:500;width:40px;min-width:40px;text-align:center}
+.sheet-table td div.cell{
+    width:100%; height:100%; min-height:32px; padding:4px 8px; outline:none; 
+    display:flex; align-items:center; white-space:nowrap; overflow:hidden;
+}
+.sheet-table td div.cell:focus{box-shadow:inset 0 0 0 2px var(--ind-d);background:#fff;z-index:10;position:absolute;top:-1px;left:-1px;width:calc(100% + 2px);height:calc(100% + 2px);}
+.sheet-table td div.cell.error{color:var(--red);font-weight:bold;font-size:11px;line-height:1.2}
+.sheet-table td div.cell.result{color:#1e293b;justify-content:flex-start}
+</style>
+</head>
+<body>
+
+<div id="introScreen" class="wrap" style="max-width:600px;margin-top:50px">
+  <div class="q-card" style="text-align:center">
+    <h1 style="color:var(--ind-d)">Ujian Informatika Kelas 6</h1>
+    <p>Masukkan data dirimu dengan benar sebelum memulai.</p>
+    <input type="text" id="inNama" class="fill-input" placeholder="Nama Lengkap" style="margin-bottom:12px">
+    <div style="display:flex;gap:12px;margin-bottom:20px">
+      <input type="text" id="inKelas" class="fill-input" placeholder="Kelas (Cth: 6A)">
+      <input type="number" id="inAbsen" class="fill-input" placeholder="No Absen">
+    </div>
+    <div id="introErr" style="color:var(--red);font-weight:600;margin-bottom:12px"></div>
+    <button class="btn next" id="btnStart" style="width:100%;justify-content:center">Mulai Ujian ▶</button>
+  </div>
+</div>
+
+<div id="examScreen" class="wrap hidden">
+  <div class="exam-layout">
+    <div class="main-area">
+      <div class="top-header">
+        <div class="soal-no"><span class="no-badge" id="currentNo">1</span> SOAL NO.</div>
+        <div class="timer-box">
+          <span class="timer-lbl">SISA WAKTU</span>
+          <span class="timer-val" id="timer">30:00</span>
+        </div>
+      </div>
+      
+      <div class="q-card" id="questionContainer">
+        <!-- Soal di-render oleh JS -->
+      </div>
+
+      <div class="action-bar">
+        <button class="btn ragu" id="btnRagu">🚩 Ragu-Ragu</button>
+        <button class="btn next" id="btnNext">Selanjutnya ▶</button>
+      </div>
+    </div>
+
+    <div class="sidebar">
+      <h3>NOMOR SOAL</h3>
+      <div class="nav-grid" id="navGrid"></div>
+      <div style="margin-top:20px;text-align:center">
+        <button class="btn submit" id="btnSubmit" style="width:100%;justify-content:center">Kumpulkan Ujian</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="resultScreen" class="wrap hidden" style="max-width:600px;margin-top:50px;text-align:center">
+  <div class="q-card">
+    <h1 style="color:var(--grn)">Ujian Selesai!</h1>
+    <p>Terima kasih telah mengerjakan dengan jujur.</p>
+    <div style="font-size:4rem;font-weight:800;color:var(--ind-d);margin:20px 0" id="resScore">0</div>
+    <p id="resStatus"></p>
+    <div id="sendStatus" style="margin-top:20px;font-weight:600;margin-bottom:15px"></div>
+    <button class="btn download" id="btnDownload">📥 Download Hasil & Pembahasan</button>
+  </div>
+</div>
+
+<script>
+const CONFIG = {
+  APPS_SCRIPT_URL: "https://script.google.com/macros/s/AKfycbzS1NT-xSBr3IHwllnQ5kN1dreKfzfhOF0FqjyJMeXvW5ZuUK1Y2kMZuUG_i2IZDkT3/exec",
+  TOKEN: "tik6-ujian-2026",
+  DURASI_MENIT: 30
+};
+
+/* Bank Soal */
+const QB = {
+  pg: [
+    {id:'PG1', bloom:'C1', q:'Kalimat berita yang dapat dipastikan bernilai <b>BENAR</b> atau <b>SALAH</b> disebut ....', opts:['Pernyataan','Kalimat perintah','Kalimat tanya','Kalimat seru'], ans:0},
+    {id:'PG2', bloom:'C1', q:'Semua rumus di Google Sheet wajib diawali dengan tanda ....', opts:['#','=','&amp;','%'], ans:1},
+    {id:'PG3', bloom:'C1', q:'Simbol operator pembanding untuk arti &ldquo;lebih kecil atau sama dengan&rdquo; adalah ....', opts:['&gt;=','&lt;=','&lt;&gt;','='], ans:1},
+    {id:'PG4', bloom:'C2', q:'Manakah kalimat berikut yang merupakan pernyataan <b>SALAH</b>?', opts:['Seminggu terdiri dari 7 hari.','Segitiga memiliki 3 sisi.','Matahari terbit dari arah barat.','10 &gt; 4.'], ans:2},
+    {id:'PG5', bloom:'C2', q:'Aturan: <b>JIKA</b> hari hujan <b>MAKA</b> bawa payung. Hari ini cerah (tidak hujan). Menurut logika IF, apa yang terjadi pada tindakan &ldquo;bawa payung&rdquo;?', opts:['Tindakan dijalankan','Tindakan dilewati karena syarat bernilai SALAH','Tindakan dijalankan dua kali','Syarat berubah menjadi BENAR'], ans:1},
+    {id:'PG6', bloom:'C2', q:'Pada rumus <code>=IF(B2&gt;=75; "Tuntas"; "Belum Tuntas")</code>, tulisan &ldquo;Belum Tuntas&rdquo; akan muncul ketika ....', opts:['syarat bernilai BENAR','syarat bernilai SALAH','sel B2 dalam keadaan kosong','rumus ditulis tanpa kurung'], ans:1},
+    {id:'PG7', bloom:'C2', q:'Aturan: <b>JIKA</b> nilai &ge; 75 <b>AND</b> kehadiran &ge; 90% <b>MAKA</b> &ldquo;LULUS&rdquo;. Budi mendapat nilai 90 dan kehadiran 80%. Bagaimana hasilnya?', opts:['LULUS, karena nilainya tinggi','TIDAK LULUS, karena ada satu syarat yang bernilai salah','LULUS, karena salah satu syarat benar','Tidak bisa ditentukan'], ans:1},
+    {id:'PG8', bloom:'C2', q:'Aturan: <b>JIKA</b> hujan <b>OR</b> panas terik <b>MAKA</b> bawa pelindung. Hari ini tidak hujan tetapi panas terik. Bagaimana hasilnya?', opts:['Bawa pelindung, karena cukup satu syarat yang benar','Tidak bawa pelindung, karena tidak hujan','Bawa pelindung, karena kedua syarat benar','Tidak bisa ditentukan'], ans:0},
+    {id:'PG9', bloom:'C3', q:'Pak Guru ingin memberi <b>10 poin bonus</b> kepada siswa yang hadir <b>lebih dari 20 hari</b> (jumlah hadir ada di sel B2). Siswa lain mendapat 0 poin. Rumus yang tepat (pemisah titik koma) adalah ....', opts:['<code>=IF(B2&gt;20; 10; 0)</code>','<code>=IF(B2&lt;20; 10; 0)</code>','<code>=IF(B2&gt;20; "10"; "0")</code>','<code>IF(B2&gt;20; 10; 0)</code>'], ans:0},
+    {id:'PG10', bloom:'C3', q:'Aturan: <b>JIKA</b> (nilai &ge; 75 <b>AND</b> kehadiran &ge; 90%) <b>OR</b> juara lomba <b>MAKA</b> &ldquo;LULUS&rdquo;. Dito mendapat nilai 70, kehadiran 80%, tetapi ia juara lomba. Bagaimana hasilnya?', opts:['TIDAK LULUS, karena nilainya kurang dari 75','LULUS, karena bagian dalam kurung SALAH tetapi juara lomba BENAR','LULUS, karena bagian dalam kurung BENAR','TIDAK LULUS, karena kehadirannya kurang dari 90%'], ans:1}
+  ],
+  pgk: [
+    {id:'PGK1', bloom:'C2', q:'Pilih <b>semua</b> kalimat yang merupakan <b>PERNYATAAN</b> (baik benar maupun salah)!', opts:['Kucing memiliki empat kaki.','Tolong ambilkan bukuku!','5 + 2 = 8.','Siapa yang piket hari ini?','Bulan mengelilingi Bumi.'], ans:[0,2,4]},
+    {id:'PGK2', bloom:'C2', q:'Google Sheet memakai pemisah titik koma (<code>;</code>). Pilih <b>semua</b> penulisan rumus yang <b>BENAR</b>!', opts:['<code>=IF(B2&gt;=75;"Tuntas";"Belum Tuntas")</code>','<code>IF(B2&gt;=75;"Tuntas";"Belum Tuntas")</code>','<code>=IF(B2&gt;=75;Tuntas;Belum Tuntas)</code>','<code>=IF(B2&gt;=75;"Tuntas";"Belum Tuntas"</code>','<code>=IF(B2&gt;=75; "Tuntas"; "Belum Tuntas")</code>'], ans:[0,4]},
+    {id:'PGK3', bloom:'C2', q:'Pilih <b>semua</b> pasangan simbol dan artinya yang <b>BENAR</b>!', opts:['<code>&gt;=</code> : lebih besar atau sama dengan','<code>&lt;&gt;</code> : tidak sama dengan','<code>&lt;=</code> : lebih besar atau sama dengan','<code>=</code> : sama dengan','<code>&lt;</code> : lebih besar dari'], ans:[0,1,3]},
+    {id:'PGK4', bloom:'C2', q:'Pilih <b>semua</b> pernyataan yang <b>BENAR</b> tentang operator AND dan OR!', opts:['AND bernilai BENAR hanya jika semua kondisi benar.','OR bernilai BENAR jika minimal satu kondisi benar.','Pada AND, satu kondisi salah membuat hasil akhir SALAH.','OR bernilai SALAH jika salah satu kondisinya salah.','Operasi di dalam kurung ( ) dikerjakan paling akhir.'], ans:[0,1,2]},
+    {id:'PGK5', bloom:'C2', q:'Rumus IF di sel C2 akan disalin ke sel-sel di bawahnya. Pilih <b>semua</b> pernyataan yang <b>BENAR</b>!', opts:['Rumus cukup diketik sekali di sel paling atas (misalnya C2).','Titik biru kecil di sudut kanan bawah sel dapat ditarik ke bawah untuk menyalin rumus.','Setelah disalin ke baris 3, alamat B2 pada rumus otomatis menjadi B3.','Rumus harus diketik ulang satu per satu di setiap baris.','Setelah disalin ke bawah, alamat sel tetap B2 di semua baris.'], ans:[0,1,2]}
+  ],
+  isian: [
+    {id:'I1', bloom:'C1', q:'Simbol operator pembanding yang berarti <b>tidak sama dengan</b> adalah ....', accept:['<>']},
+    {id:'I2', bloom:'C1', q:'Teks hasil di dalam rumus IF (misalnya Tuntas) harus diapit tanda ....', keepQuotes:true, accept:['"','""','\u201c','\u201d','\u201c\u201d','kutip','kutipdua','tandakutip','tandakutipdua','petikdua','tandapetikdua']},
+    {id:'I3', bloom:'C1', q:'Operator AND bernilai BENAR hanya jika ... kondisi bernilai benar. (jawab satu kata)', accept:['semua','semuanya','seluruh','kedua']},
+    {id:'I4', bloom:'C2', q:'Sel B2 berisi 75. Rumus <code>=IF(B2&gt;=75; "LULUS"; "TIDAK LULUS")</code> akan menampilkan ....', accept:['lulus']},
+    {id:'I5', bloom:'C2', q:'Pernyataan <b>5 + 3 = 9</b> bernilai .... (BENAR / SALAH)', accept:['salah']},
+    {id:'I6', bloom:'C2', q:'Kondisi 1 = SALAH dan Kondisi 2 = BENAR. Hasil operator <b>OR</b> adalah ....', accept:['benar']},
+    {id:'I7', bloom:'C2', q:'Kondisi 1 = BENAR dan Kondisi 2 = SALAH. Hasil operator <b>AND</b> adalah ....', accept:['salah']},
+    {id:'I8', bloom:'C2', q:'Rumus di sel C2 membaca sel B2. Setelah rumus disalin (ditarik) sampai sel C5, rumus di C5 akan membaca sel ....', accept:['b5']},
+    {id:'I9', bloom:'C3', q:'Rumus <code>=IF(B2&gt;20; 10; 0)</code>. Jika sel B2 berisi <b>20</b>, angka yang tampil adalah ....', accept:['0','nol']},
+    {id:'I10', bloom:'C3', q:'Gilang menabung Rp 45.000 (tertulis di sel B2). Rumus: <code>=IF(B2&gt;=50000; "Boleh Beli"; "Menabung Dulu")</code>. Tulisan yang tampil adalah ....', accept:['menabungdulu']}
+  ]
+};
+
+const SHEET_DATA = [
+  {nama: 'Aldo', nilai: '85'},
+  {nama: 'Bela', nilai: '60'},
+  {nama: 'Candra', nilai: '70'},
+  {nama: 'Dewi', nilai: '92'},
+  {nama: 'Evan', nilai: '55'},
+  {nama: 'Fitri', nilai: '78'},
+  {nama: 'Gilang', nilai: '69'},
+  {nama: 'Hana', nilai: '88'},
+  {nama: 'Ivan', nilai: '70'},
+  {nama: 'Jihan', nilai: '64'}
+];
+
+const KEY = 'ujian_tik6_v3';
+const $ = s => document.querySelector(s);
+let state = null;
+let tickHandle = null;
+
+function normIsian(s, keepQuotes){
+  s = String(s==null?'':s).toLowerCase().replace(/\s+/g,'');
+  if(!keepQuotes) s = s.replace(/["'\u201c\u201d\u2018\u2019`]/g,'');
+  return s.replace(/\.$/,'');
+}
+function cekIsian(q, jawab){
+  const a = normIsian(jawab, q.keepQuotes);
+  if(!a) return false;
+  return q.accept.some(x => normIsian(x, q.keepQuotes) === a);
+}
+
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+function prepareQuestions() {
+  let flat = [];
+  QB.pg.forEach(q => {
+    let opts = q.opts.map((opt, i) => ({ opt, origIdx: i }));
+    opts = shuffleArray(opts);
+    let newAns = opts.findIndex(o => o.origIdx === q.ans);
+    flat.push({ ...q, opts: opts.map(o => o.opt), ans: newAns, type: 'pg', pts: 2 });
+  });
+  QB.pgk.forEach(q => {
+    let opts = q.opts.map((opt, i) => ({ opt, origIdx: i }));
+    opts = shuffleArray(opts);
+    let newAns = q.ans.map(origIdx => opts.findIndex(o => o.origIdx === origIdx));
+    flat.push({ ...q, opts: opts.map(o => o.opt), ans: newAns, type: 'pgk', pts: 3 });
+  });
+  QB.isian.forEach(q => flat.push({ ...q, type: 'isian', pts: 3 }));
+
+  flat = shuffleArray(flat);
+  flat.push({ id: 'SK', type: 'sk', pts: 35, bloom: 'C3' });
+
+  return flat;
+}
+
+function goFullscreen() {
+  const elem = document.documentElement;
+  if (elem.requestFullscreen) {
+    elem.requestFullscreen().catch(err => console.log('Fullscreen error:', err));
+  } else if (elem.webkitRequestFullscreen) {
+    elem.webkitRequestFullscreen();
+  }
+}
+
+function startExam() {
+  const nama = $('#inNama').value.trim();
+  const kelas = $('#inKelas').value.trim();
+  const absen = $('#inAbsen').value.trim();
+  if(!nama || !kelas || !absen) { $('#introErr').textContent = 'Lengkapi semua data!'; return; }
+
+  goFullscreen();
+
+  state = {
+    id: Date.now().toString(36) + Math.random().toString(36).slice(2,6),
+    nama, kelas, absen,
+    start: Date.now(),
+    qOrder: prepareQuestions(),
+    answers: {},
+    flags: {},
+    currentIdx: 0,
+    submitted: false
+  };
+  localStorage.setItem(KEY, JSON.stringify(state));
+  initExamUI();
+}
+
+function initExamUI() {
+  $('#introScreen').classList.add('hidden');
+  $('#examScreen').classList.remove('hidden');
+  renderNav();
+  renderQuestion();
+  tick();
+  tickHandle = setInterval(tick, 1000);
+}
+
+function tick() {
+  if(!state || state.submitted) return;
+  let left = Math.ceil((state.start + CONFIG.DURASI_MENIT*60000 - Date.now())/1000);
+  if(left <= 0) { left = 0; submitExam('Waktu Habis'); }
+  $('#timer').textContent = fmtTime(left);
+  if(left < 300) $('#timer').style.background = '#ef4444';
+}
+
+function fmtTime(s) {
+  return String(Math.floor(s/60)).padStart(2,'0') + ':' + String(s%60).padStart(2,'0');
+}
+
+function renderNav() {
+  let html = '';
+  state.qOrder.forEach((q, i) => {
+    let cls = 'nav-btn';
+    if(i === state.currentIdx) cls += ' active';
+    else if (state.flags[q.id]) cls += ' ragu-flag';
+    else if (state.answers[q.id] !== undefined && state.answers[q.id] !== '') cls += ' answered';
+    html += `<button class="${cls}" onclick="jumpTo(${i})">${i+1}</button>`;
+  });
+  $('#navGrid').innerHTML = html;
+}
+
+function renderQuestion() {
+  const q = state.qOrder[state.currentIdx];
+  $('#currentNo').textContent = state.currentIdx + 1;
+  $('#btnRagu').classList.toggle('active', !!state.flags[q.id]);
+  
+  if(state.currentIdx === state.qOrder.length - 1) {
+    $('#btnNext').classList.add('hidden');
+    $('#btnSubmit').classList.remove('hidden');
+  } else {
+    $('#btnNext').classList.remove('hidden');
+    $('#btnSubmit').classList.add('hidden');
+  }
+
+  let html = '';
+  if(q.type === 'sk') {
+    html = `
+      <div class="q-text">Tugas Praktik: Membuat Tabel Nilai di Spreadsheet</div>
+      <p style="margin-bottom:12px;font-size:.95rem;color:#475569">Isilah kolom Status (C) dengan <b>rumus IF</b> yang benar. Tekan <b>Enter</b> atau klik sel lain untuk melihat hasilnya secara otomatis.</p>
+      <div style="background:var(--amb-l);padding:12px;border-radius:8px;border-left:4px solid var(--amb);font-size:.9rem;margin-bottom:16px">
+        <b>Cerita:</b> Bu Maya punya 10 siswa. KKM adalah 70. Nilai 70 ke atas = TUNTAS, di bawah 70 = REMEDIAL.<br>
+        Aldo (85), Bela (60), Candra (70), Dewi (92), Evan (55), Fitri (78), Gilang (69), Hana (88), Ivan (70), Jihan (64).
+      </div>
+      <div class="sheet-wrap">
+        <table class="sheet-table">
+          <tr><th></th><th>A</th><th>B</th><th style="min-width:220px">C</th></tr>
+          <tr><td>1</td><td style="padding:4px 8px;color:#64748b">Nama</td><td style="padding:4px 8px;color:#64748b">Nilai</td><td style="padding:4px 8px;color:#64748b">Status</td></tr>`;
+    for(let i=0; i<10; i++) {
+      let r = i + 2;
+      html += `<tr>
+        <td>${r}</td>
+        <td><div class="cell" contenteditable="true" id="cell_A${r}" onfocus="handleCellFocus(this, 'A${r}')" onblur="handleCellBlur(this, 'A${r}', null)" onkeydown="handleCellKeyDown(event, this)"></div></td>
+        <td><div class="cell" contenteditable="true" id="cell_B${r}" onfocus="handleCellFocus(this, 'B${r}')" onblur="handleCellBlur(this, 'B${r}', null)" onkeydown="handleCellKeyDown(event, this)"></div></td>
+        <td><div class="cell" contenteditable="true" id="cell_C${r}" onfocus="handleCellFocus(this, 'C${r}')" onblur="handleCellBlur(this, 'C${r}', 'B${r}')" onkeydown="handleCellKeyDown(event, this)"></div></td>
+      </tr>`;
+    }
+    html += `</table></div>`;
+  } else {
+    html = `<div class="q-text">${q.q}</div>`;
+    if(q.type === 'pg' || q.type === 'pgk') {
+      html += `<div class="opts">`;
+      q.opts.forEach((opt, i) => {
+        let checked = '';
+        if(q.type === 'pg' && state.answers[q.id] === i) checked = 'checked';
+        if(q.type === 'pgk' && Array.isArray(state.answers[q.id]) && state.answers[q.id].includes(i)) checked = 'checked';
+        let type = q.type === 'pg' ? 'radio' : 'checkbox';
+        html += `<label class="opt ${checked?'sel':''}">
+          <input type="${type}" name="${q.id}" value="${i}" ${checked} onchange="saveAnswer('${q.id}', this)">
+          <span>${LETTER[i]}. ${opt}</span>
+        </label>`;
+      });
+      html += `</div>`;
+    } else if (q.type === 'isian') {
+      let val = state.answers[q.id] || '';
+      html += `<input type="text" class="fill-input" value="${val}" oninput="saveAnswer('${q.id}', this)" placeholder="Ketik jawaban singkat...">`;
+    }
+  }
+  $('#questionContainer').innerHTML = html;
+  
+  if(q.type === 'sk' && state.answers['SK']) {
+      for(let i=0; i<10; i++) {
+          let r = i+2;
+          ['A','B','C'].forEach(col => {
+              let id = col+r;
+              let savedVal = state.answers['SK'][id] || '';
+              let el = document.getElementById('cell_'+id);
+              if(el && savedVal) {
+                  el.textContent = savedVal;
+                  if(col === 'C') {
+                      handleCellBlur(el, id, 'B'+r, true);
+                  }
+              }
+          });
+      }
+  }
+}
+
+const LETTER = ['A','B','C','D','E'];
+
+function saveAnswer(qid, el) {
+  const q = state.qOrder[state.currentIdx];
+  if(q.type === 'pg') state.answers[qid] = parseInt(el.value);
+  if(q.type === 'pgk') {
+    let arr = state.answers[qid] || [];
+    let v = parseInt(el.value);
+    if(el.checked) { if(!arr.includes(v)) arr.push(v); }
+    else { arr = arr.filter(x => x !== v); }
+    state.answers[qid] = arr;
+  }
+  if(q.type === 'isian') state.answers[qid] = el.value;
+  
+  el.closest('.opt')?.classList.toggle('sel', el.checked);
+  saveLocal();
+  renderNav();
+}
+
+// --- LOGIKA SPREADSHEET SIMULATOR ---
+
+function handleCellFocus(el, id) {
+    if (!state.answers['SK']) state.answers['SK'] = {};
+    let formula = state.answers['SK'][id] || '';
+    el.textContent = formula;
+    el.classList.remove('error', 'result');
+}
+
+function handleCellKeyDown(e, el) {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        el.blur();
+    }
+}
+
+function handleCellBlur(el, id, bRefId, silent = false) {
+    let rawVal = el.textContent.trim();
+    
+    if (!state.answers['SK']) state.answers['SK'] = {};
+    
+    if (!silent) {
+        state.answers['SK'][id] = rawVal;
+        saveLocal();
+    }
+
+    if (!rawVal) {
+        el.textContent = '';
+        el.classList.remove('error', 'result');
+        return;
+    }
+
+    if (!rawVal.startsWith('=')) {
+        if (/^(tuntas|remedial)$/i.test(rawVal.trim())) {
+            el.textContent = 'silahkan isi dengan rumus if';
+            el.classList.add('error');
+            el.classList.remove('result');
+        } else {
+            el.textContent = rawVal;
+            el.classList.remove('error');
+            el.classList.add('result');
+        }
+        return;
+    }
+
+    if (bRefId) {
+        let bVal = document.getElementById('cell_' + bRefId)?.textContent || '0';
+        let rowStr = id.replace('C', '');
+        let res = evaluateIF(rawVal, bVal, rowStr);
+        
+        if (res.error) {
+            el.textContent = '#ERROR!';
+            el.classList.add('error');
+            el.classList.remove('result');
+        } else {
+            el.textContent = res.result;
+            el.classList.remove('error');
+            el.classList.add('result');
+        }
+    }
+}
+
+function evaluateIF(formula, bValue, rowStr) {
+    let f = formula.replace(/\s+/g, '').toUpperCase();
+    if (!f.startsWith('=IF(') || !f.endsWith(')')) return { error: true };
+    
+    let inner = f.substring(4, f.length - 1);
+    
+    let parts = [];
+    let current = '';
+    let inQuote = false;
+    for (let char of inner) {
+        if (char === '"') inQuote = !inQuote;
+        if ((char === ';' || char === ',') && !inQuote) {
+            parts.push(current);
+            current = '';
+        } else {
+            current += char;
+        }
+    }
+    parts.push(current);
+    
+    if (parts.length !== 3) return { error: true };
+    
+    let cond = parts[0].trim();
+    let trueVal = parts[1].trim();
+    let falseVal = parts[2].trim();
+    
+    let expectedRef = 'B' + rowStr;
+    if (!cond.includes(expectedRef)) {
+        return { error: true };
+    }
+    
+    cond = cond.replace(new RegExp(expectedRef, 'g'), bValue);
+    
+    try {
+        if (!/^[0-9<>=()+\-*/. \s]+$/.test(cond)) return { error: true };
+        let condResult = new Function('return ' + cond)();
+        
+        let result = condResult ? trueVal : falseVal;
+        return { result: result.replace(/^"|"$/g, '').trim() };
+    } catch (e) {
+        return { error: true };
+    }
+}
+
+function jumpTo(idx) {
+  state.currentIdx = idx;
+  saveLocal();
+  renderNav();
+  renderQuestion();
+}
+
+function saveLocal() { localStorage.setItem(KEY, JSON.stringify(state)); }
+
+// Event Listeners
+$('#btnNext').onclick = () => { if(state.currentIdx < state.qOrder.length - 1) jumpTo(state.currentIdx + 1); };
+$('#btnRagu').onclick = () => { const q = state.qOrder[state.currentIdx]; state.flags[q.id] = !state.flags[q.id]; saveLocal(); renderNav(); renderQuestion(); };
+$('#btnStart').onclick = startExam;
+
+$('#btnSubmit').onclick = () => {
+  if(confirm('Apakah kamu yakin ingin mengumpulkan ujian? Jawaban tidak dapat diubah lagi.')) {
+    submitExam('Dikumpulkan Siswa');
+  }
+};
+
+// --- PENILAIAN & DOWNLOAD ---
+function submitExam(reason) {
+  if(state.submitted) return;
+  clearInterval(tickHandle);
+  
+  let score = 0;
+  let detail = [];
+  let c1=0, c2=0, c3=0, maxC1=0, maxC2=0, maxC3=0;
+  let secPG=0, secPGK=0, secIsian=0, secSK=0;
+
+  state.qOrder.forEach(q => {
+    let earned = 0;
+    let max = q.pts;
+    
+    if(q.type === 'pg') {
+      if(state.answers[q.id] === q.ans) earned = max;
+      secPG += earned;
+    } else if(q.type === 'pgk') {
+      let sel = state.answers[q.id] || [];
+      let correct = sel.filter(x => q.ans.includes(x)).length;
+      let wrong = sel.length - correct;
+      let frac = Math.max(0, (correct - wrong) / q.ans.length);
+      earned = max * frac;
+      secPGK += earned;
+    } else if(q.type === 'isian') {
+      if(cekIsian(q, state.answers[q.id])) earned = max;
+      secIsian += earned;
+    } else if(q.type === 'sk') {
+      let skAns = state.answers['SK'] || {};
+      SHEET_DATA.forEach((row, i) => {
+        let r = i + 2;
+        let name = skAns['A'+r] || '';
+        let val = skAns['B'+r] || '0';
+        let formula = skAns['C'+r] || '';
+        
+        if(normIsian(name) === normIsian(row.nama)) earned += 1;
+        if(normIsian(val) === normIsian(row.nilai)) earned += 1;
+        
+        let resHigh = evaluateIF(formula, 75, r.toString());
+        let resLow = evaluateIF(formula, 65, r.toString());
+        if(resHigh.result === 'TUNTAS' && resLow.result === 'REMEDIAL') {
+            earned += 1.5;
+        }
+      });
+      secSK += earned;
+    }
+
+    score += earned;
+    detail.push(`${q.id}:${earned}`);
+    
+    if(q.bloom === 'C1') { c1 += earned; maxC1 += max; }
+    if(q.bloom === 'C2') { c2 += earned; maxC2 += max; }
+    if(q.bloom === 'C3') { c3 += earned; maxC3 += max; }
+  });
+
+  state.submitted = true;
+  state.finalScore = Math.round(score);
+  saveLocal();
+  
+  $('#examScreen').classList.add('hidden');
+  $('#resultScreen').classList.remove('hidden');
+  $('#resScore').textContent = state.finalScore;
+  $('#resStatus').textContent = state.finalScore >= 75 ? 'SELAMAT! Anda TUNTAS.' : 'Maaf, Anda belum tuntas.';
+  $('#resStatus').style.color = state.finalScore >= 75 ? 'var(--grn)' : 'var(--red)';
+
+  const payload = {
+    token: CONFIG.TOKEN, id: state.id,
+    nama: state.nama, kelas: state.kelas, absen: state.absen,
+    alasan: reason, durasiDetik: Math.round((Date.now()-state.start)/1000),
+    skorPG: Math.round(secPG), skorPGK: Math.round(secPGK), skorIsian: Math.round(secIsian), skorSK: Math.round(secSK),
+    nilai: state.finalScore,
+    c1: maxC1 ? Math.round(c1/maxC1*100) : 0,
+    c2: maxC2 ? Math.round(c2/maxC2*100) : 0,
+    c3: maxC3 ? Math.round(c3/maxC3*100) : 0,
+    answers: state.answers,
+    detail: detail.join(' | ')
+  };
+
+  if(CONFIG.APPS_SCRIPT_URL.includes('PASTE')) {
+    $('#sendStatus').innerHTML = '<span style="color:var(--amb)">Mode Demo: URL belum diisi.</span>';
+  } else {
+    $('#sendStatus').innerHTML = '<span style="color:var(--ind)">Mengirim nilai...</span>';
+    fetch(CONFIG.APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) })
+      .then(r => r.json())
+      .then(res => {
+        if(res.ok) $('#sendStatus').innerHTML = '<span style="color:var(--grn)">✅ Berhasil dikirim ke Guru.</span>';
+        else $('#sendStatus').innerHTML = `<span style="color:var(--red)">Gagal: ${res.error}</span>`;
+      }).catch(() => $('#sendStatus').innerHTML = '<span style="color:var(--red)">Gagal koneksi internet.</span>');
+  }
+}
+
+$('#btnDownload').onclick = () => {
+    let htmlReport = `
+    <!doctype html>
+    <html lang="id">
+    <head>
+        <meta charset="utf-8">
+        <title>Hasil Ujian - ${state.nama}</title>
+        <style>
+            body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f6f8; color: #333; padding: 20px; line-height: 1.6; }
+            .container { max-width: 800px; margin: 0 auto; background: #fff; padding: 40px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+            h1 { text-align: center; color: #2563eb; margin-bottom: 5px; }
+            .header-info { text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px solid #e2e8f0; }
+            .score-box { text-align: center; font-size: 3rem; font-weight: bold; color: #10b981; margin: 20px 0; }
+            .q-item { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; margin-bottom: 15px; }
+            .q-title { font-weight: bold; margin-bottom: 10px; }
+            .ans-box { margin-top: 10px; padding: 10px; border-radius: 5px; }
+            .ans-correct { background: #ecfdf5; color: #047857; border-left: 4px solid #10b981; }
+            .ans-wrong { background: #fef2f2; color: #b91c1c; border-left: 4px solid #ef4444; }
+            .ans-neutral { background: #f1f5f9; color: #475569; }
+            table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
+            th, td { border: 1px solid #cbd5e1; padding: 8px; text-align: left; }
+            th { background: #f1f5f9; }
+            .text-err { color: #ef4444; font-weight: bold; }
+            .text-ok { color: #10b981; font-weight: bold; }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>Laporan Hasil Ujian</h1>
+            <div class="header-info">
+                <p><b>Nama:</b> ${state.nama} | <b>Kelas:</b> ${state.kelas} | <b>Absen:</b> ${state.absen}</p>
+                <p><b>Waktu Selesai:</b> ${new Date().toLocaleString('id-ID')}</p>
+            </div>
+            
+            <div class="score-box">Nilai Akhir: ${state.finalScore} / 100</div>
+            <h3 style="text-align:center; color:${state.finalScore >= 75 ? '#10b981' : '#ef4444'}; margin-bottom: 30px;">
+                Status: ${state.finalScore >= 75 ? 'TUNTAS' : 'REMEDIAL'}
+            </h3>
+
+            <h2>Rincian Jawaban</h2>
+    `;
+
+    state.qOrder.forEach((q, index) => {
+        htmlReport += `<div class="q-item">`;
+        htmlReport += `<div class="q-title">Soal ${index + 1}: ${q.q}</div>`;
+
+        if (q.type === 'pg') {
+            let studentAnsIdx = state.answers[q.id];
+            let isCorrect = studentAnsIdx === q.ans;
+            let studentAnsText = studentAnsIdx !== undefined ? `${LETTER[studentAnsIdx]}. ${q.opts[studentAnsIdx]}` : 'Tidak dijawab';
+            let correctAnsText = `${LETTER[q.ans]}. ${q.opts[q.ans]}`;
+            
+            htmlReport += `<div class="ans-box ${isCorrect ? 'ans-correct' : 'ans-wrong'}">
+                <b>Jawabanmu:</b> ${studentAnsText} <br>
+                ${isCorrect ? '✅ Benar' : `❌ Salah. <br><b>Kunci Jawaban:</b> ${correctAnsText}`}
+            </div>`;
+        } 
+        else if (q.type === 'pgk') {
+            let studentAnsArr = state.answers[q.id] || [];
+            let studentAnsText = studentAnsArr.length > 0 ? studentAnsArr.map(i => `${LETTER[i]}. ${q.opts[i]}`).join('<br>') : 'Tidak dijawab';
+            let correctAnsText = q.ans.map(i => `${LETTER[i]}. ${q.opts[i]}`).join('<br>');
+            
+            // Cek apakah persis sama
+            let isCorrect = studentAnsArr.length === q.ans.length && studentAnsArr.every(v => q.ans.includes(v));
+            
+            htmlReport += `<div class="ans-box ${isCorrect ? 'ans-correct' : 'ans-wrong'}">
+                <b>Jawabanmu:</b><br> ${studentAnsText} <br>
+                ${isCorrect ? '✅ Benar' : `❌ Salah/Kurang Tepat. <br><b>Kunci Jawaban:</b><br> ${correctAnsText}`}
+            </div>`;
+        }
+        else if (q.type === 'isian') {
+            let studentAns = state.answers[q.id] || '';
+            let isCorrect = cekIsian(q, studentAns);
+            
+            htmlReport += `<div class="ans-box ${isCorrect ? 'ans-correct' : 'ans-wrong'}">
+                <b>Jawabanmu:</b> ${studentAns || 'Tidak dijawab'} <br>
+                ${isCorrect ? '✅ Benar' : `❌ Salah. <br><b>Kunci Jawaban:</b> ${q.accept[0]}`}
+            </div>`;
+        }
+        else if (q.type === 'sk') {
+            let skAns = state.answers['SK'] || {};
+            htmlReport += `<p style="margin-bottom:5px; font-size:14px; color:#64748b;">Tabel di bawah menunjukkan di mana letak kesalahan pengisian Spreadsheet-mu:</p>`;
+            htmlReport += `<div style="overflow-x:auto;"><table>
+                <tr><th>Baris</th><th>Nama (Siswa)</th><th>Nilai (Siswa)</th><th>Rumus/Status (Siswa)</th><th>Kunci (Nama - Nilai)</th></tr>`;
+            
+            SHEET_DATA.forEach((row, i) => {
+                let r = i + 2;
+                let sName = skAns['A'+r] || '';
+                let sVal = skAns['B'+r] || '';
+                let sFormula = skAns['C'+r] || '';
+                
+                let nameOk = normIsian(sName) === normIsian(row.nama);
+                let valOk = normIsian(sVal) === normIsian(row.nilai);
+                
+                let resHigh = evaluateIF(sFormula, 75, r.toString());
+                let resLow = evaluateIF(sFormula, 65, r.toString());
+                let formulaOk = resHigh.result === 'TUNTAS' && resLow.result === 'REMEDIAL';
+                
+                htmlReport += `<tr>
+                    <td>${r}</td>
+                    <td class="${nameOk?'text-ok':'text-err'}">${sName || '-'}</td>
+                    <td class="${valOk?'text-ok':'text-err'}">${sVal || '-'}</td>
+                    <td class="${formulaOk?'text-ok':'text-err'}" style="font-family:monospace;">${sFormula || '-'}</td>
+                    <td style="color:#64748b">${row.nama} - ${row.nilai}</td>
+                </tr>`;
+            });
+            htmlReport += `</table></div>`;
+        }
+        
+        htmlReport += `</div>`;
+    });
+
+    htmlReport += `</div></body></html>`;
+
+    // Proses download
+    const blob = new Blob([htmlReport], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Hasil_Ujian_${state.nama.replace(/\s+/g, '_')}.html`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+};
+
+// --- PEMULIHAN STATE ---
+(function init() {
+  const saved = localStorage.getItem(KEY);
+  if (saved) {
+    try {
+      const parsed = JSON.parse(saved);
+      if (parsed && !parsed.submitted) {
+        state = parsed;
+        if (Date.now() >= state.start + CONFIG.DURASI_MENIT*60000) {
+          state.submitted = true;
+          saveLocal();
+          $('#introScreen').classList.add('hidden');
+          $('#resultScreen').classList.remove('hidden');
+          $('#resScore').textContent = state.finalScore || 0;
+          return;
+        }
+        initExamUI();
+      } else if (parsed && parsed.submitted) {
+        state = parsed;
+        $('#introScreen').classList.add('hidden');
+        $('#resultScreen').classList.remove('hidden');
+        $('#resScore').textContent = state.finalScore || 0;
+      }
+    } catch (e) {
+      console.error('Gagal memuat state', e);
+    }
+  }
+})();
+</script>
+</body>
+</html>
