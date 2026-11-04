@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Cara Kerja Komputer - Side by Side (IFP)</title>
+    <!-- Library untuk download rekap ke PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; display: flex; flex-direction: column; height: 100vh; background-color: #f0f4f8; }
+        header { background: #1e3a8a; color: white; text-align: center; padding: 1.5rem; font-size: 2rem; font-weight: bold; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index: 10; }
+        .progress { font-size: 1.5rem; background: #fbbf24; color: #000; padding: 10px 20px; border-radius: 8px; font-weight: bold; }
+        .title-text { flex-grow: 1; text-align: left; padding-left: 20px; }
+        
+        .container { display: flex; flex: 1; overflow: hidden; }
+        .side { flex: 1; padding: 2rem; border-right: 4px solid #cbd5e1; display: flex; flex-direction: column; overflow-y: auto; background: #ffffff; }
+        .side:last-child { border-right: none; }
+        
+        .card { background: #f8fafc; padding: 2rem; border-radius: 16px; box-shadow: 0 8px 15px -3px rgba(0,0,0,0.1); margin-bottom: 2rem; border: 1px solid #e2e8f0; }
+        h2 { font-size: 2.2rem; color: #1e293b; margin-top: 0; text-align: center; }
+        
+        input[type="text"] { width: 100%; padding: 18px; font-size: 1.5rem; margin: 15px 0; border: 2px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; }
+        button { background: #2563eb; color: white; border: none; padding: 20px 25px; font-size: 1.6rem; cursor: pointer; border-radius: 10px; width: 100%; margin-top: 20px; font-weight: bold; transition: 0.2s; box-shadow: 0 4px 6px rgba(37,99,235,0.3); }
+        button:hover { background: #1d4ed8; transform: translateY(-2px); }
+        button:active { transform: translateY(0); }
+        
+        .question-block { margin-bottom: 30px; background: white; padding: 25px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .question-title { font-size: 1.6rem; font-weight: bold; margin-bottom: 15px; color: #0f172a; line-height: 1.4; }
+        
+        .options label { display: block; background: #f1f5f9; padding: 18px; margin-bottom: 12px; border-radius: 8px; cursor: pointer; border: 2px solid #cbd5e1; font-size: 1.5rem; transition: background-color 0.2s; }
+        .options label:active { background: #e2e8f0; border-color: #94a3b8; }
+        input[type="radio"], input[type="checkbox"] { transform: scale(1.8); margin-right: 20px; }
+        
+        #recap-screen { display: none; padding: 3rem; width: 100%; overflow-y: auto; background: white; }
+        .recap-container { max-width: 1200px; margin: 0 auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 30px; background: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1); font-size: 1.5rem; }
+        th, td { border: 1px solid #cbd5e1; padding: 18px; text-align: center; }
+        th { background: #1e3a8a; color: white; }
+        tr:nth-child(even) { background-color: #f8fafc; }
+        .lulus { color: #16a34a; font-weight: bold; }
+        .gagal { color: #dc2626; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="title-text">🖥️ Kuis Interaktif: Cara Kerja Komputer</div>
+    <div id="progress-text" class="progress">Progres: 0 / 20 Siswa</div>
+</header>
+
+<div id="main-container" class="container">
+    <div id="side-left" class="side"></div>
+    <div id="side-right" class="side"></div>
+</div>
+
+<div id="recap-screen">
+    <div class="recap-container" id="recap-content">
+        <h1 style="text-align:center; font-size: 2.8rem; color: #1e3a8a; margin-bottom: 10px;">Rekapitulasi Nilai Siswa</h1>
+        <p style="text-align:center; font-size: 1.6rem; color: #475569;">Materi: Cara Kerja Komputer | Kriteria Ketuntasan Minimal (KKM): 70</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Nama Siswa</th>
+                    <th>Nilai Akhir</th>
+                    <th>Status Kelulusan</th>
+                </tr>
+            </thead>
+            <tbody id="recap-tbody">
+            </tbody>
+        </table>
+    </div>
+    <div style="max-width: 1200px; margin: 40px auto; text-align: center;">
+        <button onclick="downloadPDF()" style="background: #10b981; font-size: 1.8rem; padding: 20px 40px; width: auto;">⬇️ Download PDF Rekapan</button>
+    </div>
+</div>
+
+<script>
+    // Bank Soal Pilihan Ganda (Ditambah menjadi 12 soal)
+    const pgBank = [
+        { q: "Perangkat yang digunakan untuk memasukkan teks ke dalam komputer adalah...", opts: ["Monitor", "Keyboard", "Printer", "HDD"], ans: "Keyboard" },
+        { q: "Proses menyimpan data sementara agar pemrosesan lebih cepat menggunakan...", opts: ["CPU", "SSD", "RAM", "Flash Drive"], ans: "RAM" },
+        { q: "Berikut ini yang termasuk perangkat output untuk mengeluarkan suara adalah...", opts: ["Mouse", "Microphone", "Speaker", "Keyboard"], ans: "Speaker" },
+        { q: "Perangkat storage yang menggunakan piringan magnetik berputar adalah...", opts: ["HDD", "SSD", "RAM", "USB"], ans: "HDD" },
+        { q: "Tahapan yang berfungsi mengolah data menjadi informasi yang berguna disebut...", opts: ["Input", "Storage", "Processing", "Output"], ans: "Processing" },
+        { q: "Bagian komputer yang berfungsi seperti otak untuk melakukan perhitungan adalah...", opts: ["RAM", "CPU", "Motherboard", "Hard Disk"], ans: "CPU" },
+        { q: "Perangkat input untuk merekam data suara ke komputer adalah...", opts: ["Speaker", "Monitor", "Microphone", "Mouse"], ans: "Microphone" },
+        { q: "Perangkat Output yang bertugas menampilkan data digital sebagai gambar atau teks di layar adalah...", opts: ["Printer", "Monitor", "SSD", "Keyboard"], ans: "Monitor" },
+        { q: "Perangkat yang menyimpan data di chip memori tanpa bagian bergerak adalah...", opts: ["HDD", "SSD", "Monitor", "Mouse"], ans: "SSD" },
+        { q: "Perangkat untuk mengklik atau memilih perintah di layar adalah...", opts: ["Keyboard", "Mouse", "Printer", "Speaker"], ans: "Mouse" },
+        { q: "Untuk mencetak dokumen tugas ke kertas, kita membutuhkan perangkat...", opts: ["Monitor", "Speaker", "Printer", "Microphone"], ans: "Printer" },
+        { q: "Perangkat storage yang mudah dibawa untuk memindahkan data antar perangkat adalah...", opts: ["HDD", "USB Flash Drive", "CPU", "RAM"], ans: "USB Flash Drive" }
+    ];
+
+    // Bank Soal Pilihan Ganda Kompleks (Ditambah menjadi 8 soal)
+    const pgkBank = [
+        { q: "Manakah dari perangkat berikut yang termasuk dalam kelompok Storage? (Pilih semua yang benar)", opts: ["HDD", "RAM", "SSD", "USB Flash Drive"], ans: ["HDD", "SSD", "USB Flash Drive"] },
+        { q: "Pilih perangkat yang berfungsi sebagai Input! (Pilih semua yang benar)", opts: ["Keyboard", "Monitor", "Mouse", "Microphone"], ans: ["Keyboard", "Mouse", "Microphone"] },
+        { q: "Perangkat yang tergolong sebagai Output adalah... (Pilih semua yang benar)", opts: ["Printer", "Speaker", "Mouse", "Monitor"], ans: ["Printer", "Speaker", "Monitor"] },
+        { q: "Ciri-ciri RAM (Random Access Memory) adalah... (Pilih semua yang benar)", opts: ["Menyimpan data permanen", "Menyimpan data sementara", "Data hilang saat komputer dimatikan", "Berfungsi sebagai otak komputer"], ans: ["Menyimpan data sementara", "Data hilang saat komputer dimatikan"] },
+        { q: "Pernyataan yang benar tentang CPU dan RAM dalam tahapan Processing adalah... (Pilih semua yang benar)", opts: ["CPU adalah otak komputer", "RAM menyimpan data permanen", "RAM mempercepat pemrosesan", "CPU mencetak dokumen fisik"], ans: ["CPU adalah otak komputer", "RAM mempercepat pemrosesan"] },
+        { q: "Berdasarkan materi, tahapan utama cara kerja komputer meliputi... (Pilih semua yang benar)", opts: ["Input", "Downloading", "Processing", "Output"], ans: ["Input", "Processing", "Output"] },
+        { q: "Ciri-ciri dari Hard Disk Drive (HDD) adalah... (Pilih semua yang benar)", opts: ["Menyimpan data permanen", "Menggunakan piringan magnetik", "Lebih cepat dari SSD", "Menghilang saat dimatikan"], ans: ["Menyimpan data permanen", "Menggunakan piringan magnetik"] },
+        { q: "Pernyataan yang benar tentang perangkat Output... (Pilih semua yang benar)", opts: ["Monitor menampilkan gambar", "Printer mencetak data ke kertas", "Speaker mengubah suara jadi data digital", "Monitor memasukkan teks"], ans: ["Monitor menampilkan gambar", "Printer mencetak data ke kertas"] }
+    ];
+
+    // Bank Soal Isian Singkat (Ditambah menjadi 9 soal)
+    const isianBank = [
+        { q: "Tahapan memasukkan data atau perintah ke komputer disebut...", ans: "input" },
+        { q: "Perangkat yang mencetak data digital menjadi bentuk fisik (kertas) disebut...", ans: "printer" },
+        { q: "Perangkat penyimpanan data berupa chip memori tanpa bagian bergerak yang lebih cepat dari HDD disebut... (Singkatan 3 huruf)", ans: "ssd" },
+        { q: "Perangkat yang menerjemahkan gerakan dan klik menjadi perintah di layar adalah...", ans: "mouse" },
+        { q: "Mengubah data digital menjadi suara adalah fungsi dari perangkat...", ans: "speaker" },
+        { q: "Otak dari sebuah komputer yang menerima perintah dan melakukan perhitungan disebut... (Singkatan 3 huruf)", ans: "cpu" },
+        { q: "Tahapan menyimpan data agar bisa digunakan kapan saja disebut...", ans: "storage" },
+        { q: "Menampilkan data digital sebagai gambar di layar adalah fungsi perangkat...", ans: "monitor" },
+        { q: "Menyimpan data sementara untuk mempercepat pemrosesan menggunakan perangkat... (Singkatan 3 huruf)", ans: "ram" }
+    ];
+
+    let totalStudents = 20;
+    let studentsDone = 0;
+    let results = [];
+
+    // Sistem Pengocokan dan Pengambilan Soal Unik
+    let poolPG = [];
+    let poolPGK = [];
+    let poolIsian = [];
+
+    function shuffle(array) {
+        let copy = [...array];
+        for (let i = copy.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [copy[i], copy[j]] = [copy[j], copy[i]];
+        }
+        return copy;
+    }
+
+    function getUniqueQuestion(bank, poolArray) {
+        // Jika pool kosong (atau pertama kali mulai), isi ulang dari bank dan acak
+        if (poolArray.length === 0) {
+            poolArray.push(...shuffle(bank));
+        }
+        // Ambil (dan hapus) soal terakhir dari pool
+        return poolArray.pop();
+    }
+
+    // Render halaman awal untuk mengisi nama
+    function renderSide(sideId) {
+        const side = document.getElementById(sideId);
+        side.innerHTML = `
+            <div class="card" style="text-align:center; padding: 6rem 3rem; flex: 1; display:flex; flex-direction: column; justify-content: center; background: #fff;">
+                <h2 style="font-size: 3rem; margin-bottom: 20px; color: #1e293b;">Selamat Datang!</h2>
+                <p style="font-size: 1.6rem; color: #64748b; margin-bottom: 40px;">Silakan masukkan nama Anda untuk memulai kuis.</p>
+                <input type="text" id="${sideId}-name" placeholder="Ketik Nama Anda di sini..." autocomplete="off">
+                <button onclick="startQuiz('${sideId}')" style="font-size: 2rem; padding: 25px;">Mulai Kuis 🚀</button>
+            </div>
+        `;
+    }
+
+    // Memulai kuis dan menyajikan soal
+    function startQuiz(sideId) {
+        const nameInput = document.getElementById(`${sideId}-name`).value.trim();
+        if(!nameInput) {
+            alert("Silakan masukkan nama Anda terlebih dahulu!");
+            return;
+        }
+
+        // Ambil soal yang unik dari masing-masing pool
+        const qPG = getUniqueQuestion(pgBank, poolPG);
+        const qPGK = getUniqueQuestion(pgkBank, poolPGK);
+        const qIsian = getUniqueQuestion(isianBank, poolIsian);
+
+        // Acak urutan opsi jawaban (PG dan PGK)
+        let pgOpts = shuffle([...qPG.opts]);
+        let pgkOpts = shuffle([...qPGK.opts]);
+
+        const side = document.getElementById(sideId);
+        side.innerHTML = `
+            <div class="card">
+                <h2 style="font-size: 2.2rem; color: #2563eb; border-bottom: 3px solid #e2e8f0; padding-bottom: 15px; margin-bottom: 25px; text-align: left;">👤 Siswa: ${nameInput}</h2>
+                <input type="hidden" id="${sideId}-student-name" value="${nameInput}">
+
+                <!-- Soal PG -->
+                <div class="question-block">
+                    <div class="question-title">1. [Pilihan Ganda] - ${qPG.q}</div>
+                    <div class="options">
+                        ${pgOpts.map(opt => `<label><input type="radio" name="${sideId}-pg" value="${opt}"> ${opt}</label>`).join('')}
+                    </div>
+                    <input type="hidden" id="${sideId}-pg-ans" value="${qPG.ans}">
+                </div>
+
+                <!-- Soal PGK -->
+                <div class="question-block">
+                    <div class="question-title">2. [Pilihan Ganda Kompleks] - ${qPGK.q}</div>
+                    <div class="options">
+                        ${pgkOpts.map(opt => `<label><input type="checkbox" class="${sideId}-pgk" value="${opt}"> ${opt}</label>`).join('')}
+                    </div>
+                    <input type="hidden" id="${sideId}-pgk-ans" value="${qPGK.ans.join('|')}">
+                </div>
+
+                <!-- Soal Isian -->
+                <div class="question-block">
+                    <div class="question-title">3. [Isian Singkat] - ${qIsian.q}</div>
+                    <input type="text" id="${sideId}-isian" placeholder="Ketik jawaban Anda di sini..." autocomplete="off">
+                    <input type="hidden" id="${sideId}-isian-ans" value="${qIsian.ans}">
+                </div>
+
+                <button onclick="submitQuiz('${sideId}')" style="background: #10b981; margin-top: 10px;">Kirim Jawaban ✔️</button>
+            </div>
+        `;
+    }
+
+    // Memproses dan menilai jawaban
+    function submitQuiz(sideId) {
+        const name = document.getElementById(`${sideId}-student-name`).value;
+        
+        const pgSelected = document.querySelector(`input[name="${sideId}-pg"]:checked`)?.value;
+        const pgAns = document.getElementById(`${sideId}-pg-ans`).value;
+
+        const pgkSelected = Array.from(document.querySelectorAll(`.${sideId}-pgk:checked`)).map(cb => cb.value);
+        const pgkAns = document.getElementById(`${sideId}-pgk-ans`).value.split('|');
+
+        const isianSelected = document.getElementById(`${sideId}-isian`).value.trim().toLowerCase();
+        const isianAns = document.getElementById(`${sideId}-isian-ans`).value.toLowerCase();
+
+        let score = 0;
+        
+        if(pgSelected === pgAns) score += 30;
+
+        let isPgkCorrect = pgkSelected.length === pgkAns.length && pgkSelected.every(v => pgkAns.includes(v));
+        if(isPgkCorrect) score += 40;
+
+        if(isianSelected === isianAns) score += 30;
+
+        let status = score >= 70 ? "Lulus" : "Tidak Lulus";
+
+        results.push({ name, score, status });
+        studentsDone++;
+        updateProgress();
+
+        if(studentsDone >= totalStudents) {
+            showRecap();
+        } else {
+            const side = document.getElementById(sideId);
+            side.innerHTML = `
+                <div class="card" style="text-align:center; padding: 6rem 3rem; flex: 1; display:flex; flex-direction: column; justify-content: center; background: #f0fdf4; border: 2px solid #bbf7d0;">
+                    <h2 style="font-size: 3rem; color: #16a34a; margin-bottom: 20px;">Selesai! 🎉</h2>
+                    <p style="font-size: 1.8rem; margin-bottom: 40px; color: #15803d;">Jawaban atas nama <strong>${name}</strong> telah disimpan ke sistem.</p>
+                    <button onclick="renderSide('${sideId}')" style="font-size: 1.8rem; padding: 25px; background: #16a34a;">Lanjut ke Siswa Berikutnya</button>
+                </div>
+            `;
+        }
+    }
+
+    function updateProgress() {
+        document.getElementById('progress-text').innerText = `Progres: ${studentsDone} / ${totalStudents} Siswa`;
+    }
+
+    function showRecap() {
+        document.getElementById('main-container').style.display = 'none';
+        document.getElementById('recap-screen').style.display = 'block';
+        document.getElementById('progress-text').innerText = "Kuis Selesai!";
+
+        let tbody = document.getElementById('recap-tbody');
+        tbody.innerHTML = '';
+        results.forEach((r, idx) => {
+            tbody.innerHTML += `
+                <tr>
+                    <td>${idx + 1}</td>
+                    <td>${r.name}</td>
+                    <td><strong>${r.score}</strong></td>
+                    <td class="${r.score >= 70 ? 'lulus' : 'gagal'}">${r.status}</td>
+                </tr>
+            `;
+        });
+    }
+
+    function downloadPDF() {
+        const element = document.getElementById('recap-content');
+        const opt = {
+            margin:       [0.5, 0.5, 0.5, 0.5],
+            filename:     'Rekap_Nilai_Cara_Kerja_Komputer.pdf',
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2 },
+            jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+        };
+        html2pdf().set(opt).from(element).save();
+    }
+
+    window.onload = () => {
+        renderSide('side-left');
+        renderSide('side-right');
+    };
+</script>
+</body>
+</html>
