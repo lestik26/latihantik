@@ -1,0 +1,833 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ujian Informatika Kelas 4</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f8fafc; --card:#fff; --line:#e2e8f0;
+  --ind:#3b82f6; --ind-d:#2563eb; --ind-l:#eff6ff;
+  --grn:#10b981; --grn-l:#ecfdf5; --red:#ef4444; --red-l:#fef2f2;
+  --amb:#f59e0b; --amb-l:#fffbeb;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:var(--bg);color:#0f172a;line-height:1.6}
+.hidden{display:none!important}
+.wrap{max-width:1100px;margin:0 auto;padding:20px}
+
+/* Layout Ujian */
+.exam-layout{display:grid;grid-template-columns:1fr 300px;gap:24px;align-items:start}
+@media (max-width:800px){.exam-layout{grid-template-columns:1fr}}
+
+/* Header Soal */
+.top-header{display:flex;justify-content:space-between;align-items:center;background:#fff;padding:16px 24px;border-radius:12px;border:1px solid var(--line);margin-bottom:20px;box-shadow:0 2px 4px rgba(0,0,0,.02)}
+.soal-no{font-weight:800;font-size:1.2rem;color:#475569;display:flex;align-items:center;gap:10px}
+.no-badge{background:var(--ind-d);color:#fff;width:36px;height:36px;display:grid;place-items:center;border-radius:8px;font-size:1.2rem}
+.timer-box{display:flex;align-items:center;gap:10px}
+.timer-lbl{background:#7c3aed;color:#fff;padding:6px 12px;border-radius:6px;font-weight:700;font-size:.9rem}
+.timer-val{background:var(--ind);color:#fff;padding:6px 12px;border-radius:6px;font-weight:700;font-size:1.1rem;font-family:monospace}
+
+/* Kartu Soal */
+.q-card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:24px;margin-bottom:20px;box-shadow:0 4px 6px -1px rgba(0,0,0,.05)}
+.q-text{font-size:1.15rem;font-weight:600;margin-bottom:20px}
+.opts{display:flex;flex-direction:column;gap:12px}
+.opt{display:flex;align-items:flex-start;gap:12px;padding:16px;border:1px solid var(--line);border-radius:10px;cursor:pointer;transition:.2s}
+.opt:hover{background:#f8fafc;border-color:#cbd5e1}
+.opt input[type="radio"], .opt input[type="checkbox"]{margin-top:4px;width:18px;height:18px;accent-color:var(--ind-d)}
+.opt.sel{border-color:var(--ind);background:var(--ind-l)}
+.fill-input{width:100%;padding:14px;border:2px solid var(--line);border-radius:10px;font-size:1rem;font-family:inherit;outline:none}
+.fill-input:focus{border-color:var(--ind)}
+code{background:#f1f5f9;padding:2px 6px;border-radius:4px;font-size:.95em}
+
+/* Tombol Aksi */
+.action-bar{display:flex;justify-content:space-between;align-items:center;margin-top:24px}
+.btn{padding:12px 24px;border-radius:8px;font-weight:700;font-size:1rem;cursor:pointer;border:none;transition:.2s;display:inline-flex;align-items:center;gap:8px;font-family:inherit}
+.btn.ragu{background:var(--amb);color:#fff}
+.btn.ragu.active{background:#b45309}
+.btn.next{background:var(--ind-d);color:#fff}
+.btn.submit{background:var(--grn);color:#fff}
+.btn.download{background:#0ea5e9;color:#fff;margin-top:15px;width:100%;justify-content:center}
+.btn:hover{opacity:.9;transform:translateY(-1px)}
+
+/* Panel Navigasi Kanan */
+.sidebar{background:#fff;border:1px solid var(--line);border-radius:12px;padding:20px;position:sticky;top:20px}
+.sidebar h3{margin:0 0 16px 0;font-size:1.1rem;color:#334155;border-bottom:1px solid var(--line);padding-bottom:10px}
+.nav-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.nav-btn{aspect-ratio:1;border:1px solid var(--line);border-radius:6px;background:#fff;font-weight:600;color:#475569;cursor:pointer;transition:.2s;display:grid;place-items:center;font-family:inherit}
+.nav-btn:hover{background:#f1f5f9}
+.nav-btn.active{border:2px solid var(--ind-d);background:var(--ind-l);color:var(--ind-d)}
+.nav-btn.answered{background:var(--grn-l);border-color:#a7f3d0;color:#047857}
+.nav-btn.ragu-flag{background:var(--amb-l);border-color:#fcd34d;color:#b45309}
+
+/* ===== Simulator Google Docs ===== */
+.src-card{background:#f8fafc;border:1px dashed #94a3b8;border-radius:10px;padding:16px 20px;margin-bottom:16px;user-select:none;-webkit-user-select:none}
+.src-card .lbl{display:inline-block;background:#7c3aed;color:#fff;font-size:.75rem;font-weight:800;padding:2px 10px;border-radius:99px;margin-bottom:8px;letter-spacing:.04em}
+.src-card h4{margin:0 0 8px 0;font-size:1.05rem}
+.src-card p{margin:0 0 8px 0;font-size:.95rem;color:#334155}
+.perintah{background:var(--amb-l);border-left:4px solid var(--amb);border-radius:8px;padding:12px 16px;font-size:.92rem;margin-bottom:16px}
+.perintah ol{margin:6px 0 0 0;padding-left:20px}
+.perintah li{margin-bottom:2px}
+.docs-app{border:1px solid #dadce0;border-radius:10px;overflow:hidden;background:#f1f3f4}
+.docs-top{display:flex;align-items:center;gap:10px;padding:8px 14px;background:#fff;border-bottom:1px solid #e8eaed}
+.docs-logo{width:22px;height:28px;background:#4285f4;border-radius:3px;position:relative;flex:none}
+.docs-logo::before{content:"";position:absolute;left:5px;right:5px;top:9px;height:2px;background:#fff;box-shadow:0 5px 0 #fff,0 10px 0 #fff}
+.docs-title{font-size:.95rem;color:#202124}
+.docs-toolbar{display:flex;align-items:center;gap:4px;flex-wrap:wrap;padding:6px 10px;background:#edf2fa;border-bottom:1px solid #dadce0;position:relative}
+.tb-btn{width:34px;height:34px;border:none;background:transparent;border-radius:6px;cursor:pointer;display:grid;place-items:center;color:#444746;padding:0}
+.tb-btn:hover{background:#dde3ea}
+.tb-btn.on{background:#d3e3fd;color:#0b57d0}
+.tb-btn svg{width:20px;height:20px}
+.tb-sep{width:1px;height:22px;background:#c7c7c7;margin:0 6px}
+.tb-ls{width:auto;padding:0 8px;gap:4px;font-family:inherit;font-size:.85rem;display:flex;align-items:center;color:#444746}
+.ls-menu{position:absolute;top:44px;left:0;background:#fff;border:1px solid #dadce0;border-radius:8px;box-shadow:0 4px 14px rgba(0,0,0,.18);padding:6px 0;z-index:30;min-width:170px}
+.ls-menu button{display:flex;width:100%;align-items:center;gap:8px;padding:8px 16px;border:none;background:#fff;cursor:pointer;font-family:inherit;font-size:.9rem;text-align:left;color:#202124}
+.ls-menu button:hover{background:#f1f3f4}
+.ls-menu button .ck{width:16px;color:#0b57d0;font-weight:800}
+.docs-canvas{padding:20px 12px;max-height:560px;overflow:auto}
+.docs-page{background:#fff;max-width:760px;margin:0 auto;min-height:380px;padding:40px 52px;box-shadow:0 1px 3px rgba(60,64,67,.3);font-family:Arial,Helvetica,sans-serif;font-size:16px;color:#000;outline:none}
+.docs-page p{margin:0;line-height:1.15;min-height:1.15em;text-align:left;word-wrap:break-word}
+.docs-hint{font-size:.82rem;color:#64748b;padding:8px 14px;background:#fff;border-top:1px solid #e8eaed}
+.toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%);background:#0f172a;color:#fff;padding:10px 18px;border-radius:8px;font-size:.9rem;z-index:99;opacity:0;pointer-events:none;transition:.25s}
+.toast.show{opacity:.95}
+@media (max-width:600px){.docs-page{padding:24px 20px}}
+</style>
+</head>
+<body>
+
+<div id="introScreen" class="wrap" style="max-width:600px;margin-top:50px">
+  <div class="q-card" style="text-align:center">
+    <h1 style="color:var(--ind-d)">Ujian Informatika Kelas 4</h1>
+    <p style="margin:0 0 4px 0;font-weight:600">Perataan Teks, Spasi Antar Baris &amp; Indentasi</p>
+    <p>Masukkan data dirimu dengan benar sebelum memulai.</p>
+    <input type="text" id="inNama" class="fill-input" placeholder="Nama Lengkap" style="margin-bottom:12px">
+    <div style="display:flex;gap:12px;margin-bottom:20px">
+      <input type="text" id="inKelas" class="fill-input" placeholder="Kelas (Cth: 4A)">
+      <input type="number" id="inAbsen" class="fill-input" placeholder="No Absen">
+    </div>
+    <div id="introErr" style="color:var(--red);font-weight:600;margin-bottom:12px"></div>
+    <button class="btn next" id="btnStart" style="width:100%;justify-content:center">Mulai Ujian ▶</button>
+  </div>
+</div>
+
+<div id="examScreen" class="wrap hidden">
+  <div class="exam-layout">
+    <div class="main-area">
+      <div class="top-header">
+        <div class="soal-no"><span class="no-badge" id="currentNo">1</span> SOAL NO.</div>
+        <div class="timer-box">
+          <span class="timer-lbl">SISA WAKTU</span>
+          <span class="timer-val" id="timer">30:00</span>
+        </div>
+      </div>
+
+      <div class="q-card" id="questionContainer">
+        <!-- Soal di-render oleh JS -->
+      </div>
+
+      <div class="action-bar">
+        <button class="btn ragu" id="btnRagu">🚩 Ragu-Ragu</button>
+        <button class="btn next" id="btnNext">Selanjutnya ▶</button>
+      </div>
+    </div>
+
+    <div class="sidebar">
+      <h3>NOMOR SOAL</h3>
+      <div class="nav-grid" id="navGrid"></div>
+      <div style="margin-top:20px;text-align:center">
+        <button class="btn submit" id="btnSubmit" style="width:100%;justify-content:center">Kumpulkan Ujian</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="resultScreen" class="wrap hidden" style="max-width:600px;margin-top:50px;text-align:center">
+  <div class="q-card">
+    <h1 style="color:var(--grn)">Ujian Selesai!</h1>
+    <p>Terima kasih telah mengerjakan dengan jujur.</p>
+    <div style="font-size:4rem;font-weight:800;color:var(--ind-d);margin:20px 0" id="resScore">0</div>
+    <p id="resStatus"></p>
+    <div id="sendStatus" style="margin-top:20px;font-weight:600;margin-bottom:15px"></div>
+    <button class="btn download" id="btnDownload">📥 Download Hasil &amp; Pembahasan</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const CONFIG = {
+  APPS_SCRIPT_URL: "https://script.google.com/macros/s/AKfycbzS1NT-xSBr3IHwllnQ5kN1dreKfzfhOF0FqjyJMeXvW5ZuUK1Y2kMZuUG_i2IZDkT3/exec",
+  TOKEN: "tik6-ujian-2026",
+  DURASI_MENIT: 30
+};
+
+/* ================= BANK SOAL =================
+   Sumber: modul "Perataan Teks" (rata kiri, tengah, kanan, justify),
+   modul "Line Spacing" dan materi "Indentasi" (pertemuan 13). */
+const QB = {
+  pg: [
+    {id:'PG1', bloom:'C1', q:'Pintasan keyboard untuk membuat teks <b>rata kanan</b> adalah ....', opts:['Ctrl + L','Ctrl + E','Ctrl + R','Ctrl + J'], ans:2},
+    {id:'PG2', bloom:'C1', q:'<b>Line Spacing</b> adalah ....', opts:['jarak kosong di antara satu baris tulisan dengan baris di bawahnya','jarak paragraf dari tepi halaman','ukuran besar kecilnya huruf','jenis huruf yang dipakai di dokumen'], ans:0},
+    {id:'PG3', bloom:'C2', q:'Paragraf panjang pada buku cerita dan koran paling cocok memakai perataan ....', opts:['Rata Tengah','Rata Kanan','Rata Kiri-Kanan (Justify)','Tidak perlu diatur'], ans:2},
+    {id:'PG4', bloom:'C2', q:'Jenis indentasi yang membuat <b>baris pertama</b> paragraf menjorok ke dalam, sedangkan baris kedua dan seterusnya tetap rata dari tepi kiri, disebut ....', opts:['First Line Indent','Hanging Indent','Left Indent','Right Indent'], ans:0},
+    {id:'PG5', bloom:'C3', q:'Dina menulis surat. Judul &ldquo;Surat untuk Sahabat&rdquo; ingin di tengah, isi cerita dibuat rata kiri-kanan, dan tanggal surat di sisi kanan. Urutan pintasan keyboard yang tepat adalah ....', opts:['Ctrl + E, Ctrl + J, Ctrl + R','Ctrl + L, Ctrl + J, Ctrl + E','Ctrl + E, Ctrl + L, Ctrl + R','Ctrl + R, Ctrl + E, Ctrl + J'], ans:0}
+  ],
+  pgk: [
+    {id:'PGK1', bloom:'C2', q:'Pilih <b>semua</b> jenis perataan teks yang tersedia di Google Docs!', opts:['Rata Kiri (Align left)','Rata Tengah (Center)','Rata Kanan (Align right)','Rata Kiri-Kanan (Justify)','Rata Bawah (Align bottom)'], ans:[0,1,2,3]},
+    {id:'PGK2', bloom:'C2', q:'Pilih <b>semua</b> pasangan pintasan keyboard dan fungsinya yang <b>BENAR</b>!', opts:['<code>Ctrl + L</code> : rata kiri','<code>Ctrl + E</code> : rata kanan','<code>Ctrl + R</code> : rata kanan','<code>Ctrl + J</code> : rata tengah','<code>Ctrl + A</code> : memblok (memilih) seluruh teks'], ans:[0,2,4]},
+    {id:'PGK3', bloom:'C2', q:'Pilih <b>semua</b> manfaat mengatur spasi antar baris (line spacing)!', opts:['Mata tidak cepat lelah saat membaca.','Mencegah mata salah loncat baris.','Dokumen terlihat bersih, rapi, dan profesional.','Huruf otomatis berubah warna.','Isi tulisan otomatis berubah menjadi lebih panjang.'], ans:[0,1,2]},
+    {id:'PGK4', bloom:'C2', q:'Pilih <b>semua</b> pernyataan yang <b>BENAR</b> tentang indentasi!', opts:['Indentasi adalah jarak paragraf dari tepi halaman.','First Line Indent membuat baris pertama paragraf menjorok ke dalam.','Hanging Indent membuat baris pertama rata, sedangkan baris kedua dan seterusnya menjorok.','Indentasi terbaik dibuat dengan menekan tombol spasi berkali-kali.','Right Indent menggeser seluruh paragraf dari tepi kiri.'], ans:[0,1,2]},
+    {id:'PGK5', bloom:'C2', q:'Pilih <b>semua</b> pernyataan yang <b>BENAR</b> saat praktik mengatur dokumen!', opts:['Sebelum menekan tombol perataan, klik dulu baris tulisan yang ingin diubah.','Untuk mengubah beberapa baris sekaligus, blok/sorot semua barisnya lebih dahulu.','Jika ikon tidak terlihat, gunakan menu Format &gt; Rata (Align &amp; indent).','Ikon Line and Paragraph Spacing di Microsoft Word berada pada tab Insert.','Perataan dapat berubah tanpa memilih baris atau meletakkan kursor.'], ans:[0,1,2]}
+  ],
+  isian: [
+    {id:'I1', bloom:'C1', q:'Pintasan keyboard untuk rata kiri-kanan (Justify) adalah <code>Ctrl + ....</code> (jawab satu huruf)', accept:['j','ctrl+j','ctrlj']},
+    {id:'I2', bloom:'C1', q:'Jarak kosong antara satu baris tulisan dengan baris di bawahnya disebut <b>.... Spacing</b>. (jawab satu kata bahasa Inggris)', accept:['line','linespacing']},
+    {id:'I3', bloom:'C2', q:'Spasi antar baris <b>1,5</b> termasuk jarak baris .... (jawab: rapat / sedang / renggang)', accept:['sedang']},
+    {id:'I4', bloom:'C3', q:'Ani ingin baris pertama setiap paragraf ceritanya menjorok ke dalam seperti pada buku cerita. Jenis indentasi yang ia pilih adalah .... (jawab dalam bahasa Inggris)', accept:['firstlineindent','firstline']},
+    {id:'I5', bloom:'C3', q:'Tanggal surat &ldquo;Bekasi, 13 Oktober 2026&rdquo; dan nama penulis di akhir surat sebaiknya memakai perataan .... (jawab: rata kiri / rata tengah / rata kanan)', accept:['ratakanan','kanan','alignright','right']}
+  ]
+};
+
+/* ===== Soal Praktik Terakhir: Simulator Google Docs ===== */
+const SK_TARGET = [
+  {key:'judul', label:'Judul',            text:'Liburan ke Kebun Raya', align:'center'},
+  {key:'p1',    label:'Paragraf 1',       text:'Pada hari Minggu, keluargaku pergi berlibur ke Kebun Raya Bogor. Kami berangkat pagi-pagi agar tidak terjebak macet di jalan. Sesampainya di sana, udara terasa sejuk dan banyak pohon besar yang rindang. Aku sangat senang karena bisa berjalan-jalan bersama ayah, ibu, dan adikku.', align:'left'},
+  {key:'p2',    label:'Paragraf 2',       text:'Di tengah kebun, kami menemukan taman bunga yang berwarna-warni. Adikku berlari mengejar kupu-kupu yang terbang di antara bunga. Ibu mengajak kami makan bekal di bawah pohon yang teduh. Menjelang sore, kami pulang dengan hati gembira dan membawa banyak kenangan indah.', align:'justify'},
+  {key:'tgl',   label:'Tempat & Tanggal', text:'Bekasi, 3 November 2026', align:'right'}
+];
+const SK_LS = 1;            // spasi target: single (1,0)
+const SK_DEFAULT_LS = 1.15; // spasi bawaan Google Docs
+const PT_TEXT = 3.5, PT_ALIGN = 3.5, PT_LS = 1.75; // 4 bagian x 8,75 = 35 poin
+const ALIGN_NAME = {left:'Rata Kiri', center:'Rata Tengah', right:'Rata Kanan', justify:'Rata Kiri-Kanan'};
+
+const KEY = 'ujian_tik4_v1';
+const $ = s => document.querySelector(s);
+const LETTER = ['A','B','C','D','E'];
+let state = null;
+let tickHandle = null;
+
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function fmtLS(v){ return String(v).replace('.',','); }
+function toast(msg){
+  const t = $('#toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toast._h); toast._h = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+function normIsian(s, keepQuotes){
+  s = String(s==null?'':s).toLowerCase().replace(/\s+/g,'');
+  if(!keepQuotes) s = s.replace(/["'\u201c\u201d\u2018\u2019`]/g,'');
+  return s.replace(/\.$/,'');
+}
+function cekIsian(q, jawab){
+  const a = normIsian(jawab, q.keepQuotes);
+  if(!a) return false;
+  return q.accept.some(x => normIsian(x, q.keepQuotes) === a);
+}
+
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+function prepareQuestions() {
+  let flat = [];
+  QB.pg.forEach(q => {
+    let opts = q.opts.map((opt, i) => ({ opt, origIdx: i }));
+    opts = shuffleArray(opts);
+    let newAns = opts.findIndex(o => o.origIdx === q.ans);
+    flat.push({ ...q, opts: opts.map(o => o.opt), ans: newAns, type: 'pg', pts: 3 });
+  });
+  QB.pgk.forEach(q => {
+    let opts = q.opts.map((opt, i) => ({ opt, origIdx: i }));
+    opts = shuffleArray(opts);
+    let newAns = q.ans.map(origIdx => opts.findIndex(o => o.origIdx === origIdx));
+    flat.push({ ...q, opts: opts.map(o => o.opt), ans: newAns, type: 'pgk', pts: 4 });
+  });
+  QB.isian.forEach(q => flat.push({ ...q, type: 'isian', pts: 6 }));
+
+  flat = shuffleArray(flat);
+  flat.push({ id: 'SK', type: 'sk', pts: 35, bloom: 'C3' });
+  return flat;
+}
+
+function goFullscreen() {
+  const elem = document.documentElement;
+  if (elem.requestFullscreen) {
+    elem.requestFullscreen().catch(err => console.log('Fullscreen error:', err));
+  } else if (elem.webkitRequestFullscreen) {
+    elem.webkitRequestFullscreen();
+  }
+}
+
+function startExam() {
+  const nama = $('#inNama').value.trim();
+  const kelas = $('#inKelas').value.trim();
+  const absen = $('#inAbsen').value.trim();
+  if(!nama || !kelas || !absen) { $('#introErr').textContent = 'Lengkapi semua data!'; return; }
+
+  goFullscreen();
+
+  state = {
+    id: Date.now().toString(36) + Math.random().toString(36).slice(2,6),
+    nama, kelas, absen,
+    start: Date.now(),
+    qOrder: prepareQuestions(),
+    answers: {},
+    flags: {},
+    currentIdx: 0,
+    submitted: false
+  };
+  localStorage.setItem(KEY, JSON.stringify(state));
+  initExamUI();
+}
+
+function initExamUI() {
+  $('#introScreen').classList.add('hidden');
+  $('#examScreen').classList.remove('hidden');
+  renderNav();
+  renderQuestion();
+  tick();
+  tickHandle = setInterval(tick, 1000);
+}
+
+function tick() {
+  if(!state || state.submitted) return;
+  let left = Math.ceil((state.start + CONFIG.DURASI_MENIT*60000 - Date.now())/1000);
+  if(left <= 0) { left = 0; submitExam('Waktu Habis'); }
+  $('#timer').textContent = fmtTime(left);
+  if(left < 300) $('#timer').style.background = '#ef4444';
+}
+
+function fmtTime(s) {
+  return String(Math.floor(s/60)).padStart(2,'0') + ':' + String(s%60).padStart(2,'0');
+}
+
+function renderNav() {
+  let html = '';
+  state.qOrder.forEach((q, i) => {
+    let cls = 'nav-btn';
+    if(i === state.currentIdx) cls += ' active';
+    else if (state.flags[q.id]) cls += ' ragu-flag';
+    else if (state.answers[q.id] !== undefined && state.answers[q.id] !== '' && !(Array.isArray(state.answers[q.id]) && !state.answers[q.id].length)) cls += ' answered';
+    html += `<button class="${cls}" onclick="jumpTo(${i})">${i+1}</button>`;
+  });
+  $('#navGrid').innerHTML = html;
+}
+
+/* ---------- ikon toolbar ---------- */
+function alignIcon(type){
+  const L = {
+    left:    [[3,21],[3,15],[3,21],[3,15]],
+    center:  [[3,21],[6,18],[3,21],[6,18]],
+    right:   [[3,21],[9,21],[3,21],[9,21]],
+    justify: [[3,21],[3,21],[3,21],[3,21]]
+  }[type];
+  const ys = [5,10,15,20];
+  return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">' +
+    L.map((p,i)=>`<line x1="${p[0]}" y1="${ys[i]}" x2="${p[1]}" y2="${ys[i]}"/>`).join('') + '</svg>';
+}
+const LS_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px"><path d="M5 4v16M2.5 6.5L5 4l2.5 2.5M2.5 17.5L5 20l2.5-2.5"/><line x1="11" y1="6" x2="21" y2="6"/><line x1="11" y1="12" x2="21" y2="12"/><line x1="11" y1="18" x2="21" y2="18"/></svg>';
+
+function renderQuestion() {
+  const q = state.qOrder[state.currentIdx];
+  $('#currentNo').textContent = state.currentIdx + 1;
+  $('#btnRagu').classList.toggle('active', !!state.flags[q.id]);
+
+  if(state.currentIdx === state.qOrder.length - 1) {
+    $('#btnNext').classList.add('hidden');
+    $('#btnSubmit').classList.remove('hidden');
+  } else {
+    $('#btnNext').classList.remove('hidden');
+    $('#btnSubmit').classList.add('hidden');
+  }
+
+  let html = '';
+  if(q.type === 'sk') {
+    const s = SK_TARGET;
+    html = `
+      <div class="q-text">Tugas Praktik: Mengetik Ulang &amp; Merapikan Dokumen di Google Docs</div>
+      <div class="src-card">
+        <span class="lbl">TEKS SUMBER</span>
+        <h4>${esc(s[0].text)}</h4>
+        <p>${esc(s[1].text)}</p>
+        <p>${esc(s[2].text)}</p>
+        <p style="margin:0">${esc(s[3].text)}</p>
+      </div>
+      <div class="perintah">
+        <b>Perintah:</b> Ketik ulang teks sumber di lembar Google Docs di bawah ini dengan urutan yang sama (judul, paragraf 1, paragraf 2, tempat &amp; tanggal), lalu atur formatnya:
+        <ol>
+          <li><b>Judul</b>: Rata Tengah </li>
+          <li><b>Paragraf 1</b>: Rata Kiri </li>
+          <li><b>Paragraf 2</b>: Rata Kiri-Kanan / Justify </li>
+          <li><b>Tempat &amp; tanggal</b> (di bawah): Rata Kanan </li>
+          <li><b>Semua bagian</b>: Line Spacing single</li>
+        </ol>
+      </div>
+      <div class="docs-app">
+        <div class="docs-top"><span class="docs-logo"></span><span class="docs-title">Latihan Perataan Teks</span></div>
+        <div class="docs-toolbar" id="docsToolbar">
+          <button type="button" class="tb-btn" data-align="left" title="Rata kiri (Ctrl+L)">${alignIcon('left')}</button>
+          <button type="button" class="tb-btn" data-align="center" title="Rata tengah (Ctrl+E)">${alignIcon('center')}</button>
+          <button type="button" class="tb-btn" data-align="right" title="Rata kanan (Ctrl+R)">${alignIcon('right')}</button>
+          <button type="button" class="tb-btn" data-align="justify" title="Rata kiri-kanan / Justify (Ctrl+J)">${alignIcon('justify')}</button>
+          <span class="tb-sep"></span>
+          <button type="button" class="tb-btn tb-ls" id="lsBtn" title="Spasi antar baris (Line spacing)">${LS_ICON}<span id="lsVal">1,15</span> ▾</button>
+          <div class="ls-menu hidden" id="lsMenu">
+            ${[1,1.15,1.5,2].map(v=>`<button type="button" data-ls="${v}"><span class="ck"></span>${v===1?'1,0':v===2?'2,0':fmtLS(v)}</button>`).join('')}
+          </div>
+        </div>
+        <div class="docs-canvas"><div class="docs-page" id="docPage" contenteditable="true" spellcheck="false"><p><br></p></div></div>
+        <div class="docs-hint">Klik barisnya dulu (atau blok teksnya), lalu pilih tombol perataan atau spasi di toolbar. Menempel (paste) dinonaktifkan, jadi ketik sendiri ya.</div>
+      </div>`;
+    $('#questionContainer').innerHTML = html;
+    setupDocs();
+    return;
+  } else {
+    html = `<div class="q-text">${q.q}</div>`;
+    if(q.type === 'pg' || q.type === 'pgk') {
+      html += `<div class="opts">`;
+      q.opts.forEach((opt, i) => {
+        let checked = '';
+        if(q.type === 'pg' && state.answers[q.id] === i) checked = 'checked';
+        if(q.type === 'pgk' && Array.isArray(state.answers[q.id]) && state.answers[q.id].includes(i)) checked = 'checked';
+        let type = q.type === 'pg' ? 'radio' : 'checkbox';
+        html += `<label class="opt ${checked?'sel':''}">
+          <input type="${type}" name="${q.id}" value="${i}" ${checked} onchange="saveAnswer('${q.id}', this)">
+          <span>${LETTER[i]}. ${opt}</span>
+        </label>`;
+      });
+      html += `</div>`;
+    } else if (q.type === 'isian') {
+      let val = esc(state.answers[q.id] || '');
+      html += `<input type="text" class="fill-input" value="${val}" oninput="saveAnswer('${q.id}', this)" placeholder="Ketik jawaban singkat...">`;
+    }
+  }
+  $('#questionContainer').innerHTML = html;
+}
+
+function saveAnswer(qid, el) {
+  const q = state.qOrder[state.currentIdx];
+  if(q.type === 'pg') {
+    state.answers[qid] = parseInt(el.value);
+    document.querySelectorAll('.opt').forEach(o => o.classList.toggle('sel', o.querySelector('input').checked));
+  }
+  if(q.type === 'pgk') {
+    let arr = state.answers[qid] || [];
+    let v = parseInt(el.value);
+    if(el.checked) { if(!arr.includes(v)) arr.push(v); }
+    else { arr = arr.filter(x => x !== v); }
+    state.answers[qid] = arr;
+    el.closest('.opt')?.classList.toggle('sel', el.checked);
+  }
+  if(q.type === 'isian') state.answers[qid] = el.value;
+  saveLocal();
+  renderNav();
+}
+
+/* ================= SIMULATOR GOOGLE DOCS ================= */
+function docEl(){ return document.getElementById('docPage'); }
+
+function selBlocks(){
+  const ed = docEl(); if(!ed) return [];
+  const sel = window.getSelection();
+  if(!sel.rangeCount) return [];
+  const r = sel.getRangeAt(0);
+  if(!ed.contains(r.commonAncestorContainer)) return [];
+  let blocks = [...ed.children].filter(c => r.intersectsNode(c));
+  if(!blocks.length && ed.lastElementChild) blocks = [ed.lastElementChild];
+  return blocks;
+}
+
+function blockAlign(b){
+  let a = b.style.textAlign || getComputedStyle(b).textAlign || 'left';
+  if(a === 'start') a = 'left';
+  if(a === 'end') a = 'right';
+  return a;
+}
+function blockLS(b){
+  const v = parseFloat(b.style.lineHeight);
+  return isNaN(v) ? SK_DEFAULT_LS : v;
+}
+
+function docChanged(){
+  const ed = docEl(); if(!ed) return;
+  const hasText = ed.textContent.replace(/\u00a0/g,' ').trim().length > 0;
+  state.answers['SK'] = hasText ? ed.innerHTML : '';
+  saveLocal();
+  renderNav();
+}
+
+function fixDocStructure(){
+  const ed = docEl();
+  if(!ed.firstElementChild){
+    ed.innerHTML = '<p><br></p>';
+    const r = document.createRange(); r.setStart(ed.firstChild, 0); r.collapse(true);
+    const s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+    return;
+  }
+  const stray = [...ed.childNodes].some(n => (n.nodeType === 3 && n.textContent.trim()) || (n.nodeType === 1 && n.tagName !== 'P'));
+  if(stray){ document.execCommand('formatBlock', false, 'p'); }
+}
+
+function setAlign(a){
+  selBlocks().forEach(b => { b.style.textAlign = a; });
+  docChanged(); syncToolbar();
+}
+function setLS(v){
+  selBlocks().forEach(b => { b.style.lineHeight = String(v); });
+  docChanged(); syncToolbar();
+}
+
+function syncToolbar(){
+  const tb = document.getElementById('docsToolbar'); if(!tb) return;
+  const blocks = selBlocks(); const b = blocks[0];
+  const a = b ? blockAlign(b) : 'left';
+  const ls = b ? blockLS(b) : SK_DEFAULT_LS;
+  tb.querySelectorAll('[data-align]').forEach(btn => btn.classList.toggle('on', btn.dataset.align === a));
+  const lv = document.getElementById('lsVal'); if(lv) lv.textContent = fmtLS(ls);
+  document.querySelectorAll('#lsMenu button').forEach(btn => {
+    btn.querySelector('.ck').textContent = Math.abs(parseFloat(btn.dataset.ls) - ls) < 0.01 ? '✓' : '';
+  });
+}
+
+function setupDocs(){
+  const ed = docEl();
+  try { document.execCommand('defaultParagraphSeparator', false, 'p'); } catch(e){}
+  if(state.answers['SK']) ed.innerHTML = state.answers['SK'];
+
+  const tb = document.getElementById('docsToolbar');
+  const menu = document.getElementById('lsMenu');
+  tb.addEventListener('mousedown', e => { e.preventDefault(); }); // jaga agar seleksi tidak hilang
+  tb.querySelectorAll('[data-align]').forEach(btn => btn.addEventListener('click', () => setAlign(btn.dataset.align)));
+  document.getElementById('lsBtn').addEventListener('click', () => menu.classList.toggle('hidden'));
+  menu.querySelectorAll('[data-ls]').forEach(btn => btn.addEventListener('click', () => { setLS(parseFloat(btn.dataset.ls)); menu.classList.add('hidden'); ed.focus(); }));
+  document.addEventListener('mousedown', function closer(e){
+    if(!document.getElementById('lsMenu')){ document.removeEventListener('mousedown', closer); return; }
+    if(!e.target.closest('#lsBtn') && !e.target.closest('#lsMenu')) menu.classList.add('hidden');
+  });
+
+  ed.addEventListener('input', () => { fixDocStructure(); docChanged(); syncToolbar(); });
+  ed.addEventListener('keyup', syncToolbar);
+  ed.addEventListener('mouseup', syncToolbar);
+  ed.addEventListener('focus', syncToolbar);
+  ed.addEventListener('keydown', e => {
+    if((e.ctrlKey || e.metaKey) && !e.shiftKey && !e.altKey){
+      const map = {l:'left', e:'center', r:'right', j:'justify'};
+      const k = e.key.toLowerCase();
+      if(map[k]){ e.preventDefault(); setAlign(map[k]); }
+    }
+  });
+  ['paste','drop','cut'].forEach(ev => ed.addEventListener(ev, e => { e.preventDefault(); toast('Menempel/menyalin dinonaktifkan. Ketik sendiri ya!'); }));
+  syncToolbar();
+}
+document.addEventListener('selectionchange', () => { if(docEl()) syncToolbar(); });
+
+/* ---------- Penilaian soal praktik ---------- */
+function normText(s){
+  return String(s||'').toLowerCase().replace(/\u00a0/g,' ').replace(/[^\p{L}\p{N}\s]/gu,'').replace(/\s+/g,' ').trim();
+}
+function lev(a, b){
+  const m = a.length, n = b.length;
+  if(!m) return n; if(!n) return m;
+  let prev = Array.from({length:n+1}, (_,i) => i);
+  for(let i=1;i<=m;i++){
+    const cur = [i];
+    for(let j=1;j<=n;j++){
+      cur[j] = Math.min(prev[j]+1, cur[j-1]+1, prev[j-1] + (a[i-1]===b[j-1]?0:1));
+    }
+    prev = cur;
+  }
+  return prev[n];
+}
+function sim(a, b){
+  a = normText(a); b = normText(b);
+  const mx = Math.max(a.length, b.length);
+  return mx ? 1 - lev(a,b)/mx : 1;
+}
+function parseDoc(html){
+  const d = document.createElement('div'); d.innerHTML = html || '';
+  return [...d.children].map(b => {
+    let a = b.style.textAlign || 'left';
+    if(a === 'start') a = 'left'; if(a === 'end') a = 'right';
+    const ls = parseFloat(b.style.lineHeight);
+    return { text:(b.textContent||'').replace(/\u00a0/g,' ').trim(), align:a, ls: isNaN(ls) ? SK_DEFAULT_LS : ls };
+  }).filter(b => b.text);
+}
+function gradeSK(html){
+  const blocks = parseDoc(html);
+  const pairs = [];
+  SK_TARGET.forEach((t,ti) => blocks.forEach((b,bi) => pairs.push({ti, bi, s: sim(t.text, b.text)})));
+  pairs.sort((x,y) => y.s - x.s);
+  const match = {}, used = new Set();
+  pairs.forEach(p => {
+    if(match[p.ti] !== undefined || used.has(p.bi) || p.s < 0.5) return;
+    match[p.ti] = p; used.add(p.bi);
+  });
+  let total = 0;
+  const rows = SK_TARGET.map((t,ti) => {
+    const m = match[ti];
+    if(!m) return { t, found:false, ratio:0, textPts:0, alignPts:0, lsPts:0 };
+    const b = blocks[m.bi];
+    const textPts = PT_TEXT * Math.min(1, Math.max(0, (m.s - 0.6) / 0.35));
+    const alignOk = b.align === t.align;
+    const lsOk = Math.abs(b.ls - SK_LS) < 0.02;
+    const alignPts = alignOk ? PT_ALIGN : 0;
+    const lsPts = lsOk ? PT_LS : 0;
+    total += textPts + alignPts + lsPts;
+    return { t, found:true, ratio:m.s, textPts, alignOk, lsOk, alignPts, lsPts, b };
+  });
+  return { total, rows };
+}
+
+function jumpTo(idx) {
+  state.currentIdx = idx;
+  saveLocal();
+  renderNav();
+  renderQuestion();
+}
+
+function saveLocal() { localStorage.setItem(KEY, JSON.stringify(state)); }
+
+// Event Listeners
+$('#btnNext').onclick = () => { if(state.currentIdx < state.qOrder.length - 1) jumpTo(state.currentIdx + 1); };
+$('#btnRagu').onclick = () => { const q = state.qOrder[state.currentIdx]; state.flags[q.id] = !state.flags[q.id]; saveLocal(); renderNav(); renderQuestion(); };
+$('#btnStart').onclick = startExam;
+
+$('#btnSubmit').onclick = () => {
+  if(confirm('Apakah kamu yakin ingin mengumpulkan ujian? Jawaban tidak dapat diubah lagi.')) {
+    submitExam('Dikumpulkan Siswa');
+  }
+};
+
+// --- PENILAIAN & DOWNLOAD ---
+function submitExam(reason) {
+  if(state.submitted) return;
+  clearInterval(tickHandle);
+
+  let score = 0;
+  let detail = [];
+  let c1=0, c2=0, c3=0, maxC1=0, maxC2=0, maxC3=0;
+  let secPG=0, secPGK=0, secIsian=0, secSK=0;
+
+  state.qOrder.forEach(q => {
+    let earned = 0;
+    let max = q.pts;
+
+    if(q.type === 'pg') {
+      if(state.answers[q.id] === q.ans) earned = max;
+      secPG += earned;
+    } else if(q.type === 'pgk') {
+      let sel = state.answers[q.id] || [];
+      let correct = sel.filter(x => q.ans.includes(x)).length;
+      let wrong = sel.length - correct;
+      let frac = Math.max(0, (correct - wrong) / q.ans.length);
+      earned = max * frac;
+      secPGK += earned;
+    } else if(q.type === 'isian') {
+      if(cekIsian(q, state.answers[q.id])) earned = max;
+      secIsian += earned;
+    } else if(q.type === 'sk') {
+      earned = gradeSK(state.answers['SK']).total;
+      secSK += earned;
+    }
+
+    score += earned;
+    detail.push(`${q.id}:${Math.round(earned*100)/100}`);
+
+    if(q.bloom === 'C1') { c1 += earned; maxC1 += max; }
+    if(q.bloom === 'C2') { c2 += earned; maxC2 += max; }
+    if(q.bloom === 'C3') { c3 += earned; maxC3 += max; }
+  });
+
+  state.submitted = true;
+  state.finalScore = Math.round(score);
+  saveLocal();
+
+  $('#examScreen').classList.add('hidden');
+  $('#resultScreen').classList.remove('hidden');
+  $('#resScore').textContent = state.finalScore;
+  $('#resStatus').textContent = state.finalScore >= 75 ? 'SELAMAT! Anda TUNTAS.' : 'Maaf, Anda belum tuntas.';
+  $('#resStatus').style.color = state.finalScore >= 75 ? 'var(--grn)' : 'var(--red)';
+
+  const payload = {
+    token: CONFIG.TOKEN, id: state.id,
+    nama: state.nama, kelas: state.kelas, absen: state.absen,
+    alasan: reason, durasiDetik: Math.round((Date.now()-state.start)/1000),
+    skorPG: Math.round(secPG), skorPGK: Math.round(secPGK), skorIsian: Math.round(secIsian), skorSK: Math.round(secSK),
+    nilai: state.finalScore,
+    c1: maxC1 ? Math.round(c1/maxC1*100) : 0,
+    c2: maxC2 ? Math.round(c2/maxC2*100) : 0,
+    c3: maxC3 ? Math.round(c3/maxC3*100) : 0,
+    answers: state.answers,
+    detail: detail.join(' | ')
+  };
+
+  if(CONFIG.APPS_SCRIPT_URL.includes('PASTE')) {
+    $('#sendStatus').innerHTML = '<span style="color:var(--amb)">Mode Demo: URL belum diisi.</span>';
+  } else {
+    $('#sendStatus').innerHTML = '<span style="color:var(--ind)">Mengirim nilai...</span>';
+    fetch(CONFIG.APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) })
+      .then(r => r.json())
+      .then(res => {
+        if(res.ok) $('#sendStatus').innerHTML = '<span style="color:var(--grn)">✅ Berhasil dikirim ke Guru.</span>';
+        else $('#sendStatus').innerHTML = `<span style="color:var(--red)">Gagal: ${esc(res.error)}</span>`;
+      }).catch(() => $('#sendStatus').innerHTML = '<span style="color:var(--red)">Gagal koneksi internet.</span>');
+  }
+}
+
+$('#btnDownload').onclick = () => {
+    let htmlReport = `
+    <!doctype html>
+    <html lang="id">
+    <head>
+        <meta charset="utf-8">
+        <title>Hasil Ujian - ${esc(state.nama)}</title>
+        <style>
+            body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f6f8; color: #333; padding: 20px; line-height: 1.6; }
+            .container { max-width: 800px; margin: 0 auto; background: #fff; padding: 40px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+            h1 { text-align: center; color: #2563eb; margin-bottom: 5px; }
+            .header-info { text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px solid #e2e8f0; }
+            .score-box { text-align: center; font-size: 3rem; font-weight: bold; color: #10b981; margin: 20px 0; }
+            .q-item { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; margin-bottom: 15px; }
+            .q-title { font-weight: bold; margin-bottom: 10px; }
+            .ans-box { margin-top: 10px; padding: 10px; border-radius: 5px; }
+            .ans-correct { background: #ecfdf5; color: #047857; border-left: 4px solid #10b981; }
+            .ans-wrong { background: #fef2f2; color: #b91c1c; border-left: 4px solid #ef4444; }
+            table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
+            th, td { border: 1px solid #cbd5e1; padding: 8px; text-align: left; vertical-align: top; }
+            th { background: #f1f5f9; }
+            .text-err { color: #ef4444; font-weight: bold; }
+            .text-ok { color: #10b981; font-weight: bold; }
+            code { background:#f1f5f9; padding:1px 5px; border-radius:4px; }
+            .page { background:#fff; border:1px solid #cbd5e1; padding:20px 28px; margin-top:10px; font-family:Arial,sans-serif; }
+            .page p { margin:0; }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>Laporan Hasil Ujian</h1>
+            <div class="header-info">
+                <p><b>Nama:</b> ${esc(state.nama)} | <b>Kelas:</b> ${esc(state.kelas)} | <b>Absen:</b> ${esc(state.absen)}</p>
+                <p><b>Waktu Selesai:</b> ${new Date().toLocaleString('id-ID')}</p>
+            </div>
+
+            <div class="score-box">Nilai Akhir: ${state.finalScore} / 100</div>
+            <h3 style="text-align:center; color:${state.finalScore >= 75 ? '#10b981' : '#ef4444'}; margin-bottom: 30px;">
+                Status: ${state.finalScore >= 75 ? 'TUNTAS' : 'REMEDIAL'}
+            </h3>
+
+            <h2>Rincian Jawaban</h2>
+    `;
+
+    state.qOrder.forEach((q, index) => {
+        htmlReport += `<div class="q-item">`;
+        htmlReport += `<div class="q-title">Soal ${index + 1}: ${q.type === 'sk' ? 'Praktik Google Docs: mengetik ulang &amp; merapikan teks' : q.q}</div>`;
+
+        if (q.type === 'pg') {
+            let studentAnsIdx = state.answers[q.id];
+            let isCorrect = studentAnsIdx === q.ans;
+            let studentAnsText = studentAnsIdx !== undefined ? `${LETTER[studentAnsIdx]}. ${q.opts[studentAnsIdx]}` : 'Tidak dijawab';
+            let correctAnsText = `${LETTER[q.ans]}. ${q.opts[q.ans]}`;
+
+            htmlReport += `<div class="ans-box ${isCorrect ? 'ans-correct' : 'ans-wrong'}">
+                <b>Jawabanmu:</b> ${studentAnsText} <br>
+                ${isCorrect ? '✅ Benar' : `❌ Salah. <br><b>Kunci Jawaban:</b> ${correctAnsText}`}
+            </div>`;
+        }
+        else if (q.type === 'pgk') {
+            let studentAnsArr = state.answers[q.id] || [];
+            let studentAnsText = studentAnsArr.length > 0 ? studentAnsArr.map(i => `${LETTER[i]}. ${q.opts[i]}`).join('<br>') : 'Tidak dijawab';
+            let correctAnsText = q.ans.map(i => `${LETTER[i]}. ${q.opts[i]}`).join('<br>');
+            let isCorrect = studentAnsArr.length === q.ans.length && studentAnsArr.every(v => q.ans.includes(v));
+
+            htmlReport += `<div class="ans-box ${isCorrect ? 'ans-correct' : 'ans-wrong'}">
+                <b>Jawabanmu:</b><br> ${studentAnsText} <br>
+                ${isCorrect ? '✅ Benar' : `❌ Salah/Kurang Tepat. <br><b>Kunci Jawaban:</b><br> ${correctAnsText}`}
+            </div>`;
+        }
+        else if (q.type === 'isian') {
+            let studentAns = state.answers[q.id] || '';
+            let isCorrect = cekIsian(q, studentAns);
+
+            htmlReport += `<div class="ans-box ${isCorrect ? 'ans-correct' : 'ans-wrong'}">
+                <b>Jawabanmu:</b> ${esc(studentAns) || 'Tidak dijawab'} <br>
+                ${isCorrect ? '✅ Benar' : `❌ Salah. <br><b>Kunci Jawaban:</b> ${esc(q.accept[0])}`}
+            </div>`;
+        }
+        else if (q.type === 'sk') {
+            const g = gradeSK(state.answers['SK']);
+            htmlReport += `<p style="margin-bottom:5px; font-size:14px; color:#64748b;">Skor praktik: <b>${Math.round(g.total*10)/10} / 35</b>. Tabel di bawah menunjukkan bagian yang sudah dan belum tepat:</p>`;
+            htmlReport += `<div style="overflow-x:auto;"><table>
+                <tr><th>Bagian</th><th>Ketikan (akurasi)</th><th>Perataan</th><th>Spasi baris</th></tr>`;
+            g.rows.forEach(r => {
+                if(!r.found){
+                    htmlReport += `<tr><td>${esc(r.t.label)}</td><td class="text-err" colspan="3">Tidak ditemukan / terlalu berbeda dari teks sumber</td></tr>`;
+                    return;
+                }
+                const pct = Math.round(r.ratio*100);
+                htmlReport += `<tr>
+                    <td>${esc(r.t.label)}</td>
+                    <td class="${r.ratio>=0.95?'text-ok':'text-err'}">${pct}%</td>
+                    <td class="${r.alignOk?'text-ok':'text-err'}">${ALIGN_NAME[r.b.align]||esc(r.b.align)}${r.alignOk?' ✅':' ❌ (seharusnya '+ALIGN_NAME[r.t.align]+')'}</td>
+                    <td class="${r.lsOk?'text-ok':'text-err'}">${fmtLS(r.b.ls)}${r.lsOk?' ✅':' ❌ (seharusnya '+fmtLS(SK_LS)+')'}</td>
+                </tr>`;
+            });
+            htmlReport += `</table></div>`;
+            const blocks = parseDoc(state.answers['SK']);
+            htmlReport += `<p style="margin:12px 0 0 0;font-size:14px;color:#64748b;">Dokumen yang kamu ketik:</p><div class="page">` +
+              (blocks.length ? blocks.map(b => `<p style="text-align:${esc(b.align)};line-height:${b.ls}">${esc(b.text)}</p>`).join('') : '<p><i>Tidak dikerjakan</i></p>') + `</div>`;
+        }
+
+        htmlReport += `</div>`;
+    });
+
+    htmlReport += `</div></body></html>`;
+
+    const blob = new Blob([htmlReport], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Hasil_Ujian_${state.nama.replace(/\s+/g, '_')}.html`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+};
+
+// --- PEMULIHAN STATE ---
+(function init() {
+  const saved = localStorage.getItem(KEY);
+  if (saved) {
+    try {
+      const parsed = JSON.parse(saved);
+      if (parsed && !parsed.submitted) {
+        state = parsed;
+        if (Date.now() >= state.start + CONFIG.DURASI_MENIT*60000) {
+          state.submitted = true;
+          saveLocal();
+          $('#introScreen').classList.add('hidden');
+          $('#resultScreen').classList.remove('hidden');
+          $('#resScore').textContent = state.finalScore || 0;
+          return;
+        }
+        initExamUI();
+      } else if (parsed && parsed.submitted) {
+        state = parsed;
+        $('#introScreen').classList.add('hidden');
+        $('#resultScreen').classList.remove('hidden');
+        $('#resScore').textContent = state.finalScore || 0;
+      }
+    } catch (e) {
+      console.error('Gagal memuat state', e);
+    }
+  }
+})();
+</script>
+</body>
+</html>
