@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Petualang Cara Kerja Komputer: Jelajah Kranggan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Lexend:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<canvas id="gl" aria-label="Dunia kota Kranggan 3D"></canvas>
+
+<!-- ======= LOADING ASET ======= -->
+<section id="loading" role="status" aria-live="polite">
+  <div class="ld-card">
+    <div class="eyebrow">Petualang Cara Kerja Komputer</div>
+    <h2>Menyiapkan dunia Kranggan…</h2>
+    <div class="ld-bar" aria-hidden="true"><i id="ldBar"></i></div>
+    <p id="ldMsg">Memuat…</p>
+    <button class="linkbtn" id="ldSkip" type="button" hidden>Terlalu lama? Lanjut dengan model bawaan</button>
+  </div>
+</section>
+
+<!-- ======= INTRO ======= -->
+<section id="intro" class="screen">
+  <div class="wrap intro-grid">
+    <div>
+      <div class="eyebrow">Informatika Kelas 5 SD · Pertemuan 12 · Cara Kerja Komputer</div>
+      <h1 class="title">Petualang <span class="mark">Cara Kerja Komputer</span></h1>
+      <p class="lead">Jelajahi Kranggan, Bekasi, mulai dari SDIT Hidayatut Taufiq! Temui 20 guru dan staf yang tersebar di kota, lalu bantu mereka menjawab soal tentang input, storage, processing, dan output. Naik angkot kalau tempatnya jauh!</p>
+      <ol class="mission">
+        <li><b>1</b><span>Baca materi dulu selama <strong>3 menit</strong>.</span></li>
+        <li><b>2</b><span>Mulai dari <strong>SDIT Hidayatut Taufiq</strong>. Cari <strong>20 guru dan staf</strong> di sekitar Kranggan. Tanda seru kuning muncul kalau mereka dekat.</span></li>
+        <li><b>3</b><span>Naik <strong>angkot</strong> di halte untuk pergi jauh. Lihat <strong>Peta</strong> dan <strong>Daftar</strong> untuk petunjuk tempatnya.</span></li>
+        <li><b>4</b><span>Jawab soal pilihan ganda, pilihan ganda kompleks, dan isian. Kalau belum tepat, orangnya <strong>kabur</strong> dan harus dicari lagi. Tiap <strong>5 soal benar</strong> ada mini game <strong>Ayo Dansa</strong>!</span></li>
+      </ol>
+      <div class="resume" id="resumeBox" hidden>
+        <h2>Selamat datang kembali!</h2>
+        <p id="resumeMsg"></p>
+        <div class="rbtns">
+          <button class="btn" id="btnResume" type="button">Lanjutkan Petualangan</button>
+          <button class="btn alt small" id="btnFresh" type="button">Mulai dari Awal</button>
+        </div>
+      </div>
+      <form class="namebox" id="nameForm">
+        <label for="nama">Data siswa</label>
+        <input id="nama" type="text" maxlength="40" placeholder="Nama lengkap" autocomplete="off">
+        <div class="row3">
+          <input id="kelas" type="text" maxlength="10" placeholder="Kelas (cth: 5A)" autocomplete="off">
+          <input id="absen" type="number" min="1" max="99" placeholder="No. absen" autocomplete="off">
+        </div>
+        <div id="introErr" hidden></div>
+        <button class="btn" type="submit" id="btnMulai">Mulai Membaca</button>
+      </form>
+    </div>
+    <div class="sticker" aria-label="Cara bermain">
+      <h2>Cara bermain</h2>
+      <div class="legend-grid">
+        <span class="keys"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd></span><span>Berjalan (atau tombol panah)</span>
+        <span class="keys"><kbd>Shift</kbd></span><span>Berlari</span>
+        <span class="keys"><kbd>Mouse</kbd></span><span>Klik layar lalu gerakkan mouse untuk melihat sekeliling</span>
+        <span class="keys"><kbd>E</kbd></span><span>Bicara dengan guru, atau naik angkot di halte</span>
+        <span class="keys"><kbd>M</kbd></span><span>Peta kota Kranggan</span>
+        <span class="keys"><kbd>Tab</kbd></span><span>Daftar guru dan petunjuk tempatnya</span>
+      </div>
+      <p class="hint">Di tablet atau HP: geser jari di sisi kiri layar untuk berjalan, sisi kanan untuk melihat sekeliling.</p>
+      <p class="hint">Progres, koin, dan kostummu tersimpan otomatis. Kalau tidak sengaja tertutup atau ter-reload, semuanya bisa dilanjutkan sampai 24 jam kemudian.</p>
+      <div class="demo-row"><span class="keys"><kbd>Input</kbd><kbd>Storage</kbd><kbd>Processing</kbd><kbd>Output</kbd></span><span class="t">Empat tahapan kerja komputer yang akan kamu pelajari.</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ======= READING ======= -->
+<section id="baca" class="screen" hidden>
+  <div class="wrap">
+    <div class="rbar">
+      <div class="rbar-in">
+        <div><h1>Baca Dulu Materinya</h1><p>Pertemuan 12: Cara Kerja Komputer. Waktu membaca 3 menit.</p></div>
+        <div class="timer"><div class="clock" id="clock" role="timer" aria-live="off">03:00</div></div>
+      </div>
+      <div class="pbar"><i id="rProg"></i></div>
+    </div>
+
+    <div class="sec">
+      <h2>Tujuan pembelajaran</h2>
+      <div class="card acard"><ul>
+        <li>Menjelaskan cara kerja komputer melalui tahapan input, storage, processing, dan output.</li>
+        <li>Mengenali perangkat dalam setiap kategori beserta fungsinya.</li>
+        <li>Memahami cara kerja perangkat komputer dengan contoh sederhana.</li>
+        <li>Menghubungkan cara kerja komputer dengan kegiatan sehari-hari.</li>
+      </ul></div>
+    </div>
+
+    <div class="sec">
+      <h2>Pengertian cara kerja komputer</h2>
+      <p class="sub">Komputer bekerja melalui empat tahapan: <strong>Input, Storage, Processing, dan Output</strong>.</p>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Tahapan</th><th>Artinya</th></tr></thead>
+        <tbody>
+          <tr><td>Input</td><td>Memasukkan data atau perintah ke komputer.</td></tr>
+          <tr><td>Storage</td><td>Menyimpan data agar bisa digunakan kapan saja.</td></tr>
+          <tr><td>Processing</td><td>Mengolah data menjadi informasi yang berguna.</td></tr>
+          <tr><td>Output</td><td>Menampilkan hasil olahan data.</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+
+    <div class="sec">
+      <h2>Input</h2>
+      <p class="sub">Perangkat: <strong>Keyboard, Mouse, Microphone</strong>.</p>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Perangkat</th><th>Fungsi</th><th>Cara kerja</th></tr></thead>
+        <tbody>
+          <tr><td>Keyboard</td><td>Memasukkan teks atau perintah (misalnya, mengetik nama).</td><td>Menekan tombol mengirim sinyal ke komputer untuk ditampilkan sebagai teks.</td></tr>
+          <tr><td>Mouse</td><td>Mengklik atau memilih perintah di layar (misalnya, membuka aplikasi).</td><td>Gerakan dan klik diterjemahkan menjadi perintah di layar.</td></tr>
+          <tr><td>Microphone</td><td>Memasukkan suara (misalnya, rekaman suara).</td><td>Suara diubah menjadi data digital oleh komputer.</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+
+    <div class="sec">
+      <h2>Storage</h2>
+      <p class="sub">Perangkat: <strong>Hard Disk Drive (HDD), Solid State Drive (SSD), USB Flash Drive</strong>.</p>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Perangkat</th><th>Fungsi</th><th>Cara kerja</th></tr></thead>
+        <tbody>
+          <tr><td>HDD</td><td>Menyimpan data besar seperti dokumen dan foto secara permanen.</td><td>Data disimpan di piringan magnetik yang berputar.</td></tr>
+          <tr><td>SSD</td><td>Menyimpan data lebih cepat dari HDD.</td><td>Data disimpan di chip memori tanpa bagian bergerak.</td></tr>
+          <tr><td>USB Flash Drive</td><td>Menyimpan dan memindahkan data antar perangkat.</td><td>Data disimpan di memori flash, mudah dibawa.</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+
+    <div class="sec">
+      <h2>Processing</h2>
+      <p class="sub">Perangkat: <strong>Central Processing Unit (CPU), Random Access Memory (RAM)</strong>.</p>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Perangkat</th><th>Fungsi</th><th>Cara kerja</th></tr></thead>
+        <tbody>
+          <tr><td>CPU</td><td>Mengolah data seperti otak komputer (misalnya, menghitung atau menjalankan program).</td><td>Menerima perintah, melakukan perhitungan, dan mengirim hasil.</td></tr>
+          <tr><td>RAM</td><td>Menyimpan data sementara untuk mempercepat pemrosesan.</td><td>Menyimpan data yang sedang digunakan, hilang saat komputer dimatikan.</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+
+    <div class="sec">
+      <h2>Output</h2>
+      <p class="sub">Perangkat: <strong>Monitor, Speaker, Printer</strong>.</p>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Perangkat</th><th>Fungsi</th><th>Cara kerja</th></tr></thead>
+        <tbody>
+          <tr><td>Monitor</td><td>Menampilkan teks atau gambar (misalnya, dokumen atau video).</td><td>Menampilkan data digital sebagai gambar di layar.</td></tr>
+          <tr><td>Speaker</td><td>Mengeluarkan suara (misalnya, lagu atau suara video).</td><td>Mengubah data digital menjadi suara.</td></tr>
+          <tr><td>Printer</td><td>Mencetak data ke kertas (misalnya, dokumen tugas).</td><td>Mengubah data digital menjadi cetakan fisik.</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+
+    <div class="sec">
+      <h2>Contoh dalam kehidupan</h2>
+      <div class="grid2">
+        <div class="card acard"><h3>Mengetik dan mengedit</h3><p>Mengetik nama di keyboard (<strong>input</strong>), menyimpannya di USB (<strong>storage</strong>), mengeditnya di Word (<strong>processing</strong>), lalu menampilkannya di monitor (<strong>output</strong>).</p></div>
+        <div class="card acard"><h3>Merekam lagu</h3><p>Merekam suara lagu (<strong>input</strong>), menyimpannya di SSD (<strong>storage</strong>), mengolahnya di aplikasi (<strong>processing</strong>), dan memutarnya di speaker (<strong>output</strong>).</p></div>
+      </div>
+      <div class="tip"><b>Ayo berpikir</b>Kenapa tugas yang sedang diketik harus disimpan ke storage sebelum komputer dimatikan? Ingat sifat RAM!</div>
+    </div>
+
+    <div class="ready-bar">
+      <button class="btn pulse" id="btnSiap" disabled>Tunggu waktu membaca…</button>
+      <div class="note" id="siapNote">Baca pelan-pelan. Soal akan meminta kamu mengingat, menerapkan, dan menalar memakai materi ini.</div>
+      <div id="glErr" class="err" hidden>Maaf, browser ini belum bisa menampilkan dunia 3D (WebGL). Coba buka di Chrome, Edge, atau Firefox versi terbaru.</div>
+      <button class="linkbtn" id="btnSkip" type="button">.</button>
+    </div>
+  </div>
+</section>
+
+<!-- ======= HUD ======= -->
+<div id="hud" hidden>
+  <div class="hp" id="hProg"><div class="l">Dijawab benar</div><div class="n"><span id="hN">0</span> / <span id="hTot">20</span></div><div class="pb"><i id="hBar"></i></div><div class="l" id="hNext"></div></div>
+  <div id="zone">SDIT Hidayatut Taufiq</div>
+  <div class="hp" id="hScore"><div><div class="l">Poin</div><div class="n" id="hPts">0</div><div class="l">Koin</div><div class="n" id="hCoins">0</div></div><div><div class="l">Bintang</div><div class="n" id="hStars">0</div></div><button class="btn alt small" id="btnMap" type="button">Peta</button><button class="btn alt small" id="btnList" type="button">Daftar</button><button class="btn alt small" id="btnShop" type="button">Shop Kostum</button></div>
+  <div class="hp" id="mapbox"><canvas id="mini" width="150" height="150" aria-label="Peta kecil"></canvas></div>
+  <div class="hp" id="onl" hidden><div class="l" id="onlHead">Teman online</div><div id="onlList"></div></div>
+  <div class="cross"></div>
+  <div id="prompt" hidden><span class="pt" id="pTxt"></span><button class="btn small" id="btnTalk" type="button">Bicara</button></div>
+  <div id="toast" hidden role="status"></div>
+  <div id="pause" hidden>Klik layar untuk mengunci kamera, atau tahan klik dan geser untuk melihat sekeliling</div>
+  <div id="rideBox" hidden><div id="rideTxt"></div><div class="pb"><i id="rideBar"></i></div><button class="btn alt small" id="rideSkip" type="button">Lewati perjalanan</button></div>
+  <button class="btn danger small" id="btnFinish" type="button">Selesaikan Ujian</button>
+  <div id="legend">
+    <div><span>Jalan</span><span class="keys"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd></span></div>
+    <div><span>Lari</span><span class="keys"><kbd>Shift</kbd></span></div>
+    <div><span>Bicara / naik angkot</span><span class="keys"><kbd>E</kbd></span></div><div><span>Shop kostum</span><span class="keys"><kbd>B</kbd></span></div>
+    <div><span>Peta</span><span class="keys"><kbd>M</kbd></span></div>
+    <div><span>Daftar guru</span><span class="keys"><kbd>Tab</kbd></span></div>
+  </div>
+</div>
+<div id="tzL"></div><div id="tzR"></div>
+<div id="joyBase" hidden><div id="joyKnob"></div></div>
+
+<!-- ======= DIALOG ======= -->
+<div id="dialog" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="dName">
+  <div class="dcard" id="dcard" tabindex="-1">
+    <div class="dhead">
+      <div class="av" id="dAv"></div>
+      <div><div class="dname" id="dName"></div><div class="drole" id="dRole"></div></div>
+      <button class="x" id="dClose" type="button" aria-label="Tutup"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M3 3l10 10M13 3L3 13"/></svg></button>
+    </div>
+    <p class="bubble" id="dHi"></p>
+    <div class="qbox">
+      <span class="qtag"></span>
+      <p class="qs" id="dQ"></p>
+      <div class="opts" id="dOpts"></div>
+      <div class="res" id="dRes" hidden></div>
+      <p class="hint" id="dHint"></p>
+    </div>
+    <div class="dfoot">
+      <button class="btn alt" id="dLater" type="button">Nanti dulu</button>
+      <button class="btn" id="dSubmit" type="button">Periksa Jawaban</button>
+    </div>
+  </div>
+</div>
+
+<!-- ======= PETA KOTA ======= -->
+<div id="shop" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="shopTitle">
+ <div class="dcard" tabindex="-1" id="shopCard">
+  <div class="dhead"><div><div class="dname" id="shopTitle">✨ Emerald Outfit Shop</div><div class="drole">Beli kostum spesial dengan koin dari jawaban benar. Efek aktif setelah dipakai, dan kostummu terlihat oleh pemain lain.</div></div><button class="x" id="shopClose" type="button" aria-label="Tutup">×</button></div>
+  <p class="bubble">Koin kamu: <b id="shopCoins">0</b> · Kostum yang sudah dimiliki tetap tersimpan selama sesi permainan.</p>
+  <div id="shopItems" class="shop-items"></div>
+  <div class="dfoot"><button class="btn alt" id="shopDone" type="button">Kembali bermain</button></div>
+ </div>
+</div>
+<div id="peta" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="mTitle">
+  <div class="dcard" id="pcard2" tabindex="-1" style="max-width:min(1140px,100%)">
+    <div class="dhead">
+      <div><div class="dname" id="mTitle">Peta Kranggan, Bekasi</div><div class="drole">Titik besar berwarna = halte angkot. Panah merah = kamu. Bulatan hijau = guru yang sudah kamu bantu.</div></div>
+      <button class="x" id="mClose" type="button" aria-label="Tutup"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M3 3l10 10M13 3L3 13"/></svg></button>
+    </div>
+    <canvas id="bigmap" width="1100" height="664"></canvas>
+    <div id="mapLegend"></div>
+  </div>
+</div>
+
+<!-- ======= NAIK ANGKOT ======= -->
+<div id="naik" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="nTitle">
+  <div class="dcard" id="ncard" tabindex="-1">
+    <div class="dhead">
+      <div><div class="dname" id="nTitle"></div><div class="drole" id="nSub"></div></div>
+      <button class="x" id="nClose" type="button" aria-label="Tutup"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M3 3l10 10M13 3L3 13"/></svg></button>
+    </div>
+    <div id="nList"></div>
+  </div>
+</div>
+
+<!-- ======= MINI GAME: AYO DANSA ======= -->
+<div id="dance" hidden>
+  <div class="dn-top" id="dnTop" hidden>
+    <div class="dn-song">&#9835; <span id="dnClock">02:00</span></div>
+    <div class="dn-sbar"><i id="dnBar"></i></div>
+  </div>
+  <button class="dn-mute" id="dnMute" type="button" aria-label="Matikan suara lagu" hidden>&#128266;</button>
+  <div class="hp dn-board" id="dnBoard" hidden></div>
+  <div class="dn-banner" id="dnBanner" hidden role="status"></div>
+  <div class="dn-count" id="dnCount" hidden aria-live="assertive"></div>
+  <div class="dn-main" id="dnMain" hidden>
+    <div class="dn-fb" id="dnFb" aria-live="polite"></div>
+    <div class="dn-seq" id="dnSeq"></div>
+    <div class="dn-bar"><div class="dn-zone" id="dnZone"><i></i></div><div class="dn-mk" id="dnMk"></div></div>
+    <div class="dn-combo" id="dnCombo"></div>
+  </div>
+  <div class="dn-pad" id="dnPad" hidden></div>
+</div>
+
+<div id="mgame" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="mgTitle">
+  <div class="dcard" id="mgcard" tabindex="-1">
+    <div class="dhead"><div><div class="dname" id="mgTitle">Tantangan Ayo Dansa!</div><div class="drole" id="mgSub"></div></div></div>
+    <div id="mgBody"></div>
+    <div class="dfoot">
+      <button class="btn alt" id="mgSkip" type="button">Lewati</button>
+      <button class="btn" id="mgGo" type="button">Ayo Dansa!</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ======= KONFIRMASI SELESAI ======= -->
+<div id="konfirm" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="kTitle">
+  <div class="dcard" tabindex="-1" id="kcard">
+    <div class="dname" id="kTitle">Selesaikan ujian sekarang?</div>
+    <p id="kMsg"></p>
+    <div class="dfoot">
+      <button class="btn alt" id="kNo" type="button">Lanjut Mencari</button>
+      <button class="btn danger" id="kYes" type="button">Ya, Selesaikan</button>
+    </div>
+  </div>
+</div>
+
+<!-- ======= DAFTAR ======= -->
+<div id="daftar" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="lTitle">
+  <div class="dcard" tabindex="-1" id="lcard">
+    <div class="dhead">
+      <div><div class="dname" id="lTitle">Daftar guru dan staf</div><div class="drole">Petunjuk tempat mereka berdiri</div></div>
+      <button class="x" id="lClose" type="button" aria-label="Tutup"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M3 3l10 10M13 3L3 13"/></svg></button>
+    </div>
+    <ul class="list" id="lList"></ul>
+  </div>
+</div>
+
+<!-- ======= RESULTS ======= -->
+<section id="hasil" class="screen" hidden>
+  <div class="wrap">
+    <div class="rhead">
+      <div class="eyebrow" id="rName">Misi selesai</div>
+      <h1 id="rTitle">Hebat!</h1>
+      <p class="lead" id="rMsg"></p>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="n" id="rScore">0</div><div class="l">Nilai (0–100)</div></div>
+      <div class="stat"><div class="n" id="rPerfect">0 / 20</div><div class="l">Benar di percobaan pertama</div></div>
+      <div class="stat"><div class="n" id="rPts">0</div><div class="l">Total percobaan salah</div></div>
+      <div class="stat"><div class="n" id="rStars">0</div><div class="l">Bintang Ayo Dansa</div></div>
+    </div>
+    <div class="stats sec4" id="rSec"></div>
+    <div id="sendStatus"></div><button class="btn alt small" id="btnResend" type="button" hidden>Kirim Ulang Nilai</button>
+    <ul class="list" id="rList" style="margin-top:14px"></ul>
+    <div class="ractions">
+      <button class="btn" id="btnAgain" type="button">Main Lagi (Latihan)</button>
+      <button class="btn alt" id="btnReread" type="button">Baca Materi Lagi</button>
+    </div>
+  </div>
+</section>
+
+<script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script defer src="js/data.js"></script>
+<script defer src="js/manifest3d.js"></script>
+<script defer src="js/game.js"></script>
+</body>
+</html>
