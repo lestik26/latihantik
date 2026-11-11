@@ -129,24 +129,34 @@ function stats(){const n=R.length,pos=[0,1,2].map(j=>R.filter(r=>r.ok[j]).length
  return{n,pos,lv,it,avg:n?Math.round(R.reduce((a,r)=>a+nil(r),0)/n):0,tot:pc(pos.reduce((a,b)=>a+b,0),n*3)}}
 const row=(t,a,b)=>'<div class="rw"><span>'+t+'</span><div class="qzbar"><span style="width:'+pc(a,b)+'%"></span></div><b>'+pc(a,b)+'%</b></div>';
 function rec(){const s=stats(),c=['C1','C2','C3','C4','C5'].filter(l=>s.lv[l]);
- let h='<div class="rec"><div class="w cds"><div><b>'+s.n+'</b>siswa mengerjakan</div><div><b>'+s.avg+'</b>rata-rata nilai</div><div><b>'+s.tot+'%</b>jawaban benar keseluruhan</div><button class="qzbtn" style="margin-left:auto;align-self:center" onclick="QZ.dl()">⬇ Unduh Rekap Jawaban (CSV)</button></div>';
+ let h='<div class="rec"><div class="w cds"><div><b>'+s.n+'</b>siswa mengerjakan</div><div><b>'+s.avg+'</b>rata-rata nilai</div><div><b>'+s.tot+'%</b>jawaban benar keseluruhan</div><div style="margin-left:auto;display:flex;flex-direction:column;gap:6px;align-items:flex-end"><div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end"><button class="qzbtn" onclick="QZ.dl()">⬇ Unduh (CSV)</button><button class="qzbtn g" onclick="QZ.copy()">📋 Salin Data</button><button class="qzbtn g" onclick="QZ.show()">👁 Tampilkan Data</button></div><div id="qzmsg" style="font-size:.85em;max-width:34em;text-align:right"></div></div></div><textarea id="qzdata" readonly style="display:none;grid-column:1/-1;width:100%;height:10em;font-family:monospace;font-size:.8em;background:var(--st);color:var(--tx);border:2px solid var(--ac2);border-radius:10px;padding:8px"></textarea><div class="w" style="display:none"></div>';
  h+='<div><div class="qzh">% siswa menjawab benar per nomor</div>'+['Soal 1 (Pilihan ganda)','Soal 2 (PG kompleks)','Soal 3 (PG kompleks)'].map((t,j)=>row(t,s.pos[j],s.n)).join('')+'</div>';
  h+='<div><div class="qzh">% ketercapaian level kognitif</div>'+c.map(l=>row(l+' '+L[l],s.lv[l][0],s.lv[l][1])).join('')+'</div>';
  h+='<div class="w"><div class="qzh">% benar per butir soal (1–24)</div><div class="chips">'+Object.keys(s.it).sort((a,b)=>a-b).map(b=>'<span>No.'+b+' ('+SETS[Math.floor((b-1)/3)][(b-1)%3][0]+'): <b>'+pc(...s.it[b])+'%</b></span>').join('')+'</div></div>';
  h+='<div class="w"><div class="qzh">Rekap nilai siswa</div><table><tr><th>No</th><th>Nama</th><th>Paket</th><th>Soal 1</th><th>Soal 2</th><th>Soal 3</th><th>Nilai</th></tr>'+R.map(r=>'<tr><td>'+r.no+'</td><td>'+esc(r.name)+'</td><td>'+r.set+'</td>'+r.ok.map(x=>'<td>'+(x?'✔':'✘')+'</td>').join('')+'<td><b>'+nil(r)+'</b></td></tr>').join('')+'</table></div></div>';
  return h}
-function csv(){const q=v=>{v=String(v);if(/^[=+\-@]/.test(v))v="'"+v;return '"'+v.replace(/"/g,'""')+'"'};
+function rowsData(){const q=v=>{v=String(v);if(/^[=+\-@]/.test(v))v="'"+v;return '"'+v.replace(/"/g,'""')+'"'};
  const rows=[['No','Nama','Paket','Level S1','Level S2','Level S3','Jawaban S1','Jawaban S2','Jawaban S3','Status S1','Status S2','Status S3','Jumlah Benar','Nilai']],s=stats();
  R.forEach(r=>{rows.push([r.no,r.name,r.set,...SETS[r.set-1].map(x=>x[0]),...r.ans.map((a,j)=>a.map(i=>SETS[r.set-1][j][2][i]).join(' | ')),...r.ok.map(x=>x?'Benar':'Salah'),r.ok.filter(Boolean).length,nil(r)])});
  rows.push([],['REKAP'],['Jumlah siswa',s.n],['Rata-rata nilai',s.avg],['% jawaban benar keseluruhan',s.tot+'%']);
  s.pos.forEach((c,j)=>rows.push(['% siswa benar Soal '+(j+1),pc(c,s.n)+'%']));
  Object.keys(s.lv).sort().forEach(l=>rows.push(['% ketercapaian '+l+' '+L[l],pc(...s.lv[l])+'%']));
- return '\ufeff'+rows.map(r=>r.map(q).join(',')).join('\r\n')}
+ return rows}
+function csv(){const q=v=>{v=String(v);if(/^[=+\-@]/.test(v))v="'"+v;return '"'+v.replace(/"/g,'""')+'"'};return '\ufeff'+rowsData().map(r=>r.map(q).join(',')).join('\r\n')}
+function tsv(){return rowsData().map(r=>r.map(v=>String(v).replace(/[\t\r\n]+/g,' ')).join('\t')).join('\n')}
 window.QZ={adv,
  start(p){const i=$('nm'+p),v=i.value.trim();if(!v){i.style.borderColor='#d33';i.focus();return}const n=P[p].n;P[p]={n,st:'quiz',name:v,ord:set(n).map(q=>sh(q[2].length))};rp(p)},
  send(p){const S=P[p],n=S.n,ans=[],ok=[];set(n).forEach((q,j)=>{const v=[...document.querySelectorAll('#qp'+p+' input[name="q'+p+'_'+j+'"]:checked')].map(x=>+x.value).sort((a,b)=>a-b);ans.push(v);ok.push(v.join()===q[3].slice().sort((a,b)=>a-b).join())});
   R=R.filter(r=>r.no!==n);R.push({no:n,name:S.name,set:(n-1)%8+1,ans,ok});R.sort((a,b)=>a.no-b.no);S.st='done';save();rp(p);bar();setTimeout(()=>{if(P[p]===S&&S.st==='done')adv(p)},1800)},
- async dl(){const d=window.claude&&await claude.use('downloads');if(!d){alert('Unduhan tidak tersedia di tampilan ini.');return}try{await d.save({filename:'rekap_kuis_jaringan.csv',data:csv()})}catch(e){}}};
+ async dl(){const msg=QZ.msg;let d=null;try{d=window.claude&&await claude.use('downloads')}catch(e){}
+  if(!d){msg('Unduhan langsung tidak didukung di tampilan ini. Pakai tombol Salin Data atau Tampilkan Data.');QZ.show();return}
+  try{await d.save({filename:'rekap_kuis.csv',data:csv()});msg('Berkas dikirim ke penyimpanan. Jika tidak muncul, pakai Salin Data.')}
+  catch(e){const c=e&&e.code;msg(c==='declined'?'Unduhan dibatalkan.':'Unduhan gagal ('+(c||'error')+'). Pakai Salin Data.');if(c!=='declined')QZ.show()}},
+ msg(t){const e=$('qzmsg');if(e)e.textContent=t},
+ show(){const e=$('qzdata');if(e){e.style.display='block';e.value=tsv();e.focus();e.select()}},
+ async copy(){const t=tsv();let ok=false;try{await navigator.clipboard.writeText(t);ok=true}catch(e){}
+  if(!ok){const e=$('qzdata');if(e){e.style.display='block';e.value=t;e.focus();e.select();try{ok=document.execCommand('copy')}catch(x){}}}
+  QZ.msg(ok?'Data disalin. Tempel (paste) di Excel atau Google Sheets.':'Salin otomatis diblokir. Data ditampilkan di kotak: tekan lama lalu pilih Salin.')}};
 window.openQz=()=>{$('qz').style.display='flex';view='play';initP();render()};
 $('qzx').onclick=()=>{$('qz').style.display='none'};
 $('qzr').onclick=()=>{view='rec';render()};$('qzp').onclick=()=>{view='play';initP();render()};
